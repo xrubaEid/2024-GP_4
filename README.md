@@ -30,13 +30,13 @@ Requirements To Launch The Application
 ----------------------
 Launching from Visual studio/Android studio:
 --------------------------------------------
- 1 Open 2024-GP-4 repository on GitHub
- 2 Click on the code button
- 3 Download .zip file
- 4 Unzip the file
- 5 Open Android Studio or Visual Studio Code
- 6 Click on File > Open > Location of the saved unzipped file then click on Ok
- 7 Turn on an Android Emulator or connect an android mobile to your computer using USB
- 8 Run the SleepWell application
+ 1\ Open 2024-GP-4 repository on GitHub
+ 2\ Click on the code button
+ 3\ Download .zip file
+ 4\ Unzip the file
+ 5\ Open Android Studio or Visual Studio Code
+ 6\ Click on File > Open > Location of the saved unzipped file then click on Ok
+ 7\Turn on an Android Emulator or connect an android mobile to your computer using USB
+ 8\ Run the SleepWell application
 
 
