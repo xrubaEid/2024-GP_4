@@ -10,20 +10,24 @@ Our goal is centered around a user-friendly application connected to sensor desi
 
 -----------------
 Technology used 
------------------
-Flutter 
-Agile 
-Firebase platform
-Android Studio
-visual studio code
+------------------
+|                  |
+|------------------|
+|Flutter           |
+|Agile             | 
+|Firebase platform |
+|Android Studio    |
+|visual studio code|
 
 ---------------------------------------
 Requirements To Launch The Application
 ---------------------------------------
- • Android Studio with SDK or Visual Studio Code.
- • Flutter framework.
- • Dart programming language.
- • mobile emulator or android mobile.
+ |                                               |
+ |-----------------------------------------------|
+ | Android Studio with SDK or Visual Studio Code.|
+ |Flutter framework.                |
+ | Dart programming language.       |
+ |mobile emulator or android mobile.|
  
 ----------------------
  Launch Instructions
