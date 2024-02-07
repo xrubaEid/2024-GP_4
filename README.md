@@ -31,7 +31,7 @@ Requirements To Launch The Application
 Launching from Visual studio/Android studio:
 --------------------------------------------
 | 1\ Open 2024-GP-4 repository on GitHub    |
-|                                           |
+|-------------------------------------------|
 | 2\ Click on the code button               |
 | 3\ Download .zip file                     |
 | 4\ Unzip the file                         |
