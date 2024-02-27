@@ -44,5 +44,9 @@ Launching from Visual studio/Android studio:
 | 6\ Click on File > Open > Location of the saved unzipped file then click on Ok|
 | 7\Turn on an Android Emulator or connect an android mobile to your computer using USB|
 | 8\ Run the SleepWell application|
-
+| Team member :   |
+| Taif Alrubeaan  | 
+| Rema Alsharef   |
+| Ruba Albnhar    |
+| Raghad Alboqami |
 
