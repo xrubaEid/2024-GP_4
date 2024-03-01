@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-     initialRoute:SignInScreen.RouteScreen,
+     initialRoute:SplashScreen.RouteScreen,
      routes:{
       SignInScreen.RouteScreen : (context)=> SignInScreen(),
       MyHomePage.RouteScreen : (context)=> MyHomePage(),
