@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "705225154575",
+    "project_id": "sleepwell-2d0c4",
+    "storage_bucket": "sleepwell-2d0c4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:705225154575:android:9c93a1b6cb1551a573c37a",
+        "android_client_info": {
+          "package_name": "com.example.sleepwell"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBun53CttUKoTpq2tmqqrvz5hpLkp2GTMw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

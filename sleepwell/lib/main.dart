@@ -1,3 +1,4 @@
+//import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
@@ -5,8 +6,17 @@ import 'package:sleepwell/screens/signup_screen.dart';
 import 'package:sleepwell/screens/splash_screen.dart';
 import 'package:sleepwell/widget/tabbar_screen.dart';
 
-void main() {
+Future<void> main() async {
+
+//await Firebase.initializeApp( options: DefaultFirebaseOptions.currentPlatform).then(
+ // (FirebaseApp value ) => Get.put(AuthenticationRepository()),
+//);
+//Todo: Add Google-Firebase Auth here
+
   runApp(const MyApp());
+}
+
+class AuthenticationRepository {
 }
 
 class MyApp extends StatelessWidget {
