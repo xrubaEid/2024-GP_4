@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/signup_screen.dart';
 import 'package:sleepwell/widget/regsterbutton.dart';
@@ -23,15 +21,7 @@ class _SignInScreenState extends State<SignInScreen> {
       
        appBar: AppBar(
         backgroundColor: myColor,
-        title: const Text('') ,/*const Center(
-          child:Text(
-            'Sign In',
-            style: TextStyle(color: Color.fromARGB(228, 230, 230, 227), // pick a colore 
-            fontWeight: FontWeight.bold,
-            fontSize: 30,
-           ), 
-           ),
-        ),*/
+        title: const Text('') ,
         ),
        
        body:  Container(
