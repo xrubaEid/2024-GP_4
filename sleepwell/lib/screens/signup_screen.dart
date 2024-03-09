@@ -42,16 +42,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
            child: ListView(
             shrinkWrap: true,
             children: [ 
-               const SizedBox(
+               /*const SizedBox(
                 height: 200,
                 width: double.infinity,
                  child: Image(image: AssetImage('assets/logo2.png'),
                  ),
-               ), 
-               
+               ), */
+               const SizedBox( height: 15,),
                const Center(
                  child:  Text( 
-                  'Sign up new account',
+                  'Let’s create  your account!',
                   style: TextStyle(
                    color: Colors.white,
                    fontSize: 20,
@@ -65,7 +65,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   fillColor: Colors.white,
                    filled: true,
                    suffixIcon:const  Icon(Icons.person),
-                   label:  const Text ('Full Name ') ,  
+                   hintText:  'Full Name ',  
                    border: OutlineInputBorder(
                      borderRadius: BorderRadius.circular(10),
                    ),),
@@ -78,7 +78,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   fillColor: Colors.white,
                    filled: true,
                    suffixIcon: Icon(Icons.email),
-                   label: const Text ('Email Address') ,  
+                   hintText: 'Email Address' ,  
                    border: OutlineInputBorder(
                      borderRadius: BorderRadius.circular(10),
                    ),),
@@ -91,7 +91,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   fillColor: Colors.white,
                   filled: true,
                   suffixIcon:const  Icon(Icons.key),
-                  label:const  Text ('Password') ,  
+                  hintText:'Password',  
                   border: OutlineInputBorder(
                      borderRadius: BorderRadius.circular(10),
                    ),),
@@ -104,7 +104,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   fillColor: Colors.white,
                   filled: true,
                   suffixIcon:const  Icon(Icons.key),
-                  label:const  Text ('Confirm Password') ,  
+                 hintText:'Confirm Password',  
                   border: OutlineInputBorder(
                    borderRadius: BorderRadius.circular(10),
                    ),),
@@ -112,7 +112,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                  const SizedBox( height: 30,),
                  regsterbutton(
                     color:Color(0xffd5defe),
-                    title:'Sign Up',
+                    title:'Create Account',
                     onPressed: (){
                        Navigator.pushNamed(context,MyHomePage.RouteScreen);
                     },),

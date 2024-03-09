@@ -4,13 +4,14 @@ import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
 import 'package:sleepwell/screens/signup_screen.dart';
 import 'package:sleepwell/screens/splash_screen.dart';
-import 'package:sleepwell/widget/tabbar_screen.dart';
 
-Future<void> main() async {
-
-//await Firebase.initializeApp( options: DefaultFirebaseOptions.currentPlatform).then(
- // (FirebaseApp value ) => Get.put(AuthenticationRepository()),
-//);
+ main() async {
+  //coenact to fire base 
+//WidgetsFlutterBinding.ensureInitialized();
+//await Firebase.initializeApp();
+/*await Firebase.initializeApp( options: DefaultFirebaseOptions.s).then(
+(FirebaseApp value ) => Get.put(AuthenticationRepository()),
+);*/
 //Todo: Add Google-Firebase Auth here
 
   runApp(const MyApp());
@@ -37,7 +38,6 @@ class MyApp extends StatelessWidget {
       MyHomePage.RouteScreen : (context)=> MyHomePage(),
       SignUpScreen.RouteScreen : (context)=> SignUpScreen(),
       SplashScreen.RouteScreen : (context)=> SplashScreen(),
-      TabBarExample.RouteScreen : (context)=> TabBarExample(),
 
      
      },

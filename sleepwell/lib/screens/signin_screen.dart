@@ -39,7 +39,7 @@ class _SignInScreenState extends State<SignInScreen> {
             shrinkWrap: true,
             children: [
                const SizedBox(
-                height: 220,
+                height: 150,
                 width: double.infinity,
                  child: Image(image: AssetImage('assets/logo2.png'),
                  ),
@@ -47,14 +47,22 @@ class _SignInScreenState extends State<SignInScreen> {
               
                const Center(
                  child:  Text( 
-                  'Sign in  to your account',
+                  'Welcome  back!',
+                  style: TextStyle(
+                   color: Colors.white,
+                   fontSize: 25,
+                   fontWeight: FontWeight.bold
+                    ),),
+               ),
+               const Center(
+                 child:  Text( 
+                  '  start exploring our platform today!',
                   style: TextStyle(
                    color: Colors.white,
                    fontSize: 20,
                    fontWeight: FontWeight.bold
                     ),),
                ),
-               
                const SizedBox(height: 25) ,
                TextField(
                 keyboardType: TextInputType.emailAddress,
@@ -62,7 +70,7 @@ class _SignInScreenState extends State<SignInScreen> {
                    fillColor: Colors.white,
                    filled: true,
                    suffixIcon:const  Icon(Icons.email),
-                   label:const  Text ('Email') , 
+                   hintText:'Email' , 
                    border: OutlineInputBorder(
                    borderRadius: BorderRadius.circular(10),
                    
@@ -78,7 +86,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 fillColor: Colors.white,
                 filled: true,
                 suffixIcon: const Icon(Icons.key, ),
-                 label: const Text ('Password') ,  
+                 hintText: 'Password',  
                  border: OutlineInputBorder(
                  borderRadius: BorderRadius.circular(10),
                    

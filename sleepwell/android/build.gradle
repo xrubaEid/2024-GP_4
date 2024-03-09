@@ -1,3 +1,4 @@
+
 allprojects {
     repositories {
         google()
@@ -16,5 +17,3 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
-//Update the Kotlin version
-//ext.kotlin_version = '1.6.10'
