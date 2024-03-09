@@ -12,13 +12,12 @@ import 'package:sleepwell/screens/splash_screen.dart';
 /*await Firebase.initializeApp( options: DefaultFirebaseOptions.s).then(
 (FirebaseApp value ) => Get.put(AuthenticationRepository()),
 );*/
-//Todo: Add Google-Firebase Auth here
+
 
   runApp(const MyApp());
 }
 
-class AuthenticationRepository {
-}
+class AuthenticationRepository {}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -41,7 +40,7 @@ class MyApp extends StatelessWidget {
 
      
      },
+
     );
   }
 }
-
