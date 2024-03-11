@@ -1,5 +1,6 @@
 //import 'dart:html';
 import 'package:flutter/material.dart';
+import 'package:sleepwell/screens/alarm_screen.dart';
 import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
 import 'package:sleepwell/screens/signup_screen.dart';
@@ -37,6 +38,8 @@ class MyApp extends StatelessWidget {
       MyHomePage.RouteScreen : (context)=> MyHomePage(),
       SignUpScreen.RouteScreen : (context)=> SignUpScreen(),
       SplashScreen.RouteScreen : (context)=> SplashScreen(),
+      AlarmScreen.RouteScreen : (context)=> AlarmScreen(),
+
 
      
      },
