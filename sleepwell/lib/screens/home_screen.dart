@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sleepwell/screens/alarm_screen.dart';
 
 class MyHomePage extends StatefulWidget {
    static String RouteScreen ='home_screen';
@@ -13,14 +14,17 @@ class _MyHomePageState extends State<MyHomePage> {
   final pages =[
     const Center(child: Text('Hello  profile ')),
     const Center(child: Text('Hello  statistic  ')),
-    const Center(child: Text('Hello Alarm ')),
+    AlarmScreen(),
     const Center(child: Text('Hello Dashboard')),
   ];
   
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-        
+        appBar: AppBar(
+          backgroundColor: Color.fromARGB(255, 162, 165, 180),
+          title: Text(''),
+        ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: index,
         onDestinationSelected: (index) => setState(()=> this.index = index) ,
