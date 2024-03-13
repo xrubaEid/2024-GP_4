@@ -1,24 +1,29 @@
 //import 'dart:html';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:sleepwell/firebase_options.dart';
 import 'package:sleepwell/screens/alarm_screen.dart';
 import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
 import 'package:sleepwell/screens/signup_screen.dart';
 import 'package:sleepwell/screens/splash_screen.dart';
 
- main() async {
-  //coenact to fire base 
-//WidgetsFlutterBinding.ensureInitialized();
-//await Firebase.initializeApp();
-/*await Firebase.initializeApp( options: DefaultFirebaseOptions.s).then(
-(FirebaseApp value ) => Get.put(AuthenticationRepository()),
-);*/
+Future<void> main() async {
 
+//
+final WidgetsBinding= WidgetsFlutterBinding.ensureInitialized();
+// GetX local storege
+await GetStorage.init();
+//coenact to fire base 
+await Firebase.initializeApp( options: DefaultFirebaseOptions.currentPlatform);
+//.then( (FirebaseApp value ) => Get.put(AuthenticationRepository()),)
+
+// await Splash until other items loaded
+//flutterNativeSplash.preserve(WidgetsBinding:WidgetsBinding);
 
   runApp(const MyApp());
 }
-
-class AuthenticationRepository {}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
