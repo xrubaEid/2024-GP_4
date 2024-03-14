@@ -13,6 +13,10 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+ // why late because i well not give  it a value new 
+ late String email;
+ late String password ;
+
   @override
   Widget build(BuildContext context) {
     Color myColor =  Color.fromARGB(255, 0, 74, 173);
@@ -66,6 +70,10 @@ class _SignInScreenState extends State<SignInScreen> {
                const SizedBox(height: 25) ,
                TextField(
                 keyboardType: TextInputType.emailAddress,
+                onChanged:(value) {
+                  // here i save the  value of email from user 
+                  email=value;
+                },
                 decoration: InputDecoration(
                    fillColor: Colors.white,
                    filled: true,
@@ -77,10 +85,14 @@ class _SignInScreenState extends State<SignInScreen> {
                     //border:OutlineInputBorder(borderRadius:BorderRadius.circular(10),
                    ), ),
                ),
-               SizedBox( height: 15,),
+              const  SizedBox( height: 15,),
               
               TextField(
                 keyboardType: TextInputType.visiblePassword,
+                onChanged:(value) {
+                  // here i save the  value of pssword from user 
+                  password=value;
+                },
                 obscureText: true,
                 decoration: InputDecoration(
                 fillColor: Colors.white,
@@ -97,7 +109,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     color:Color(0xffd5defe),
                     title:'Sign In',
                     onPressed: (){
-                       Navigator.pushNamed(context,MyHomePage.RouteScreen);
+                     Navigator.pushNamed(context,MyHomePage.RouteScreen);
+                     print(email);
+                     print(password);
                     },),
                        const SizedBox( height: 15,), 
                         

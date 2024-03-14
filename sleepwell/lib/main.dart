@@ -10,7 +10,6 @@ import 'package:sleepwell/screens/signup_screen.dart';
 import 'package:sleepwell/screens/splash_screen.dart';
 
 Future<void> main() async {
-
 //
 final WidgetsBinding= WidgetsFlutterBinding.ensureInitialized();
 // GetX local storege
