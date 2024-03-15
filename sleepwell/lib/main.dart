@@ -38,11 +38,12 @@ class MyApp extends StatelessWidget {
       MyHomePage.RouteScreen : (context)=> MyHomePage(),
       SignUpScreen.RouteScreen : (context)=> SignUpScreen(),
       SplashScreen.RouteScreen : (context)=> SplashScreen(),
-      AlarmScreen.RouteScreen : (context)=> AlarmScreen(),
-
+      AlarmScreen.RouteScreen : (context)=>AlarmScreen(),
 
      
      },
+     
+     
 
     );
   }

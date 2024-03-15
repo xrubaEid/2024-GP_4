@@ -27,7 +27,13 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: index,
-        onDestinationSelected: (index) => setState(()=> this.index = index) ,
+       onDestinationSelected: (index) {
+  if (index != 2) {
+    setState(() => this.index = index);
+  } else {
+    Navigator.pushNamed(context, AlarmScreen.RouteScreen);
+  }
+},
         backgroundColor: Color.fromARGB(255, 162, 165, 180),
         height: 70,
         destinations: const [
@@ -41,11 +47,12 @@ class _MyHomePageState extends State<MyHomePage> {
             selectedIcon:Icon( Icons.align_vertical_bottom ), 
             label:'Statistic',
             ),
-             NavigationDestination(
-            icon:Icon( Icons.access_alarm_outlined ),
-            selectedIcon:Icon( Icons.access_alarm ), 
-            label:'Alarm',
-            ),
+           NavigationDestination(
+    icon: Icon(Icons.access_alarm_outlined),
+    selectedIcon: Icon(Icons.access_alarm),
+    label: 'Alarm',
+    key: Key('alarm'),
+  ),
              NavigationDestination(
             icon:Icon( Icons.dashboard_customize_outlined ),
             selectedIcon:Icon( Icons.dashboard_customize ), 
