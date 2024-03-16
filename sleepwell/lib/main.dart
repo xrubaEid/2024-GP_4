@@ -8,6 +8,7 @@ import 'package:sleepwell/firebase_options.dart';
 >>>>>>> a5772954afbe167ad5addf62c64194358466bcd6
 import 'package:sleepwell/screens/alarm_screen.dart';
 import 'package:sleepwell/screens/home_screen.dart';
+import 'package:sleepwell/screens/profile_screen.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
 import 'package:sleepwell/screens/signup_screen.dart';
 import 'package:sleepwell/screens/splash_screen.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
       SignUpScreen.RouteScreen : (context)=> SignUpScreen(),
       SplashScreen.RouteScreen : (context)=> SplashScreen(),
       AlarmScreen.RouteScreen : (context)=> AlarmScreen(),
+      ProfileScreen.RouteScreen : (context)=> ProfileScreen(),
 
 
      
