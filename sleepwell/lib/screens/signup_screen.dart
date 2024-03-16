@@ -1,7 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/widget/regsterbutton.dart';
-
 
 class SignUpScreen extends StatefulWidget {
   static String RouteScreen ='signup_screen';
@@ -12,6 +12,13 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+final _auth=FirebaseAuth.instance;
+// why late because i well not give  it a value new 
+ late String name;
+ late String email;
+ late String password ;
+ late String cpassword ;
+
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
@@ -61,6 +68,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox( height: 15,),
                TextField(
                 keyboardType: TextInputType.name,
+                onChanged:(value) {
+                  // here i save the  value of email from user 
+                  name=value;
+                },
                 decoration: InputDecoration(
                   fillColor: Colors.white,
                    filled: true,
@@ -74,6 +85,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
               
                TextField(
                 keyboardType: TextInputType.emailAddress,
+                onChanged:(value) {
+                  // here i save the  value of email from user 
+                  email=value;
+                },
                 decoration: InputDecoration(
                   fillColor: Colors.white,
                    filled: true,
@@ -86,6 +101,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox( height: 15,),
                TextField(
                 keyboardType: TextInputType.visiblePassword,
+                onChanged:(value) {
+                  // here i save the  value of email from user 
+                  password=value;
+                },
                 obscureText: true,
                 decoration: InputDecoration(
                   fillColor: Colors.white,
@@ -99,6 +118,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                const SizedBox( height: 15,),
                TextField(
                 keyboardType: TextInputType.visiblePassword,
+                onChanged:(value) {
+                  // here i save the  value of email from user 
+                  cpassword=value;
+                },
                 obscureText: true,
                 decoration: InputDecoration(
                   fillColor: Colors.white,
@@ -113,8 +136,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                  regsterbutton(
                     color:Color(0xffd5defe),
                     title:'Create Account',
-                    onPressed: (){
-                       Navigator.pushNamed(context,MyHomePage.RouteScreen);
+                    onPressed: ()  async{ 
+                        try {
+                         Navigator.pushNamed(context,MyHomePage.RouteScreen);
+                         final nweUser = await _auth.createUserWithEmailAndPassword(
+                        email: email, password: password); 
+                         Navigator.pushNamed(context,MyHomePage.RouteScreen);
+                        } catch (e) {
+                          print(e);
+                        }
+
                     },),
                ],
            ),
