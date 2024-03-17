@@ -1,6 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:sleepwell/screens/clockview.dart';
+
 class AlarmScreen extends StatefulWidget {
-static String RouteScreen ='alarm_screen';
+  static String RouteScreen = 'alarm_screen';
 
   const AlarmScreen({super.key});
 
@@ -11,13 +15,22 @@ static String RouteScreen ='alarm_screen';
 class _AlarmScreenState extends State<AlarmScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
+      body: Container(
+        alignment: Alignment.center,
+        color: Color(0xFF004AAD),
+        child: ClockView(),
+      ),
+    );
+  }
+}
 
-      body: Column(
+
+/*Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Center(child:Center(child: Text("Wake Up time "))),
-          /*DigitalClock(
+          DigitalClock(
             digitAnimationStyle: Curves.easeInOut,
             is24HourTimeFormat: false,
             areaDecoration: BoxDecoration(
@@ -27,9 +40,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
               color: Colors.blueGry,
               fontSize: 50,
             ),
-          ),*/
+          ),
         ],
       ),
-    );
-  }
-}
+    );*/
