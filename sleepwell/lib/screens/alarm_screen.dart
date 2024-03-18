@@ -29,8 +29,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
 /*Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Center(child: Center(child: Text("Wake Up time "))),
-          DigitalClock(
+          Center(child:Center(child: Text("Wake Up time "))),
+          /*DigitalClock(
             digitAnimationStyle: Curves.easeInOut,
             is24HourTimeFormat: false,
             areaDecoration: BoxDecoration(
