@@ -19,7 +19,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
   Widget build(BuildContext context) {
     var now = DateTime.now();
     var formattedDate = DateFormat('EEE, d MMM').format(now);
-    var formattedTime = DateFormat('HH:mm').format(now);
+    var formattedTime = DateFormat('hh:mm').format(now);
 
     var white = Colors.white;
     const color = Color.fromARGB(255, 255, 255, 255);
@@ -62,6 +62,62 @@ class _AlarmScreenState extends State<AlarmScreen> {
                       style: const TextStyle(
                           color: Color.fromARGB(255, 255, 255, 255),
                           fontSize: 15),
+                    ),
+                    SizedBox(
+                      height: 60,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        SizedBox(width: 20),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "ALARM TIME",
+                              style: TextStyle(
+                                  color: Color(0xffff0863),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1.3),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              "06:12 PM",
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 255, 255, 255),
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w700),
+                            )
+                          ],
+                        ),
+                        SizedBox(width: 30),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              "WAKE UP IN",
+                              style: TextStyle(
+                                  color: Color(0xffff0863),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 1.3),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              "08:00 AM",
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 255, 255, 255),
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w700),
+                            )
+                          ],
+                        ),
+                      ],
                     ),
                   ],
                 ),
