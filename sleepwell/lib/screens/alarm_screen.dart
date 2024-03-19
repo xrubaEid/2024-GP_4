@@ -1,5 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-//import 'package:intl/intl.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
+import 'package:sleepwell/screens/clockview.dart';
+import 'package:intl/intl.dart';
 
 class AlarmScreen extends StatefulWidget {
   static String RouteScreen = 'alarm_screen';
@@ -21,7 +25,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
     const color = Color.fromARGB(255, 255, 255, 255);
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 16, 95, 199),
-      /*body: Container(
+      body: Container(
         height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -31,7 +35,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
           ),
         ),
         child: Container(
-padding: const EdgeInsets.all(30),
+          padding: const EdgeInsets.all(30),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -69,7 +73,7 @@ padding: const EdgeInsets.all(30),
             ], //<widget>[]
           ), //row
         ), //container
-      ),*/
+      ),
     );
   }
 }
