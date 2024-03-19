@@ -20,7 +20,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
   Widget build(BuildContext context) {
     var now = DateTime.now();
     var formattedDate = DateFormat('EEE, d MMM').format(now);
-    var formattedTime = DateFormat('HH:mm').format(now);
+    var formattedTime = DateFormat('hh:mm').format(now);
 
     var white = Colors.white;
     const color = Color.fromARGB(255, 255, 255, 255);
