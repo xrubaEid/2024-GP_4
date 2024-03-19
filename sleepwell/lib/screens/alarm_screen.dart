@@ -1,3 +1,4 @@
+//import 'dart:html';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -63,10 +64,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
                           color: Color.fromARGB(255, 255, 255, 255),
                           fontSize: 15),
                     ),
-                    SizedBox(
-                      height: 60,
-                    ),
-                    Row(
+                    const SizedBox(height: 60),
+                    const Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         SizedBox(width: 20),
@@ -74,7 +73,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              "ALARM TIME",
+                              "BEDTIME",
                               style: TextStyle(
                                   color: Color(0xffff0863),
                                   fontSize: 12,
@@ -82,23 +81,18 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                   letterSpacing: 1.3),
                             ),
                             SizedBox(
-                              height: 10,
+                              height: 5,
                             ),
                             Text(
-                              "06:12 PM",
+                              "10:15 PM",
                               style: TextStyle(
                                   color: Color.fromARGB(255, 255, 255, 255),
                                   fontSize: 30,
                                   fontWeight: FontWeight.w700),
-                            )
-                          ],
-                        ),
-                        SizedBox(width: 30),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
+                            ),
+                            SizedBox(height: 20),
                             Text(
-                              "WAKE UP IN",
+                              "WAKE UP TIME",
                               style: TextStyle(
                                   color: Color(0xffff0863),
                                   fontSize: 12,
@@ -106,7 +100,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                   letterSpacing: 1.3),
                             ),
                             SizedBox(
-                              height: 10,
+                              height: 5,
                             ),
                             Text(
                               "08:00 AM",
