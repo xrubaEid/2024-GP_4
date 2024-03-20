@@ -46,35 +46,35 @@ late User signInUser ;
   Widget build(BuildContext context) {
     return  Scaffold(
         appBar: AppBar(
-          backgroundColor:const  Color.fromARGB(255, 162, 165, 180),
+          backgroundColor:const Color.fromARGB(255, 0, 74, 173),
           title: Text(''),
         ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: index,
         onDestinationSelected: (index) => setState(()=> this.index = index) ,
-        backgroundColor:Color.fromARGB(255, 162, 165, 180),
+        backgroundColor:Color(0xFF040E3B),
         height: 70,
         destinations: const [
           NavigationDestination(
-            icon:Icon( Icons.person_outlined ),
-            selectedIcon:Icon( Icons.person ), 
+            icon:Icon( Icons.person_outlined ,color: Colors.white),
+            selectedIcon:Icon( Icons.person ,color: Colors.white), 
             label:'profile',
             ),
              NavigationDestination(
-            icon:Icon( Icons.align_vertical_bottom_outlined ),
-            selectedIcon:Icon( Icons.align_vertical_bottom ), 
+            icon:Icon( Icons.align_vertical_bottom_outlined ,color: Colors.white),
+            selectedIcon:Icon( Icons.align_vertical_bottom,color: Colors.white ), 
             label:'Statistic',
             ),
              NavigationDestination(
-            icon:Icon( Icons.access_alarm_outlined ),
-            selectedIcon:Icon( Icons.access_alarm ), 
+            icon:Icon( Icons.access_alarm_outlined,color: Colors.white ),
+            selectedIcon:Icon( Icons.access_alarm ,color: Colors.white), 
             label:'Alarm',
             ),
-             NavigationDestination(
-            icon:Icon( Icons.dashboard_customize_outlined ),
-            selectedIcon:Icon( Icons.dashboard_customize ), 
-            label:'Dashboard',
-            ),
+           NavigationDestination(
+  icon: Icon(Icons.dashboard_customize_outlined, color: Colors.white),
+  selectedIcon: Icon(Icons.dashboard_customize, color: Colors.white),
+  label: 'Dashboard',
+),
         ],
       ),
      

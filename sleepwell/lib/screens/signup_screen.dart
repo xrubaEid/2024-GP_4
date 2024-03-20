@@ -17,10 +17,10 @@ final _auth=FirebaseAuth.instance;
 bool  showSpinner = false;
 // why late because i well not give  it a value new 
  late String name;
+ late String Lname;
  late String email;
  late String password ;
  late String cpassword ;
-
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
@@ -45,12 +45,6 @@ bool  showSpinner = false;
              child: ListView(
               shrinkWrap: true,
               children: [ 
-                 /*const SizedBox(
-                  height: 200,
-                  width: double.infinity,
-                   child: Image(image: AssetImage('assets/logo2.png'),
-                   ),
-                 ), */
                  const SizedBox( height: 15,),
                  const Center(
                    child:  Text( 
@@ -72,7 +66,23 @@ bool  showSpinner = false;
                     fillColor: Colors.white,
                      filled: true,
                      suffixIcon:const  Icon(Icons.person),
-                     hintText:  'Full Name ',  
+                     hintText:  ' First Name ',  
+                     border: OutlineInputBorder(
+                       borderRadius: BorderRadius.circular(10),
+                     ),),
+                 ),  
+                 const SizedBox( height: 15,),
+                 TextField(
+                  keyboardType: TextInputType.name,
+                  onChanged:(value) {
+                    // here i save the  value of email from user 
+                    Lname=value;
+                  },
+                  decoration: InputDecoration(
+                    fillColor: Colors.white,
+                     filled: true,
+                     suffixIcon:const  Icon(Icons.person),
+                     hintText:  ' Last Name ',  
                      border: OutlineInputBorder(
                        borderRadius: BorderRadius.circular(10),
                      ),),
@@ -132,22 +142,57 @@ bool  showSpinner = false;
                    regsterbutton(
                       color:Color(0xffd5defe),
                       title:'Create Account',
-                      onPressed: ()  async{ 
-                         setState(() {
-                           showSpinner =true ;
+                     onPressed: () async {
+                     if (password.length >= 8 &&
+                      password.contains(RegExp(r'\d')) &&
+                       password == cpassword) {
+                     try {
+                        setState(() {
+                        showSpinner = true;
                          });
-                          try {
-                           final nweUser = await _auth.createUserWithEmailAndPassword(
-                          email: email, password: password); 
-                           Navigator.pushNamed(context,MyHomePage.RouteScreen);
-                           setState(() {
-                             showSpinner =false ;
+                         final newUser = await _auth.createUserWithEmailAndPassword(
+                          email: email, password: password);
+                         if (newUser != null) {
+                         Navigator.pushNamed(context, MyHomePage.RouteScreen);
+                         }
+                         setState(() {
+                          showSpinner = false;
                            });
-                          } catch (e) {
-                            print(e);
-                          }
-        
-                      },),
+                         } catch (e) {
+                          setState(() {
+                          showSpinner = false;
+                           });
+                           String errorMessage = '';
+                           if (e is FirebaseAuthException) {
+                            if (e.code == 'weak-password') {
+                              errorMessage = 'Cause: Password is too weak.';
+                               } else if (e.code == 'email-already-in-use') {
+                                errorMessage = ' Email is already in use.';
+                                 } else {
+                                  errorMessage = ' An error occurred. Please try again later.';
+                                  }
+                                  } else {
+                                      errorMessage = ' An error occurred. Please try again later.';
+                                      }
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                           content: Text(errorMessage),
+                                           duration: const Duration(seconds: 3),
+                                            ),
+                                             );
+                                             }
+                                             } else {
+                                               ScaffoldMessenger.of(context).showSnackBar(
+                                                 const SnackBar(
+                                                   content: Text(
+                                                    'Please make sure the password is at least 8 characters long, contains a number, and matches the confirm password.',
+                                                    ),
+                                                       duration: Duration(seconds: 3),
+                                                        ),
+                                                         );
+                                                          }
+                                                          },
+                                                          ),
                  ],
              ),
            ),

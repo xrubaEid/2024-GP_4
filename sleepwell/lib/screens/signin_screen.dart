@@ -132,7 +132,6 @@ class _SignInScreenState extends State<SignInScreen> {
                         });
                       }
                     } catch (e) {
-                      print(e);
                       setState(() {
                         showSpinner = false;
                       });

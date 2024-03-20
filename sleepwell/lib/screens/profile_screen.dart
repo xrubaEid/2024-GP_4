@@ -38,42 +38,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(15, 220, 201, 201),
+      backgroundColor: Color.fromARGB(255, 16, 95, 199),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(24),
-          children: [
-            SettingsGroup(
-              title: 'Personal',
-              children: <Widget>[
-                // Add your personal settings widgets here
-                 Account() ,
-                 AboutYou(),
-                 
-              ],
-            ),
-            SettingsGroup(
-              title: 'Alarm',
-              children: <Widget>[
-                // Add your alarm settings widgets here
-                AlarmSound(),
-                Snooze(),
-              ],
-            ),
-            SettingsGroup(
-              title: 'Setting',
-              children: <Widget>[
-                // Add your general settings widgets here
-                Sleepgoal(),
-              ],
-            ),
-            SettingsGroup(
-              title: 'Other',
-              children:  <Widget>[
-                buildLogOut(),
-              ],
-            ),
-          ],
+        child: Container(
+           height: MediaQuery.of(context).size.height,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF004AAD), Color(0xFF040E3B)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+          child: ListView(
+            padding: const EdgeInsets.all(24),
+            children: [
+              SettingsGroup(
+                title: 'Personal',
+                children: <Widget>[
+                  // Add your personal settings widgets here
+                   Account() ,
+                   AboutYou(),
+                   
+                ],
+              ),
+              SettingsGroup(
+                title: 'Alarm',
+                children: <Widget>[
+                  // Add your alarm settings widgets here
+                  AlarmSound(),
+                  Snooze(),
+                ],
+              ),
+              SettingsGroup(
+                title: 'Setting',
+                children: <Widget>[
+                  // Add your general settings widgets here
+                  Sleepgoal(),
+                ],
+              ),
+              SettingsGroup(
+                title: 'Other',
+                children:  <Widget>[
+                  buildLogOut(),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
