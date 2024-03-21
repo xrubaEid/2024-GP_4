@@ -2,9 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
+import 'package:sleepwell/screens/welcoming_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  static String RouteScreen ='splash_screen';
+  static String RouteScreen = 'splash_screen';
   const SplashScreen({super.key});
 
   @override
@@ -23,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // Navigate to the SignInScreen()
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => SignInScreen()),
+      MaterialPageRoute(builder: (context) => welcome()),
     );
   }
 

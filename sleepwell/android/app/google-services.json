@@ -12,7 +12,20 @@
           "package_name": "com.example.sleepwell"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "705225154575-gfiasq94vnksqh39b45g4fg1o5rkg311.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sleepwell",
+            "certificate_hash": "8dba05b1a054771f506084fd99a25d8896f0f6e4"
+          }
+        },
+        {
+          "client_id": "705225154575-n4behj3mm1c61o6r5ql87f33gr2vd5jr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBun53CttUKoTpq2tmqqrvz5hpLkp2GTMw"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "705225154575-n4behj3mm1c61o6r5ql87f33gr2vd5jr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "705225154575-1ua2ef48o15s8dtmofp6pi5bkkoket6d.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sleepwell.RunnerTests"
+              }
+            }
+          ]
         }
       }
     }

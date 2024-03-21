@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
 import 'package:sleepwell/widget/iconwidget.dart';
+import 'aboutyou_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const String RouteScreen = 'profile_screen';
@@ -14,73 +15,102 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final _auth=FirebaseAuth.instance;
-  late User signInUser ;
- @override
+  final _auth = FirebaseAuth.instance;
+  late User signInUser;
+
+  @override
   void initState() {
     super.initState();
     getCurrentUser();
   }
-  void getCurrentUser(){
-    // check is the user sign up or not ? 
-   try {
-    final user =_auth.currentUser;
-   // if rutern 0 no user found if not will rutern the email and the password
-   if (user !=null){
-    signInUser= user;
-    // should be deleted now just for testing
-    print(signInUser.email);
-   } 
-   } catch (e) {
-     print(e);
-   }
+
+  void getCurrentUser() {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        signInUser = user;
+        print(signInUser.email);
+      }
+    } catch (e) {
+      print(e);
+    }
   }
+
   @override
   Widget build(BuildContext context) {
+    Color myColor = const Color.fromARGB(255, 0, 74, 173);
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 16, 95, 199),
+      backgroundColor: const Color.fromARGB(255, 16, 95, 199),
       body: SafeArea(
         child: Container(
-           height: MediaQuery.of(context).size.height,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF004AAD), Color(0xFF040E3B)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+          height: MediaQuery.of(context).size.height,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF004AAD), Color(0xFF040E3B)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
           ),
-        ),
           child: ListView(
             padding: const EdgeInsets.all(24),
             children: [
-              SettingsGroup(
-                title: 'Personal',
-                children: <Widget>[
-                  // Add your personal settings widgets here
-                   Account() ,
-                   AboutYou(),
-                   
-                ],
+              Container(
+                color: const Color(0xffd5defe),
+                child: SettingsGroup(
+                  title: 'Personal',
+                  titleTextStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  children: <Widget>[
+                    Account(),
+                    AboutYou(),
+                  ],
+                ),
               ),
-              SettingsGroup(
-                title: 'Alarm',
-                children: <Widget>[
-                  // Add your alarm settings widgets here
-                  AlarmSound(),
-                  Snooze(),
-                ],
+              Container(
+                color: Color(0xffd5defe),
+                child: SettingsGroup(
+                  title: 'Alarm',
+                  titleTextStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  children: <Widget>[
+                    AlarmSound(),
+                    Snooze(),
+                  ],
+                ),
               ),
-              SettingsGroup(
-                title: 'Setting',
-                children: <Widget>[
-                  // Add your general settings widgets here
-                  Sleepgoal(),
-                ],
+              Container(
+                color: Color(0xffd5defe),
+                child: SettingsGroup(
+                  title: 'Setting',
+                  titleTextStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  children: <Widget>[
+                    Sleepgoal(),
+                  ],
+                ),
               ),
-              SettingsGroup(
-                title: 'Other',
-                children:  <Widget>[
-                  buildLogOut(),
-                ],
+              Container(
+                color: Color(0xffd5defe),
+                child: SettingsGroup(
+                  title: 'Account Actions',
+                  titleTextStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  children: <Widget>[
+                    buildLogOut(),
+                  ],
+                ),
               ),
             ],
           ),
@@ -89,82 +119,93 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
- Widget buildLogOut() => SimpleSettingsTile(
-  title: 'Sign Out',
-  leading: IconWidget(icon: Icons.logout, color: const Color.fromARGB(241, 230, 158, 3)),
-  onTap: () {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title:const Text( 
-                    'Confirm Sign Out',
-                    style: TextStyle(
-                     color: Color.fromARGB(255, 152, 15, 5),
-                     fontSize: 24,
-                     fontWeight: FontWeight.bold
-                      ),),
-          content:const Text( 
-                    'Are you sure you want to sign out?',
-                    style: TextStyle(
-                     color: Colors.black,
-                     fontSize: 18,
-                      ),),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-            TextButton(
-              child: const Text('Sign Out'),
-              onPressed: () {
-                _auth.signOut();
-                Navigator.pushNamed(context, SignInScreen.RouteScreen);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  },
-);
+  Widget buildLogOut() => SimpleSettingsTile(
+        title: 'Sign Out',
+        leading: IconWidget(
+            icon: Icons.logout, color: const Color.fromARGB(241, 230, 158, 3)),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text(
+                  'Confirm Sign Out',
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 152, 15, 5),
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                content: const Text(
+                  'Are you sure you want to sign out?',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                  ),
+                  TextButton(
+                    child: const Text('Sign Out'),
+                    onPressed: () {
+                      _auth.signOut();
+                      Navigator.pushNamed(context, SignInScreen.RouteScreen);
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
 
-      Widget Account() => SimpleSettingsTile(
+  Widget Account() => SimpleSettingsTile(
         title: 'Account',
         leading: IconWidget(icon: Icons.person, color: const Color(0xFF040E3B)),
         onTap: () {
-          // Handle sign out logic here
+          // Handle account logic here
         },
-        
       );
 
-      Widget AboutYou() => SimpleSettingsTile(
-        title: 'About you',
-        leading: IconWidget(icon: Icons.assessment_outlined, color: const Color(0xFF040E3B)),
+  Widget AboutYou() => SimpleSettingsTile(
+        title: 'About You',
+        leading: IconWidget(
+            icon: Icons.assessment_outlined, color: const Color(0xFF040E3B)),
         onTap: () {
-          // Handle sign out logic here
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => aboutyou_screen()),
+          );
         },
       );
-      Widget AlarmSound() => SimpleSettingsTile(
-        title: 'Alarm sound',
-        leading: IconWidget(icon: Icons.music_note_outlined, color: const Color(0xFF040E3B)),
+
+  Widget AlarmSound() => SimpleSettingsTile(
+        title: 'Alarm Sound',
+        leading: IconWidget(
+            icon: Icons.music_note_outlined, color: const Color(0xFF040E3B)),
         onTap: () {
-          // Handle sign out logic here
+          // Handle alarm sound logic here
         },
       );
-      Widget Snooze() => SimpleSettingsTile(
+
+  Widget Snooze() => SimpleSettingsTile(
         title: 'Snooze',
-        leading: IconWidget(icon: Icons.snooze ,color: const Color(0xFF040E3B)),
+        leading: IconWidget(icon: Icons.snooze, color: const Color(0xFF040E3B)),
         onTap: () {
-          // Handle sign out logic here
+          // Handle snooze logic here
         },
       );
 
-       Widget Sleepgoal() => SimpleSettingsTile(
+  Widget Sleepgoal() => SimpleSettingsTile(
         title: 'Sleep Goal',
-        leading: IconWidget(icon: Icons.location_searching_sharp, color: const Color(0xFF040E3B)),
+        leading: IconWidget(
+            icon: Icons.location_searching_sharp,
+            color: const Color(0xFF040E3B)),
         onTap: () {
           // Handle sign out logic here
         },
