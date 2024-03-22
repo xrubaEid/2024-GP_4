@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/widget/regsterbutton.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -164,7 +163,7 @@ bool  showSpinner = false;
                           'Password': password,
                           });
                            
-                         Navigator.pushNamed(context, MyHomePage.RouteScreen);
+                         Navigator.pushNamed(context, SignUpScreen.RouteScreen);
                          }
                          setState(() {
                           showSpinner = false;
