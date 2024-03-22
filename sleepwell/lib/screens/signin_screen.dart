@@ -181,7 +181,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         );
                       },
                       child: const Text(
-                        'SignUp',
+                        'Sign Up',
                         style: TextStyle(
                           color: Color.fromARGB(241, 230, 158, 3),
                           fontSize: 20,
@@ -190,6 +190,18 @@ class _SignInScreenState extends State<SignInScreen> {
                       ),
                     ),
                   ],
+                ),
+                SizedBox(height: 10),
+                Divider(),
+                SizedBox(height: 10),
+                Text(
+                  'Or sign in with Google',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    //fontWeight: FontWeight.bold,
+                  ),
                 ),
                 SizedBox(height: 10),
                 Row(
@@ -202,7 +214,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           showSpinner = true;
                         });
                         try {
-                          await AuthServise().signinWithGoogle();
+                          await AuthServise().signInWithGoogle();
                           Navigator.pushNamed(context, MyHomePage.RouteScreen);
                           setState(() {
                             showSpinner = false;
