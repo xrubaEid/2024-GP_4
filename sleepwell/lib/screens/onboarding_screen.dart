@@ -1,133 +1,138 @@
-
 import 'package:flutter/material.dart';
 import 'package:sleepwell/screens/onboarding_data.dart';
-import 'package:sleepwell/screens/signin_screen.dart';
+import 'package:sleepwell/screens/welcoming_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingScreen extends StatefulWidget {
-    static String RouteScreen = 'onboarding_screen';
-  const OnboardingScreen({super.key});
+  static String RouteScreen = 'onboarding_screen';
+  const OnboardingScreen({Key? key}) : super(key: key);
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  _OnboardingScreenState createState() => _OnboardingScreenState();
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final controller = OnboardingData();
   final pageController = PageController();
-  int currentIndex = 0;
+  bool isLastPage = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffd5defe),
-      body: Column(
-        children: [
-          body(),
-          buildDots(),
-          button(),
-        ],
-      ),
-       appBar: AppBar(
-       actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => const SignInScreen()));
-            },
-            child: const Text(
-              "Skip",
-              style: TextStyle(
-                color: Colors.blue,
-                
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF004AAD), Color(0xFF040E3B)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: PageView.builder(
+                onPageChanged: (index) => setState(() => isLastPage = controller.items.length - 1 == index),
+                itemCount: controller.items.length,
+                controller: pageController,
+                itemBuilder: (context, index) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        controller.items[index].image,
+                        height: 300, 
+                      ),
+                      const SizedBox(height: 50),
+                      Text(
+                        controller.items[index].title,
+                        style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 15),
+                      Text(
+                        controller.items[index].descriptions,
+                        style: const TextStyle(color: Colors.white, fontSize: 17),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
-          ),
-       ],
-       ),
-    );
-  }
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: isLastPage ? getStarted() : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Skip Button
+                  TextButton(
+                    onPressed: () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      prefs.setBool("onboarding", true);
 
-  //Body
-  Widget body(){
-    return Expanded(
-      child: Center(
-        child: PageView.builder(
-            onPageChanged: (value){
-              setState(() {
-                currentIndex = value;
-              });
-            },
-            itemCount: controller.items.length,
-            itemBuilder: (context,index){
-             return Padding(
-               padding: const EdgeInsets.symmetric(horizontal: 15),
-               child: Column(
-                 mainAxisAlignment: MainAxisAlignment.center,
-                 children: [
-                   //Images
-                   Image.asset(controller.items[currentIndex].image),
+                      if (!mounted) return;
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => welcome()),
+                      );
+                    },
+                    child: const Text("Skip" ,style: TextStyle(color:Colors.white),
+                  ),
+                  ),
+                  // Indicator
+                  SmoothPageIndicator(
+                    controller: pageController,
+                    count: controller.items.length,
+                    onDotClicked: (index) => pageController.animateToPage(
+                      index,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeIn,
+                    ),
+                    effect: const WormEffect(
+                      dotHeight: 12,
+                      dotWidth: 12,
+                      activeDotColor: Colors.white,
+                    ),
+                  ),
 
-                   const SizedBox(height: 15),
-                   //Titles
-                   Text(controller.items[currentIndex].title,
-                     style: 
-                     const TextStyle(
-                      fontSize: 25,
-                      color: Color.fromARGB(255, 16, 95, 199),
-                      fontWeight: FontWeight.bold),
-                     textAlign: TextAlign.center,),
-
-                   //Description
-                   Padding(
-                     padding: const EdgeInsets.symmetric(horizontal: 15),
-                     child: Text(controller.items[currentIndex].description,
-                       style: const TextStyle(color: Colors.blue,fontSize: 16),textAlign: TextAlign.center,),
-                   ),
-
-                 ],
-               ),
-             );
-        }),
+                  // Next Button
+                  TextButton(
+                    onPressed: () => pageController.nextPage(
+                      duration: const Duration(milliseconds: 600),
+                      curve: Curves.easeIn,
+                      
+                    ),
+                    child: const Text("Next"  ,style: TextStyle(color:Colors.white),
+                    
+                  ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  //Dots
-  Widget buildDots(){
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(controller.items.length, (index) => AnimatedContainer(
-          margin: const EdgeInsets.symmetric(horizontal: 2),
-          decoration:   BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            color: const Color.fromARGB(255, 16, 95, 199),
-          ),
-          height: 3,
-          width: currentIndex == index? 30 : 7,
-          duration: const Duration(milliseconds: 700))),
-    );
-  }
-
-  //Button
-  Widget button(){
+  Widget getStarted() {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 20),
-      width: MediaQuery.of(context).size.width *.9,
-      height: 55,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color:const Color(0xFF040E3B)
+        color: const Color(0xffd5defe),
       ),
-
+      width: MediaQuery.of(context).size.width * .9,
+      height: 55,
       child: TextButton(
-        onPressed: (){
-          setState(() {
-            currentIndex != controller.items.length -1? currentIndex++ : null;
-          });
+        onPressed: () async {
+          final prefs = await SharedPreferences.getInstance();
+          prefs.setBool("onboarding", true);
+
+          if (!mounted) return;
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => welcome()));
         },
-        child: Text(currentIndex == controller.items.length -1? "Get started" : "Continue",
-          style: const TextStyle(color: Colors.white),),
+        child: const Text("Get Started", style: TextStyle(color: Color(0xFF040E3B), fontSize:20)),
       ),
-      
     );
   }
 }
