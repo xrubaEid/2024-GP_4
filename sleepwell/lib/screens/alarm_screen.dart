@@ -1,10 +1,7 @@
-//import 'dart:html';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-import 'package:sleepwell/screens/clockview.dart';
 import 'package:intl/intl.dart';
+import 'package:sleepwell/screens/clockview.dart';
 
 class AlarmScreen extends StatefulWidget {
   static String RouteScreen = 'alarm_screen';
@@ -88,7 +85,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
     var white = Colors.white;
     const color = Color.fromARGB(255, 255, 255, 255);
-
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 16, 95, 199),
       body: Container(
