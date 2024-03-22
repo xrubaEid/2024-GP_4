@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -13,6 +14,7 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+final _firestore=  FirebaseFirestore.instance ;
 final _auth=FirebaseAuth.instance;
 bool  showSpinner = false;
 // why late because i well not give  it a value new 
@@ -21,6 +23,7 @@ bool  showSpinner = false;
  late String email;
  late String password ;
  late String cpassword ;
+  
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
@@ -153,6 +156,14 @@ bool  showSpinner = false;
                          final newUser = await _auth.createUserWithEmailAndPassword(
                           email: email, password: password);
                          if (newUser != null) {
+                         final userId = newUser.user?.uid; // Access the UID of the newly created user
+                         await _firestore.collection('Users').doc(userId).set({
+                          'Email': email,
+                          'Fname': name,
+                          'Lname': Lname,
+                          'Password': password,
+                          });
+                           
                          Navigator.pushNamed(context, MyHomePage.RouteScreen);
                          }
                          setState(() {
@@ -174,6 +185,7 @@ bool  showSpinner = false;
                                   } else {
                                       errorMessage = ' An error occurred. Please try again later.';
                                       }
+                                      print('Sign-up error: $errorMessage');
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
                                            content: Text(errorMessage),
