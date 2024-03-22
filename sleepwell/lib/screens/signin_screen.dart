@@ -25,7 +25,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Color myColor = Color.fromARGB(255, 0, 74, 173);
+    Color myColor = const Color.fromARGB(255, 0, 74, 173);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -44,7 +44,7 @@ class _SignInScreenState extends State<SignInScreen> {
             ),
           ),
           child: Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: ListView(
               shrinkWrap: true,
               children: [
@@ -118,7 +118,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   height: 30,
                 ),
                 regsterbutton(
-                  color: Color(0xffd5defe),
+                  color: const Color(0xffd5defe),
                   title: 'Sign In',
                   onPressed: () async {
                     setState(() {
@@ -129,13 +129,11 @@ class _SignInScreenState extends State<SignInScreen> {
                         email: email,
                         password: password,
                       );
-                      if (user != null) {
-                        Navigator.pushNamed(context, MyHomePage.RouteScreen);
-                        setState(() {
-                          showSpinner = false;
-                        });
-                      }
-                    } catch (e) {
+                      Navigator.pushNamed(context, MyHomePage.RouteScreen);
+                      setState(() {
+                        showSpinner = false;
+                      });
+                                        } catch (e) {
                       setState(() {
                         showSpinner = false;
                       });
@@ -177,7 +175,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SignUpScreen()),
+                              builder: (context) => const SignUpScreen()),
                         );
                       },
                       child: const Text(
@@ -191,7 +189,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

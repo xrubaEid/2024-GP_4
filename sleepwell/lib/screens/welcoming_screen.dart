@@ -26,7 +26,7 @@ class welcome extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: ListView(
             shrinkWrap: true,
             children: [
@@ -47,7 +47,7 @@ class welcome extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               const Center(
@@ -63,12 +63,12 @@ class welcome extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               regsterbutton(
-                color: Color(0xffd5defe),
+                color: const Color(0xffd5defe),
                 title: 'SIGN UP',
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SignUpScreen()),
+                    MaterialPageRoute(builder: (context) => const SignUpScreen()),
                   );
                 },
               ),
@@ -76,12 +76,12 @@ class welcome extends StatelessWidget {
                 height: 2,
               ),
               regsterbutton(
-                color: Color(0xffd5defe),
+                color: const Color(0xffd5defe),
                 title: 'SIGN IN',
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SignInScreen()),
+                    MaterialPageRoute(builder: (context) => const SignInScreen()),
                   );
                 },
               )

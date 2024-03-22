@@ -28,7 +28,7 @@ bool  showSpinner = false;
     return  Scaffold(
       backgroundColor: Colors.white ,
       appBar: AppBar(
-        backgroundColor:  Color.fromARGB(255, 0, 74, 173),
+        backgroundColor:  const Color.fromARGB(255, 0, 74, 173),
         title: const Text('') ,
         ),
       body: ModalProgressHUD(
@@ -43,7 +43,7 @@ bool  showSpinner = false;
               ),
               ),
           child: Padding(
-             padding: EdgeInsets.all(20),
+             padding: const EdgeInsets.all(20),
              child: ListView(
               shrinkWrap: true,
               children: [ 
@@ -100,7 +100,7 @@ bool  showSpinner = false;
                   decoration: InputDecoration(
                     fillColor: Colors.white,
                      filled: true,
-                     suffixIcon: Icon(Icons.email),
+                     suffixIcon: const Icon(Icons.email),
                      hintText: 'Email Address' ,  
                      border: OutlineInputBorder(
                        borderRadius: BorderRadius.circular(10),
@@ -142,7 +142,7 @@ bool  showSpinner = false;
                  ),
                    const SizedBox( height: 30,),
                    regsterbutton(
-                      color:Color(0xffd5defe),
+                      color:const Color(0xffd5defe),
                       title:'Create Account',
                      onPressed: () async {
                      if (password.length >= 8 &&
@@ -154,18 +154,16 @@ bool  showSpinner = false;
                          });
                          final newUser = await _auth.createUserWithEmailAndPassword(
                           email: email, password: password);
-                         if (newUser != null) {
-                         final userId = newUser.user?.uid; // Access the UID of the newly created user
-                         await _firestore.collection('Users').doc(userId).set({
-                          'Email': email,
-                          'Fname': name,
-                          'Lname': Lname,
-                          'Password': password,
-                          });
-                           
-                         Navigator.pushNamed(context, SignUpScreen.RouteScreen);
-                         }
-                         setState(() {
+                       final userId = newUser.user?.uid; // Access the UID of the newly created user
+                       await _firestore.collection('Users').doc(userId).set({
+                        'Email': email,
+                        'Fname': name,
+                        'Lname': Lname,
+                        'Password': password,
+                        });
+                         
+                       Navigator.pushNamed(context, SignUpScreen.RouteScreen);
+                                                setState(() {
                           showSpinner = false;
                            });
                          } catch (e) {

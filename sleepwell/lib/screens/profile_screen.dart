@@ -9,7 +9,7 @@ import 'aboutyou_screen.dart';
 class ProfileScreen extends StatefulWidget {
   static const String RouteScreen = 'profile_screen';
 
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -59,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: const Color(0xffd5defe),
                 child: SettingsGroup(
                   title: 'Personal',
-                  titleTextStyle: TextStyle(
+                  titleTextStyle: const TextStyle(
                     color: Colors.black,
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -71,10 +71,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               Container(
-                color: Color(0xffd5defe),
+                color: const Color(0xffd5defe),
                 child: SettingsGroup(
                   title: 'Alarm',
-                  titleTextStyle: TextStyle(
+                  titleTextStyle: const TextStyle(
                     color: Colors.black,
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -86,10 +86,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               Container(
-                color: Color(0xffd5defe),
+                color: const Color(0xffd5defe),
                 child: SettingsGroup(
                   title: 'Setting',
-                  titleTextStyle: TextStyle(
+                  titleTextStyle: const TextStyle(
                     color: Colors.black,
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -100,10 +100,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               Container(
-                color: Color(0xffd5defe),
+                color: const Color(0xffd5defe),
                 child: SettingsGroup(
                   title: 'Account Actions',
-                  titleTextStyle: TextStyle(
+                  titleTextStyle: const TextStyle(
                     color: Colors.black,
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -122,8 +122,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget buildLogOut() => SimpleSettingsTile(
         title: 'Sign Out',
-        leading: IconWidget(
-            icon: Icons.logout, color: const Color.fromARGB(241, 230, 158, 3)),
+        leading: const IconWidget(
+            icon: Icons.logout, color: Color.fromARGB(241, 230, 158, 3)),
         onTap: () {
           showDialog(
             context: context,
@@ -167,7 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget Account() => SimpleSettingsTile(
         title: 'Account',
-        leading: IconWidget(icon: Icons.person, color: const Color(0xFF040E3B)),
+        leading: const IconWidget(icon: Icons.person, color: Color(0xFF040E3B)),
         onTap: () {
           // Handle account logic here
         },
@@ -175,20 +175,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget AboutYou() => SimpleSettingsTile(
         title: 'About You',
-        leading: IconWidget(
-            icon: Icons.assessment_outlined, color: const Color(0xFF040E3B)),
+        leading: const IconWidget(
+            icon: Icons.assessment_outlined, color: Color(0xFF040E3B)),
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => aboutyou_screen()),
+            MaterialPageRoute(builder: (context) => const aboutyou_screen()),
           );
         },
       );
 
   Widget AlarmSound() => SimpleSettingsTile(
         title: 'Alarm Sound',
-        leading: IconWidget(
-            icon: Icons.music_note_outlined, color: const Color(0xFF040E3B)),
+        leading: const IconWidget(
+            icon: Icons.music_note_outlined, color: Color(0xFF040E3B)),
         onTap: () {
           // Handle alarm sound logic here
         },
@@ -196,7 +196,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget Snooze() => SimpleSettingsTile(
         title: 'Snooze',
-        leading: IconWidget(icon: Icons.snooze, color: const Color(0xFF040E3B)),
+        leading: const IconWidget(icon: Icons.snooze, color: Color(0xFF040E3B)),
         onTap: () {
           // Handle snooze logic here
         },
@@ -204,9 +204,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget Sleepgoal() => SimpleSettingsTile(
         title: 'Sleep Goal',
-        leading: IconWidget(
+        leading: const IconWidget(
             icon: Icons.location_searching_sharp,
-            color: const Color(0xFF040E3B)),
+            color: Color(0xFF040E3B)),
         onTap: () {
           // Handle sign out logic here
         },

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 //import 'package:flutter_alarm_clock/app/data/theme_data.dart';
 
 class ClockView extends StatefulWidget {
+  const ClockView({super.key});
+
   @override
   _ClockViewState createState() => _ClockViewState();
 }
@@ -11,7 +13,7 @@ class ClockView extends StatefulWidget {
 class _ClockViewState extends State<ClockView> {
   @override
   void initState() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {});
     });
     super.initState();
@@ -19,7 +21,7 @@ class _ClockViewState extends State<ClockView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 120,
       height: 120,
       child: Transform.rotate(
@@ -42,15 +44,15 @@ class ClockPainter extends CustomPainter {
     var center = Offset(centerX, centerY);
     var radius = min(centerX, centerY);
 
-    var fillBrush = Paint()..color = Color.fromARGB(255, 2, 9, 45);
+    var fillBrush = Paint()..color = const Color.fromARGB(255, 2, 9, 45);
     var outlineBrush = Paint()
-      ..color = Color.fromARGB(255, 157, 185, 222)
+      ..color = const Color.fromARGB(255, 157, 185, 222)
       ..style = PaintingStyle.stroke
       ..strokeWidth = size.width / 20;
-    var centerDotBrush = Paint()..color = Color.fromARGB(255, 26, 67, 121);
+    var centerDotBrush = Paint()..color = const Color.fromARGB(255, 26, 67, 121);
 
     var secHandBrush = Paint()
-      ..shader = RadialGradient(colors: [
+      ..shader = const RadialGradient(colors: [
         Color.fromRGBO(222, 140, 240, 1.0),
         Color.fromRGBO(214, 97, 143, 1.0)
       ]).createShader(Rect.fromCircle(center: center, radius: radius))
@@ -59,7 +61,7 @@ class ClockPainter extends CustomPainter {
       ..strokeWidth = size.width / 60;
 
     var minHandBrush = Paint()
-      ..shader = RadialGradient(colors: [
+      ..shader = const RadialGradient(colors: [
         Color.fromARGB(255, 50, 18, 106),
         Color.fromARGB(255, 106, 134, 190)
       ]).createShader(Rect.fromCircle(center: center, radius: radius))
@@ -68,7 +70,7 @@ class ClockPainter extends CustomPainter {
       ..strokeWidth = size.width / 30;
 
     var hourHandBrush = Paint()
-      ..shader = RadialGradient(colors: [
+      ..shader = const RadialGradient(colors: [
         Color.fromARGB(255, 78, 159, 196),
         Color.fromARGB(255, 99, 38, 241)
       ]).createShader(Rect.fromCircle(center: center, radius: radius))
@@ -77,7 +79,7 @@ class ClockPainter extends CustomPainter {
       ..strokeWidth = size.width / 24;
 
     var dashBrush = Paint()
-      ..color = Color.fromARGB(255, 202, 135, 223)
+      ..color = const Color.fromARGB(255, 202, 135, 223)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
 

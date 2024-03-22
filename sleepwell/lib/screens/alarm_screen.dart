@@ -1,8 +1,5 @@
 //import 'dart:html';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:sleepwell/screens/clockview.dart';
 import 'package:intl/intl.dart';
 
@@ -90,7 +87,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
     const color = Color.fromARGB(255, 255, 255, 255);
 
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 16, 95, 199),
+      backgroundColor: const Color.fromARGB(255, 16, 95, 199),
       body: Container(
         height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(
@@ -141,7 +138,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                               ],
                             ),
                           ),
-                          Align(
+                          const Align(
                             alignment: Alignment.centerRight,
                             child: ClockView(),
                           ),
@@ -152,11 +149,11 @@ class _AlarmScreenState extends State<AlarmScreen> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text(
+                            const Text(
                               "BEDTIME",
                               style: TextStyle(
                                 color: Color(0xffff0863),
@@ -170,7 +167,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                               child: AbsorbPointer(
                                 child: TextFormField(
                                   controller: bedtimeController,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     hintText: "Select bedtime",
                                     hintStyle: TextStyle(
                                       color: Colors.white,
@@ -178,7 +175,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Color.fromARGB(255, 255, 255, 255),
                                     fontSize: 30,
                                     fontWeight: FontWeight.w700,
@@ -186,8 +183,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 20),
-                            Text(
+                            const SizedBox(height: 20),
+                            const Text(
                               "WAKE UP TIME",
                               style: TextStyle(
                                   color: Color(0xffff0863),
@@ -200,7 +197,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                               child: AbsorbPointer(
                                 child: TextFormField(
                                   controller: wakeUpTimeController,
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                     hintText: "Select wake-up time",
                                     hintStyle: TextStyle(
                                       color: Colors.white,
@@ -208,7 +205,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Color.fromARGB(255, 255, 255, 255),
                                     fontSize: 30,
                                     fontWeight: FontWeight.w700,
@@ -220,7 +217,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Align(
                         alignment: Alignment.center,
                         child: Center(
@@ -232,9 +229,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
                             foregroundColor:
                                 MaterialStateProperty.all<Color>(Colors.white),
                           ),
-                          child: Text('Save'),
+                          child: const Text('Save'),
                         ))),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     BottomAppBar(
                       color: Colors.transparent,
                       child: Padding(
@@ -244,7 +241,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                           children: <Widget>[
                             Text(
                               'Optimal wake-up time is: $printedWakeUpTime',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,

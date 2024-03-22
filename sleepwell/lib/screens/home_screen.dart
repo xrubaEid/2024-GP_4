@@ -38,9 +38,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int index = 2;
   final pages = [
-    ProfileScreen(),
+    const ProfileScreen(),
     const Center(child: Text('Hello  statistic  ')),
-    AlarmScreen(),
+    const AlarmScreen(),
     const Center(child: Text('Hello Dashboard')),
   ];
 
@@ -49,12 +49,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 0, 74, 173),
-        title: Text(''),
+        title: const Text(''),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: index,
         onDestinationSelected: (index) => setState(() => this.index = index),
-        backgroundColor: Color(0xFF040E3B),
+        backgroundColor: const Color(0xFF040E3B),
         height: 70,
         destinations: const [
           NavigationDestination(

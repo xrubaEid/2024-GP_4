@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class aboutyou_screen extends StatelessWidget {
+  const aboutyou_screen({super.key});
+
   @override
   Widget build(BuildContext context) {
     Color myColor = const Color.fromARGB(255, 0, 74, 173);
@@ -8,8 +10,8 @@ class aboutyou_screen extends StatelessWidget {
       backgroundColor: myColor,
       appBar: AppBar(
         backgroundColor: myColor,
-        title: Text('About You'),
-        titleTextStyle: TextStyle(
+        title: const Text('About You'),
+        titleTextStyle: const TextStyle(
           color: Colors.white,
           fontSize: 25,
           fontWeight: FontWeight.bold,
@@ -29,33 +31,33 @@ class aboutyou_screen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'User Information',
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.white),
               ),
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Age: 30',
                 style: TextStyle(color: Colors.white),
               ),
-              Text(
+              const Text(
                 'Gender: Male',
                 style: TextStyle(color: Colors.white),
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'Default Bedtime and Wake-up Time',
                 style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: Colors.white),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               DataTable(
-                columns: [
+                columns: const [
                   DataColumn(
                       label: Text(
                     'Day',
@@ -72,7 +74,7 @@ class aboutyou_screen extends StatelessWidget {
                     style: TextStyle(color: Colors.white),
                   )),
                 ],
-                rows: [
+                rows: const [
                   DataRow(cells: [
                     DataCell(Text(
                       'Monday',

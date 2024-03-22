@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 class regsterbutton extends StatelessWidget {
- regsterbutton({required this.color, required this.title,required this.onPressed});
+ const regsterbutton({super.key, required this.color, required this.title,required this.onPressed});
  final Color color;
  final String title;
  final VoidCallback onPressed;
@@ -18,7 +18,7 @@ class regsterbutton extends StatelessWidget {
           height: 42,
           child: Text( 
             title, 
-            style: TextStyle(color: Colors.black ,fontSize:20 ,),
+            style: const TextStyle(color: Colors.black ,fontSize:20 ,),
             
             ),
       

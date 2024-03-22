@@ -8,7 +8,7 @@ import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/profile_screen.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
 import 'package:sleepwell/screens/signup_screen.dart';
-import 'package:sleepwell/screens/splash_screen.dart';
+import 'package:sleepwell/screens/onboarding_screen.dart';
 import 'package:sleepwell/screens/welcoming_screen.dart';
 
 Future<void> main() async {
@@ -38,15 +38,15 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      initialRoute: SplashScreen.RouteScreen,
+      initialRoute: OnboardingScreen.RouteScreen,
       routes: {
-        SignInScreen.RouteScreen: (context) => SignInScreen(),
-        MyHomePage.RouteScreen: (context) => MyHomePage(),
-        SignUpScreen.RouteScreen: (context) => SignUpScreen(),
-        SplashScreen.RouteScreen: (context) => SplashScreen(),
-        AlarmScreen.RouteScreen: (context) => AlarmScreen(),
-        ProfileScreen.RouteScreen: (context) => ProfileScreen(),
-        welcome.RouteScreen: (context) => welcome(),
+        SignInScreen.RouteScreen: (context) => const SignInScreen(),
+        MyHomePage.RouteScreen: (context) => const MyHomePage(),
+        SignUpScreen.RouteScreen: (context) => const SignUpScreen(),
+        OnboardingScreen.RouteScreen: (context) => const OnboardingScreen(),
+        AlarmScreen.RouteScreen: (context) => const AlarmScreen(),
+        ProfileScreen.RouteScreen: (context) => const ProfileScreen(),
+        welcome.RouteScreen: (context) => const welcome(),
       },
     );
   }
