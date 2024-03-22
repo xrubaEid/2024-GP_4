@@ -55,7 +55,8 @@ dependencies:
 
   #For Time in Clock
   intl: ^0.19.0
-  
+  #google sing in 
+  google_sign_in: ^6.2.1
 
 dev_dependencies:
   flutter_test:

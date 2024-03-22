@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/signup_screen.dart';
+import 'package:sleepwell/services/auth_service.dart';
 import 'package:sleepwell/widget/regsterbutton.dart';
+import 'package:sleepwell/widget/square_tile.dart';
 
 class SignInScreen extends StatefulWidget {
   static String RouteScreen = 'signin_screen';
@@ -15,6 +18,7 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   final _auth = FirebaseAuth.instance;
+  //final GoogleSignIn googleSignIn = signinwithgoogle();
   bool showSpinner = false;
   late String email;
   late String password;
@@ -53,7 +57,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 const Center(
                   child: Text(
-                    'Welcome  back!',
+                    'Welcome back!',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 25,
@@ -135,14 +139,17 @@ class _SignInScreenState extends State<SignInScreen> {
                       setState(() {
                         showSpinner = false;
                       });
-                      String errorMessage = 'An error occurred! Please try again.';
+                      String errorMessage =
+                          'An error occurred! Please try again.';
                       if (e is FirebaseAuthException) {
                         switch (e.code) {
                           case 'user-not-found':
-                            errorMessage = 'User not found! Please check your email and try again.';
+                            errorMessage =
+                                'User not found! Please check your email and try again.';
                             break;
                           case 'wrong-password':
-                            errorMessage = 'Incorrect password! Please try again.';
+                            errorMessage =
+                                'Incorrect password! Please try again.';
                             break;
                           // Add more cases for specific error codes if needed
                         }
@@ -169,7 +176,8 @@ class _SignInScreenState extends State<SignInScreen> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => SignUpScreen()),
+                          MaterialPageRoute(
+                              builder: (context) => SignUpScreen()),
                         );
                       },
                       child: const Text(
@@ -183,6 +191,47 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                   ],
                 ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    //google button
+                    SquareTile(
+                      onTap: () async {
+                        setState(() {
+                          showSpinner = true;
+                        });
+                        try {
+                          await AuthServise().signinWithGoogle();
+                          Navigator.pushNamed(context, MyHomePage.RouteScreen);
+                          setState(() {
+                            showSpinner = false;
+                          });
+                        } catch (e) {
+                          setState(() {
+                            showSpinner = false;
+                          });
+                          print('Error occurred: $e');
+                          String errorMessage =
+                              'An error occurred! Please try again.';
+                          if (e is PlatformException) {
+                            if (e.code == 'sign_in_failed') {
+                              errorMessage =
+                                  'Sign-in failed. Please check your Google account credentials.';
+                            }
+                            // Add more specific error handling for other possible error codes if needed
+                          }
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(errorMessage),
+                            ),
+                          );
+                        }
+                      },
+                      imagePath: 'assets/googleLogo.png',
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -191,3 +240,22 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 }
+  /*void signinwithgoogle() async {
+  //begin interactive sign in process
+  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  
+  // obtain auth details from request
+  final GoogleSignInAuthentication googleAuth = await googleUser!.authentication;
+  
+  // create a new credential for user
+  AuthCredential authCredential = GoogleAuthProvider.getCredential(
+idToken: googleSignInAuthentication. idToken, accessToken: googleSignInAuthentication. accessToken) ;
+  /*final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth.accessToken,
+    idToken: googleAuth.idToken,
+  );*/
+  
+  // let's sign in
+  await FirebaseAuth.instance.signInWithCredential(credential);
+}*/
+
