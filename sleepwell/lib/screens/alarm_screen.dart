@@ -1,4 +1,4 @@
-
+//import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sleepwell/screens/clockview.dart';
@@ -20,7 +20,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   String printedBedtime = '';
   String printedWakeUpTime = '';
-
+ TimeOfDay? OwakeUpTime;
   @override
   void initState() {
     super.initState();
@@ -65,18 +65,30 @@ class _AlarmScreenState extends State<AlarmScreen> {
     }
   }
 
-  void _saveTimes() {
-    final String bedtime = bedtimeController.text;
+  void _saveTimes() {  
+  
+   final String bedtime = bedtimeController.text;
     final String wakeUpTime = wakeUpTimeController.text;
-
     // Perform your sleep cycle function using the saved values
-
-    setState(() {
+   final String calculatedTime =calculateNumberOfIntervals(bedtime,wakeUpTime);
+   setState(() {
       printedBedtime = bedtime;
-      printedWakeUpTime = wakeUpTime;
-    });
-  }
+      printedWakeUpTime = calculatedTime;
+    });  
+  } 
+  String calculateNumberOfIntervals(String bedtime, String wakeUpTime) {
+  int bedtimeMinutes = TimeUtils.calculateMinutesFromTime(bedtime);
+  int wakeUpTimeMinutes = TimeUtils.calculateMinutesFromTime(wakeUpTime);
 
+  int timeDifference = wakeUpTimeMinutes - bedtimeMinutes;
+  int numberOfIntervals = (timeDifference / 90).floor();
+
+  int calculatedMinutes = numberOfIntervals * 90;
+  String calculatedTime = TimeUtils.calculateTimeFromMinutes(calculatedMinutes, bedtime);
+
+  return calculatedTime;
+}
+ 
   @override
   Widget build(BuildContext context) {
     var now = DateTime.now();
@@ -84,7 +96,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
     var formattedTime = DateFormat('hh:mm').format(now);
 
     var white = Colors.white;
-    const color = Color.fromARGB(255, 255, 255, 255);
+    const color = Color.fromARGB(255, 0, 0, 0);
+
+
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 16, 95, 199),
       body: Container(
@@ -221,7 +235,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                         alignment: Alignment.center,
                         child: Center(
                             child: TextButton(
-                          onPressed: _saveTimes,
+                          onPressed: () {  _saveTimes();},
                           style: ButtonStyle(
                             backgroundColor:
                                 MaterialStateProperty.all<Color>(Colors.pink),
@@ -234,13 +248,13 @@ class _AlarmScreenState extends State<AlarmScreen> {
                     BottomAppBar(
                       color: Colors.transparent,
                       child: Padding(
-                        padding: const EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.all(5.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Text(
                               'Optimal wake-up time is: $printedWakeUpTime',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
@@ -262,5 +276,22 @@ class _AlarmScreenState extends State<AlarmScreen> {
         ),
       ),
     );
+  }
+}
+class TimeUtils {
+  static String calculateTimeFromMinutes(int minutes, String referenceTime) {
+    int hours = minutes ~/ 60;
+    int mins = minutes % 60;
+    TimeOfDay timeOfDay = TimeOfDay(hour: hours, minute: mins);
+    DateTime dateTime = DateFormat('hh:mm a').parse(referenceTime);
+    dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day,
+        timeOfDay.hour, timeOfDay.minute);
+    return DateFormat('hh:mm a').format(dateTime);
+  }
+
+  static int calculateMinutesFromTime(String time) {
+    TimeOfDay timeOfDay =
+        TimeOfDay.fromDateTime(DateFormat('hh:mm a').parse(time));
+    return (timeOfDay.hour * 60) + timeOfDay.minute;
   }
 }

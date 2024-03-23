@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
@@ -18,7 +19,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final _auth = FirebaseAuth.instance;
   late User signInUser;
-
+final _firestore=  FirebaseFirestore.instance ;
   @override
   void initState() {
     super.initState();
@@ -36,6 +37,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print(e);
     }
   }
+//void getUsersinfo() async{
+//final Names = await _firestore.collection('Users').get();
+//for (var name in Names.docs) {
+ //print( name.data());
+//}
+//}
+
+
 
   @override
   Widget build(BuildContext context) {

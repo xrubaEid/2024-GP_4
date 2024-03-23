@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:sleepwell/screens/signin_screen.dart';
 import 'package:sleepwell/widget/regsterbutton.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -16,6 +17,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 final _firestore=  FirebaseFirestore.instance ;
 final _auth=FirebaseAuth.instance;
 bool  showSpinner = false;
+bool _isSignUpSuccessful = false;
 // why late because i well not give  it a value new 
  late String name;
  late String Lname;
@@ -162,9 +164,23 @@ bool  showSpinner = false;
                           'Lname': Lname,
                           'Password': password,
                           });
-                           
-                         Navigator.pushNamed(context, SignUpScreen.RouteScreen);
-                         }
+                           showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Sign Up Successful'),
+                                content: Text('You have successfully signed up! You can now Sign In to your accuont'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.pushNamed(context,  SignInScreen.RouteScreen);},
+                                      child: Text('OK'),
+                                      ),
+                                      ],);
+                                       },
+                                       ); 
+                                       }
                          setState(() {
                           showSpinner = false;
                            });
