@@ -49,11 +49,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 15),
-                      Text(
+                      Padding(
+                     padding: EdgeInsets.symmetric(horizontal: 20), 
+                    child: Text(
                         controller.items[index].descriptions,
                         style: const TextStyle(color: Colors.white, fontSize: 17),
                         textAlign: TextAlign.center,
+                       
                       ),
+                      )
                     ],
                   );
                 },
@@ -122,7 +126,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         color: const Color(0xffd5defe),
       ),
       width: MediaQuery.of(context).size.width * .9,
-      height: 55,
+      height: 45,
       child: TextButton(
         onPressed: () async {
           final prefs = await SharedPreferences.getInstance();

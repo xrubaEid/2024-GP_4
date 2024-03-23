@@ -15,7 +15,7 @@ class OnboardingData{
 
     OnboardingInfo(
         title: "enhance your kid's sleep",
-        descriptions: "Track and monitor your family's sleep patterns! Add your kids as beneficiaries to ensure they get the rest they need.",
+        descriptions: " Track and monitor your family's sleep patterns! Add your kids as beneficiaries to ensure they get the rest they need.",
         image: "assets/USERICON.png"),
 
 
