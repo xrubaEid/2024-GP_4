@@ -53,6 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: index,
+<<<<<<< HEAD
         onDestinationSelected: (index) => setState(() => this.index = index),
         backgroundColor: const Color(0xFF040E3B),
         height: 70,
@@ -85,3 +86,45 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+=======
+       onDestinationSelected: (index) {
+  if (index != 2) {
+    setState(() => this.index = index);
+  } else {
+    Navigator.pushNamed(context, AlarmScreen.RouteScreen);
+  }
+},
+        backgroundColor: Color.fromARGB(255, 162, 165, 180),
+        height: 70,
+        destinations: const [
+          NavigationDestination(
+            icon:Icon( Icons.person_outlined ),
+            selectedIcon:Icon( Icons.person ), 
+            label:'profile',
+            ),
+             NavigationDestination(
+            icon:Icon( Icons.align_vertical_bottom_outlined ),
+            selectedIcon:Icon( Icons.align_vertical_bottom ), 
+            label:'Statistic',
+            ),
+           NavigationDestination(
+    icon: Icon(Icons.access_alarm_outlined),
+    selectedIcon: Icon(Icons.access_alarm),
+    label: 'Alarm',
+    key: Key('alarm'),
+  ),
+             NavigationDestination(
+            icon:Icon( Icons.dashboard_customize_outlined ),
+            selectedIcon:Icon( Icons.dashboard_customize ), 
+            label:'Dashboard',
+            ),
+        ],
+      ),
+     
+     body:pages[index],
+    
+   
+      );
+  } 
+}
+>>>>>>> 14db60dfe48377b3d80628dc1b225398df4e8cd3

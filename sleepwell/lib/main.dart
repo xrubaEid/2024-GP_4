@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+<<<<<<< HEAD
       initialRoute: OnboardingScreen.RouteScreen,
       routes: {
         SignInScreen.RouteScreen: (context) => const SignInScreen(),
@@ -48,6 +49,21 @@ class MyApp extends StatelessWidget {
         ProfileScreen.RouteScreen: (context) => const ProfileScreen(),
         welcome.RouteScreen: (context) => const welcome(),
       },
+=======
+     initialRoute:SplashScreen.RouteScreen,
+     routes:{
+      SignInScreen.RouteScreen : (context)=> SignInScreen(),
+      MyHomePage.RouteScreen : (context)=> MyHomePage(),
+      SignUpScreen.RouteScreen : (context)=> SignUpScreen(),
+      SplashScreen.RouteScreen : (context)=> SplashScreen(),
+      AlarmScreen.RouteScreen : (context)=>AlarmScreen(),
+
+     
+     },
+     
+     
+
+>>>>>>> 14db60dfe48377b3d80628dc1b225398df4e8cd3
     );
   }
 }
