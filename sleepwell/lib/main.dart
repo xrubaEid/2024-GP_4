@@ -5,6 +5,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:sleepwell/firebase_options.dart';
 import 'package:sleepwell/screens/alarm_screen.dart';
 import 'package:sleepwell/screens/home_screen.dart';
+import 'package:sleepwell/screens/onboarding_screen.dart';
 import 'package:sleepwell/screens/profile_screen.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
 import 'package:sleepwell/screens/signup_screen.dart';
@@ -18,10 +19,6 @@ Future<void> main() async {
   await GetStorage.init();
 //coenact to fire base
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-//.then( (FirebaseApp value ) => Get.put(AuthenticationRepository()),)
-
-// await Splash until other items loaded
-//flutterNativeSplash.preserve(WidgetsBinding:WidgetsBinding);
 
   runApp(const MyApp());
 }
@@ -38,7 +35,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      initialRoute: SignUpScreen.RouteScreen,
+      initialRoute: SplashScreen.RouteScreen,
       routes: {
         SignInScreen.RouteScreen: (context) => SignInScreen(),
         MyHomePage.RouteScreen: (context) => MyHomePage(),
@@ -47,6 +44,7 @@ class MyApp extends StatelessWidget {
         AlarmScreen.RouteScreen: (context) => AlarmScreen(),
         ProfileScreen.RouteScreen: (context) => ProfileScreen(),
         welcome.RouteScreen: (context) => welcome(),
+        OnboardingScreen.RouteScreen: (context) => const OnboardingScreen(),
       },
     );
   }
