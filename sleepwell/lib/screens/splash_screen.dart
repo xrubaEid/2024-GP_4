@@ -1,7 +1,8 @@
-/*import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:sleepwell/screens/onboarding_screen.dart';
 import 'package:sleepwell/screens/welcoming_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -24,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // Navigate to the SignInScreen()
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => welcome()),
+      MaterialPageRoute(builder: (context) => OnboardingScreen()),
     );
   }
 
@@ -51,4 +52,3 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-*/

@@ -8,7 +8,7 @@ import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/profile_screen.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
 import 'package:sleepwell/screens/signup_screen.dart';
-//import 'package:sleepwell/screens/splash_screen.dart';
+import 'package:sleepwell/screens/splash_screen.dart';
 import 'package:sleepwell/screens/welcoming_screen.dart';
 import 'package:sleepwell/screens/onboarding_screen.dart';
 
@@ -39,12 +39,12 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      initialRoute: OnboardingScreen.RouteScreen,
+      initialRoute: SplashScreen.RouteScreen,
       routes: {
         SignInScreen.RouteScreen: (context) => SignInScreen(),
         MyHomePage.RouteScreen: (context) => MyHomePage(),
         SignUpScreen.RouteScreen: (context) => SignUpScreen(),
-        //SplashScreen.RouteScreen: (context) => SplashScreen(),
+        SplashScreen.RouteScreen: (context) => SplashScreen(),
         AlarmScreen.RouteScreen: (context) => AlarmScreen(),
         ProfileScreen.RouteScreen: (context) => ProfileScreen(),
         welcome.RouteScreen: (context) => welcome(),

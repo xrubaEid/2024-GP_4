@@ -67,6 +67,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
     }
   }
 
+/*
   void _saveTimes() {
     final String bedtime = bedtimeController.text;
     final String wakeUpTime = wakeUpTimeController.text;
@@ -87,6 +88,48 @@ class _AlarmScreenState extends State<AlarmScreen> {
       printedBedtime = bedtime;
       printedWakeUpTime = optimalWakeUpTime;
     });
+  }*/
+  void _saveTimes() {
+    List<Map<String, int>> myHourList =
+        timeAndHeart(); // Retrieve the data internally
+
+    int bedtimeIndex = 0;
+    int bedtimeMinutes = 0;
+    int sleepCycleMinutes = 90; // Duration of each sleep cycle in minutes
+
+    for (int i = 0; i < myHourList.length; i++) {
+      if (myHourList[i]['heartRate']! < 95) {
+        bedtimeIndex = i;
+        break;
+      }
+    }
+
+    if (bedtimeIndex > 0) {
+      bedtimeMinutes = myHourList[bedtimeIndex]['hour']! * 60 +
+          myHourList[bedtimeIndex]['minute']!;
+    } else {
+      // Handle case where heart rate never drops below 95 bpm
+      // Use the last hour in the list as bedtime
+      bedtimeMinutes = myHourList[myHourList.length - 1]['hour']! * 60 +
+          myHourList[myHourList.length - 1]['minute']!;
+    }
+
+    int numberOfCycles = ((selectedWakeUpTime.hour * 60 +
+                selectedWakeUpTime.minute -
+                bedtimeMinutes) /
+            sleepCycleMinutes)
+        .floor();
+
+    int optimalWakeUpMinutes =
+        bedtimeMinutes + (numberOfCycles * sleepCycleMinutes);
+    String optimalWakeUpTime = calculateTimeFromMinutes(
+        optimalWakeUpMinutes, wakeUpTimeController.text);
+
+    setState(() {
+      printedBedtime =
+          "${myHourList[bedtimeIndex]['hour']}:${myHourList[bedtimeIndex]['minute']}";
+      printedWakeUpTime = optimalWakeUpTime;
+    });
   }
 
   String calculateTimeFromMinutes(int minutes, String referenceTime) {
@@ -103,6 +146,86 @@ class _AlarmScreenState extends State<AlarmScreen> {
     TimeOfDay timeOfDay =
         TimeOfDay.fromDateTime(DateFormat('hh:mm a').parse(time));
     return (timeOfDay.hour * 60) + timeOfDay.minute;
+  }
+
+  List<Map<String, int>> timeAndHeart() {
+    List<Map<String, int>> myHourList = [];
+
+    DateTime startTime = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+      11,
+      0,
+      0,
+    );
+    DateTime endTime = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+      12,
+      0,
+      0,
+    );
+
+    int initialHeartRate = 120;
+    int finalHeartRate = 75;
+
+    DateTime currentTime = startTime;
+    while (currentTime.isBefore(endTime)) {
+      int heartRate;
+      if (currentTime.isBefore(DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day,
+        11,
+        30,
+      ))) {
+        // Decrease heart rate gradually from initialHeartRate to 95 bpm
+        double progress = currentTime.difference(startTime).inMinutes /
+            (DateTime(
+              DateTime.now().year,
+              DateTime.now().month,
+              DateTime.now().day,
+              11,
+              30,
+            ).difference(startTime))
+                .inMinutes;
+
+        int decreaseAmount = (progress * (initialHeartRate - 95)).round();
+        heartRate = initialHeartRate - decreaseAmount;
+      } else {
+        // Decrease heart rate gradually from 95 bpm to finalHeartRate
+        double progress = currentTime
+                .difference(DateTime(
+                  DateTime.now().year,
+                  DateTime.now().month,
+                  DateTime.now().day,
+                  11,
+                  30,
+                ))
+                .inMinutes /
+            (endTime.difference(DateTime(
+              DateTime.now().year,
+              DateTime.now().month,
+              DateTime.now().day,
+              11,
+              30,
+            ))).inMinutes;
+
+        int decreaseAmount = (progress * (95 - finalHeartRate)).round();
+        heartRate = 95 - decreaseAmount;
+      }
+
+      myHourList.add({
+        'hour': currentTime.hour,
+        'minute': currentTime.minute,
+        'heartRate': heartRate
+      });
+      currentTime = currentTime.add(Duration(minutes: 1));
+    }
+
+    return myHourList;
   }
 
   @override
@@ -245,7 +368,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     Align(
                         alignment: Alignment.center,
                         child: Center(
@@ -259,26 +382,43 @@ class _AlarmScreenState extends State<AlarmScreen> {
                           ),
                           child: Text('Save'),
                         ))),
-                    SizedBox(height: 20),
-                    BottomAppBar(
-                      color: Colors.transparent,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                    SizedBox(height: 8),
+                    SafeArea(
+                      child: BottomAppBar(
+                        color: Colors.transparent,
+                        child: Column(
                           children: <Widget>[
-                            Text(
-                              'Optimal wake-up time is: $printedWakeUpTime',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  'Actual sleep time is: $printedBedtime',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            //SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  'Optimal wake-up time is: $printedWakeUpTime',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
