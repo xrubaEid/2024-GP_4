@@ -1,4 +1,3 @@
-//import 'dart:html';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -9,7 +8,7 @@ import 'package:intl/intl.dart';
 class AlarmScreen extends StatefulWidget {
   static String RouteScreen = 'alarm_screen';
 
-  const AlarmScreen({super.key});
+  const AlarmScreen({Key? key}) : super(key: key);
 
   @override
   State<AlarmScreen> createState() => _AlarmScreenState();
@@ -72,12 +71,38 @@ class _AlarmScreenState extends State<AlarmScreen> {
     final String bedtime = bedtimeController.text;
     final String wakeUpTime = wakeUpTimeController.text;
 
-    // Perform your sleep cycle function using the saved values
+    int bedtimeMinutes = calculateMinutesFromTime(bedtime);
+    int wakeupMinutes = calculateMinutesFromTime(wakeUpTime);
+
+    int sleepCycleMinutes = 90; // Duration of each sleep cycle in minutes
+    int numberOfCycles =
+        ((wakeupMinutes - bedtimeMinutes) / sleepCycleMinutes).floor();
+
+    int optimalWakeUpMinutes =
+        bedtimeMinutes + (numberOfCycles * sleepCycleMinutes);
+    String optimalWakeUpTime =
+        calculateTimeFromMinutes(optimalWakeUpMinutes, wakeUpTime);
 
     setState(() {
       printedBedtime = bedtime;
-      printedWakeUpTime = wakeUpTime;
+      printedWakeUpTime = optimalWakeUpTime;
     });
+  }
+
+  String calculateTimeFromMinutes(int minutes, String referenceTime) {
+    int hours = minutes ~/ 60;
+    int mins = minutes % 60;
+    TimeOfDay timeOfDay = TimeOfDay(hour: hours, minute: mins);
+    DateTime dateTime = DateFormat('hh:mm a').parse(referenceTime);
+    dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day,
+        timeOfDay.hour, timeOfDay.minute);
+    return DateFormat('hh:mm a').format(dateTime);
+  }
+
+  int calculateMinutesFromTime(String time) {
+    TimeOfDay timeOfDay =
+        TimeOfDay.fromDateTime(DateFormat('hh:mm a').parse(time));
+    return (timeOfDay.hour * 60) + timeOfDay.minute;
   }
 
   @override
