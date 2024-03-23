@@ -34,7 +34,7 @@ dependencies:
   ntp: 2.0.0  
   get: ^4.1.4
 
-#onboaring bage 
+#onboaring page 
   smooth_page_indicator: ^1.1.0
   shared_preferences: ^2.2.2
 
