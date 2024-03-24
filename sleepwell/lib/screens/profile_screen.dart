@@ -61,68 +61,79 @@ final _firestore=  FirebaseFirestore.instance ;
               end: Alignment.bottomCenter,
             ),
           ),
-          child: ListView(
-            padding: const EdgeInsets.all(24),
-            children: [
-              Container(
-                color: const Color(0xffd5defe),
-                child: SettingsGroup(
-                  title: 'Personal',
-                  titleTextStyle: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+          child: Padding(
+            padding: const  EdgeInsets.only(top:10.0),
+            child: ListView(
+              padding: const EdgeInsets.all(24),
+              children: [
+                const Text(
+                        '  Profile',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),),
+                        SizedBox(height: 25,),
+                Container(
+                  color: const Color(0xffd5defe),
+                  child: SettingsGroup(
+                    title: 'Personal',
+                    titleTextStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    children: <Widget>[
+                      Account(),
+                      AboutYou(),
+                    ],
                   ),
-                  children: <Widget>[
-                    Account(),
-                    AboutYou(),
-                  ],
                 ),
-              ),
-              Container(
-                color: Color(0xffd5defe),
-                child: SettingsGroup(
-                  title: 'Alarm',
-                  titleTextStyle: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  color: Color(0xffd5defe),
+                  child: SettingsGroup(
+                    title: 'Alarm',
+                    titleTextStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    children: <Widget>[
+                      AlarmSound(),
+                      Snooze(),
+                    ],
                   ),
-                  children: <Widget>[
-                    AlarmSound(),
-                    Snooze(),
-                  ],
                 ),
-              ),
-              Container(
-                color: Color(0xffd5defe),
-                child: SettingsGroup(
-                  title: 'Setting',
-                  titleTextStyle: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  color: Color(0xffd5defe),
+                  child: SettingsGroup(
+                    title: 'Setting',
+                    titleTextStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    children: <Widget>[
+                      Sleepgoal(),
+                    ],
                   ),
-                  children: <Widget>[
-                    Sleepgoal(),
-                  ],
                 ),
-              ),
-              Container(
-                color: Color(0xffd5defe),
-                child: SettingsGroup(
-                  title: 'Account Actions',
-                  titleTextStyle: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  color: Color(0xffd5defe),
+                  child: SettingsGroup(
+                    title: 'Account Actions',
+                    titleTextStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    children: <Widget>[
+                      buildLogOut(),
+                    ],
                   ),
-                  children: <Widget>[
-                    buildLogOut(),
-                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

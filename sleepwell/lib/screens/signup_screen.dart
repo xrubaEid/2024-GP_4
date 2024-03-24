@@ -63,6 +63,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(
                   height: 15,
                 ),
+                 const Text(
+                   '  Names should be in English ',
+                   style: TextStyle(
+                       color: Color.fromARGB(241, 230, 158, 3),
+                       fontSize: 15,
+                       fontWeight: FontWeight.bold),
+                 ),
+                 const SizedBox(
+                  height: 10,
+                ),
                 TextField(
                   keyboardType: TextInputType.name,
                   onChanged: (value) {
@@ -120,6 +130,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(
                   height: 15,
                 ),
+                
                 TextField(
                   keyboardType: TextInputType.visiblePassword,
                   onChanged: (value) {
@@ -158,15 +169,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 const SizedBox(
-                  height: 30,
+                  height: 10,
+                ),
+                const Text(
+                   '- Password should be Identical.',
+                   style: TextStyle(
+                       color: Color.fromARGB(241, 230, 158, 3),
+                       fontSize: 15,
+                       fontWeight: FontWeight.bold),
+                 ),
+                 const Text(
+                   '- At least 8 characters long.',
+                   style: TextStyle(
+                       color: Color.fromARGB(241, 230, 158, 3),
+                       fontSize: 15,
+                       fontWeight: FontWeight.bold),
+                 ),
+                 const Text(
+                   '- Password should contain numbers & characters.',
+                   style: TextStyle(
+                       color: Color.fromARGB(241, 230, 158, 3),
+                       fontSize: 15,
+                       fontWeight: FontWeight.bold),
+                 ),
+                const SizedBox(
+                  height: 10,
                 ),
                 regsterbutton(
                   color: Color(0xffd5defe),
                   title: 'Create Account',
                   onPressed: () async {
-                    if (password.length >= 8 &&
-                        password.contains(RegExp(r'\d')) &&
-                        password == cpassword) {
+                      if (password.length >= 8 &&
+                      password.contains(RegExp(r'[a-zA-Z]')) &&
+                       password.contains(RegExp(r'[0-9]')) &&
+                       password==cpassword) {
                       try {
                         setState(() {
                           showSpinner = true;
@@ -188,9 +224,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text('Sign Up Successful'),
+                                title:const Text('Sign Up Successful'),
                                 titleTextStyle: TextStyle(
-                                  color: Colors.green,
+                                  color:Colors.green,
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -225,7 +261,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             errorMessage = ' Email is already in use.';
                           } else {
                             errorMessage =
-                                ' An error occurred. Please try again later.';
+                                ' Emil format not correct';
                           }
                         } else {
                           errorMessage =
@@ -243,7 +279,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text(
-                            'Please make sure the password is at least 8 characters long, contains a number, and matches the confirm password.',
+                            'Something went wrong with the password ! Make sure the conditions are met.',
                           ),
                           duration: Duration(seconds: 3),
                         ),
