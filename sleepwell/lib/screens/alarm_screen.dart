@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sleepwell/screens/clockview.dart';
 import 'package:intl/intl.dart';
+import 'dart:math';
 
 class AlarmScreen extends StatefulWidget {
   static String RouteScreen = 'alarm_screen';
@@ -22,6 +23,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   String printedBedtime = '';
   String printedWakeUpTime = '';
+  String printednumOfCycles = '';
 
   @override
   void initState() {
@@ -39,18 +41,20 @@ class _AlarmScreenState extends State<AlarmScreen> {
     super.dispose();
   }
 
-  void _showBedtimePicker() async {
+  Future<TimeOfDay?> _showBedtimePicker() async {
     final TimeOfDay? pickedTime = await showTimePicker(
       context: context,
-      initialTime: selectedBedtime,
+      initialTime: TimeOfDay.now(),
     );
 
     if (pickedTime != null) {
       setState(() {
-        selectedBedtime = pickedTime;
         bedtimeController.text = pickedTime.format(context);
+        selectedBedtime = pickedTime;
       });
     }
+
+    return pickedTime;
   }
 
   void _showWakeUpTimePicker() async {
@@ -89,47 +93,68 @@ class _AlarmScreenState extends State<AlarmScreen> {
       printedWakeUpTime = optimalWakeUpTime;
     });
   }*/
-  void _saveTimes() {
-    List<Map<String, int>> myHourList =
-        timeAndHeart(); // Retrieve the data internally
+  void _saveTimes() async {
+    //await _showBedtimePicker();
+    TimeOfDay? selectedTime = selectedBedtime;
 
-    int bedtimeIndex = 0;
-    int bedtimeMinutes = 0;
-    int sleepCycleMinutes = 90; // Duration of each sleep cycle in minutes
+    if (selectedTime != null) {
+      List<Map<String, int>> myHourList = timeAndHeart(selectedTime);
+      // ...
 
-    for (int i = 0; i < myHourList.length; i++) {
-      if (myHourList[i]['heartRate']! < 95) {
-        bedtimeIndex = i;
-        break;
+      int bedtimeIndex = 0;
+      int bedtimeMinutes = 0;
+      int sleepCycleMinutes = 90; // Duration of each sleep cycle in minutes
+
+      for (int i = 0; i < myHourList.length; i++) {
+        if (myHourList[i]['heartRate']! < 90) {
+          bedtimeIndex = i;
+          break;
+        }
       }
+
+      if (bedtimeIndex > 0) {
+        bedtimeMinutes = myHourList[bedtimeIndex]['hour']! * 60 +
+            myHourList[bedtimeIndex]['minute']!;
+      } else {
+        // Handle case where heart rate never drops below 95 bpm
+        // Use the last hour in the list as bedtime
+        bedtimeMinutes = myHourList[myHourList.length - 1]['hour']! * 60 +
+            myHourList[myHourList.length - 1]['minute']!;
+      }
+
+      int numberOfCycles = ((selectedWakeUpTime.hour * 60 +
+                  selectedWakeUpTime.minute -
+                  bedtimeMinutes) /
+              sleepCycleMinutes)
+          .floor();
+
+      int optimalWakeUpMinutes =
+          bedtimeMinutes + (numberOfCycles * sleepCycleMinutes);
+      String optimalWakeUpTime = calculateTimeFromMinutes(
+          optimalWakeUpMinutes, wakeUpTimeController.text);
+
+      String moreTime = calculateTimeFromMinutes(
+          optimalWakeUpMinutes + 15, wakeUpTimeController.text);
+      print(moreTime);
+      print(selectedWakeUpTime);
+
+      bool compare =
+          compareTimeStringAndTimeOfDay(moreTime, selectedWakeUpTime);
+      /*if (compare) {
+        optimalWakeUpTime = moreTime;
+      }*/
+
+      setState(() {
+        int? hour = myHourList[bedtimeIndex]['hour'];
+        int? minute = myHourList[bedtimeIndex]['minute'];
+        String period = (hour! < 12) ? 'AM' : 'PM';
+        hour = (hour > 12) ? hour - 12 : hour;
+
+        printedBedtime = '$hour:${minute.toString().padLeft(2, '0')} $period';
+        printedWakeUpTime = optimalWakeUpTime;
+        printednumOfCycles = numberOfCycles.toString();
+      });
     }
-
-    if (bedtimeIndex > 0) {
-      bedtimeMinutes = myHourList[bedtimeIndex]['hour']! * 60 +
-          myHourList[bedtimeIndex]['minute']!;
-    } else {
-      // Handle case where heart rate never drops below 95 bpm
-      // Use the last hour in the list as bedtime
-      bedtimeMinutes = myHourList[myHourList.length - 1]['hour']! * 60 +
-          myHourList[myHourList.length - 1]['minute']!;
-    }
-
-    int numberOfCycles = ((selectedWakeUpTime.hour * 60 +
-                selectedWakeUpTime.minute -
-                bedtimeMinutes) /
-            sleepCycleMinutes)
-        .floor();
-
-    int optimalWakeUpMinutes =
-        bedtimeMinutes + (numberOfCycles * sleepCycleMinutes);
-    String optimalWakeUpTime = calculateTimeFromMinutes(
-        optimalWakeUpMinutes, wakeUpTimeController.text);
-
-    setState(() {
-      printedBedtime =
-          "${myHourList[bedtimeIndex]['hour']}:${myHourList[bedtimeIndex]['minute']}";
-      printedWakeUpTime = optimalWakeUpTime;
-    });
   }
 
   String calculateTimeFromMinutes(int minutes, String referenceTime) {
@@ -148,7 +173,36 @@ class _AlarmScreenState extends State<AlarmScreen> {
     return (timeOfDay.hour * 60) + timeOfDay.minute;
   }
 
-  List<Map<String, int>> timeAndHeart() {
+  bool compareTimeStringAndTimeOfDay(String timeString, TimeOfDay timeOfDay) {
+    List<String> parts = timeString.split(' ');
+    List<String> timeParts = parts[0].split(':');
+    int hour = int.parse(timeParts[0]);
+    int minute = int.parse(timeParts[1]);
+    if (parts[1] == 'PM' && hour != 12) {
+      hour += 12;
+    }
+
+    DateTime parsedDateTime = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+      hour,
+      minute,
+    );
+
+    DateTime targetDateTime = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+      timeOfDay.hour,
+      timeOfDay.minute,
+    );
+
+    return parsedDateTime.isBefore(targetDateTime) ||
+        parsedDateTime.isAtSameMomentAs(targetDateTime);
+  }
+
+  /* List<Map<String, int>> timeAndHeart() {
     List<Map<String, int>> myHourList = [];
 
     DateTime startTime = DateTime(
@@ -223,6 +277,61 @@ class _AlarmScreenState extends State<AlarmScreen> {
         'heartRate': heartRate
       });
       currentTime = currentTime.add(Duration(minutes: 1));
+    }
+
+    return myHourList;
+  }*/
+
+  List<Map<String, int>> timeAndHeart(TimeOfDay bedtime) {
+    List<Map<String, int>> myHourList = [];
+
+    DateTime now = DateTime.now();
+    DateTime startTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      bedtime.hour,
+      bedtime.minute,
+    );
+
+    DateTime endTime = startTime.add(Duration(hours: 1));
+
+    int initialHeartRate = 120;
+    int finalHeartRate = 75;
+
+    DateTime currentTime = startTime;
+    Random random = Random();
+    while (currentTime.isBefore(endTime)) {
+      int heartRate;
+      if (currentTime.isBefore(startTime.add(Duration(minutes: 30)))) {
+        // Decrease heart rate gradually from initialHeartRate to 95 bpm
+        double progress = currentTime.difference(startTime).inMinutes /
+            (startTime.add(Duration(minutes: 30)).difference(startTime))
+                .inMinutes;
+
+        int decreaseAmount = (progress * (initialHeartRate - 95)).round();
+        heartRate = initialHeartRate - decreaseAmount;
+      } else {
+        // Decrease heart rate gradually from 95 bpm to finalHeartRate
+        double progress = currentTime
+                .difference(startTime.add(Duration(minutes: 30)))
+                .inMinutes /
+            (endTime.difference(startTime.add(Duration(minutes: 30))))
+                .inMinutes;
+
+        int decreaseAmount = (progress * (95 - finalHeartRate)).round();
+        heartRate = 95 - decreaseAmount;
+      }
+
+      myHourList.add({
+        'hour': currentTime.hour,
+        'minute': currentTime.minute,
+        'heartRate': heartRate,
+      });
+
+      // Generate a random duration between 10 and 20 minutes
+      int randomDuration = 10 + random.nextInt(11);
+      currentTime = currentTime.add(Duration(minutes: randomDuration));
     }
 
     return myHourList;
