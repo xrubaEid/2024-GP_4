@@ -5,12 +5,12 @@ import 'package:get_storage/get_storage.dart';
 import 'package:sleepwell/firebase_options.dart';
 import 'package:sleepwell/screens/alarm_screen.dart';
 import 'package:sleepwell/screens/home_screen.dart';
+import 'package:sleepwell/screens/onboarding_screen.dart';
 import 'package:sleepwell/screens/profile_screen.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
 import 'package:sleepwell/screens/signup_screen.dart';
 import 'package:sleepwell/screens/splash_screen.dart';
 import 'package:sleepwell/screens/welcoming_screen.dart';
-import 'package:sleepwell/screens/onboarding_screen.dart';
 
 Future<void> main() async {
 //
@@ -19,10 +19,6 @@ Future<void> main() async {
   await GetStorage.init();
 //coenact to fire base
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-//.then( (FirebaseApp value ) => Get.put(AuthenticationRepository()),)
-
-// await Splash until other items loaded
-//flutterNativeSplash.preserve(WidgetsBinding:WidgetsBinding);
 
   runApp(const MyApp());
 }

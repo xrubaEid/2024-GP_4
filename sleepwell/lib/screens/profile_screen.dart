@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
@@ -18,7 +19,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final _auth = FirebaseAuth.instance;
   late User signInUser;
-
+final _firestore=  FirebaseFirestore.instance ;
   @override
   void initState() {
     super.initState();
@@ -36,6 +37,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print(e);
     }
   }
+//void getUsersinfo() async{
+//final Names = await _firestore.collection('Users').get();
+//for (var name in Names.docs) {
+ //print( name.data());
+//}
+//}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -52,68 +61,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
               end: Alignment.bottomCenter,
             ),
           ),
-          child: ListView(
-            padding: const EdgeInsets.all(24),
-            children: [
-              Container(
-                color: const Color(0xffd5defe),
-                child: SettingsGroup(
-                  title: 'Personal',
-                  titleTextStyle: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+          child: Padding(
+            padding: const  EdgeInsets.only(top:10.0),
+            child: ListView(
+              padding: const EdgeInsets.all(24),
+              children: [
+                const Text(
+                        '  Profile',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),),
+                        SizedBox(height: 25,),
+                Container(
+                  color: const Color(0xffd5defe),
+                  child: SettingsGroup(
+                    title: 'Personal',
+                    titleTextStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    children: <Widget>[
+                      Account(),
+                      AboutYou(),
+                    ],
                   ),
-                  children: <Widget>[
-                    Account(),
-                    AboutYou(),
-                  ],
                 ),
-              ),
-              Container(
-                color: Color(0xffd5defe),
-                child: SettingsGroup(
-                  title: 'Alarm',
-                  titleTextStyle: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  color: Color(0xffd5defe),
+                  child: SettingsGroup(
+                    title: 'Alarm',
+                    titleTextStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    children: <Widget>[
+                      AlarmSound(),
+                      Snooze(),
+                    ],
                   ),
-                  children: <Widget>[
-                    AlarmSound(),
-                    Snooze(),
-                  ],
                 ),
-              ),
-              Container(
-                color: Color(0xffd5defe),
-                child: SettingsGroup(
-                  title: 'Setting',
-                  titleTextStyle: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  color: Color(0xffd5defe),
+                  child: SettingsGroup(
+                    title: 'Setting',
+                    titleTextStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    children: <Widget>[
+                      Sleepgoal(),
+                    ],
                   ),
-                  children: <Widget>[
-                    Sleepgoal(),
-                  ],
                 ),
-              ),
-              Container(
-                color: Color(0xffd5defe),
-                child: SettingsGroup(
-                  title: 'Account Actions',
-                  titleTextStyle: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  color: Color(0xffd5defe),
+                  child: SettingsGroup(
+                    title: 'Account Actions',
+                    titleTextStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    children: <Widget>[
+                      buildLogOut(),
+                    ],
                   ),
-                  children: <Widget>[
-                    buildLogOut(),
-                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

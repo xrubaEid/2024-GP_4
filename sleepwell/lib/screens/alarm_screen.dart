@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:sleepwell/screens/clockview.dart';
 import 'package:intl/intl.dart';
-import 'dart:math';
 
 class AlarmScreen extends StatefulWidget {
   static String RouteScreen = 'alarm_screen';
@@ -133,28 +132,11 @@ class _AlarmScreenState extends State<AlarmScreen> {
       String optimalWakeUpTime = calculateTimeFromMinutes(
           optimalWakeUpMinutes, wakeUpTimeController.text);
 
-      String moreTime = calculateTimeFromMinutes(
-          optimalWakeUpMinutes + 15, wakeUpTimeController.text);
-      print(moreTime);
-      print(selectedWakeUpTime);
-
-      bool compare =
-          compareTimeStringAndTimeOfDay(moreTime, selectedWakeUpTime);
-      /*if (compare) {
-        optimalWakeUpTime = moreTime;
-      }*/
-
-      setState(() {
-        int? hour = myHourList[bedtimeIndex]['hour'];
-        int? minute = myHourList[bedtimeIndex]['minute'];
-        String period = (hour! < 12) ? 'AM' : 'PM';
-        hour = (hour > 12) ? hour - 12 : hour;
-
-        printedBedtime = '$hour:${minute.toString().padLeft(2, '0')} $period';
-        printedWakeUpTime = optimalWakeUpTime;
-        printednumOfCycles = numberOfCycles.toString();
-      });
-    }
+    setState(() {
+      printedBedtime =
+          "${myHourList[bedtimeIndex]['hour']}:${myHourList[bedtimeIndex]['minute']}";
+      printedWakeUpTime = optimalWakeUpTime;
+    });
   }
 
   String calculateTimeFromMinutes(int minutes, String referenceTime) {

@@ -12,10 +12,7 @@ class welcome extends StatelessWidget {
     Color myColor = const Color.fromARGB(255, 0, 74, 173);
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: myColor,
-        title: const Text(''),
-      ),
+      
       body: Container(
         height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(
