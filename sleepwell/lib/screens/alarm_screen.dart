@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sleepwell/screens/clockview.dart';
-import 'package:intl/intl.dart';
 
 class AlarmScreen extends StatefulWidget {
   static String RouteScreen = 'alarm_screen';
@@ -132,11 +131,28 @@ class _AlarmScreenState extends State<AlarmScreen> {
       String optimalWakeUpTime = calculateTimeFromMinutes(
           optimalWakeUpMinutes, wakeUpTimeController.text);
 
-    setState(() {
-      printedBedtime =
-          "${myHourList[bedtimeIndex]['hour']}:${myHourList[bedtimeIndex]['minute']}";
-      printedWakeUpTime = optimalWakeUpTime;
-    });
+      String moreTime = calculateTimeFromMinutes(
+          optimalWakeUpMinutes + 15, wakeUpTimeController.text);
+      print(moreTime);
+      print(selectedWakeUpTime);
+
+      bool compare =
+          compareTimeStringAndTimeOfDay(moreTime, selectedWakeUpTime);
+      if (compare) {
+        optimalWakeUpTime = moreTime;
+      }
+
+      setState(() {
+        int? hour = myHourList[bedtimeIndex]['hour'];
+        int? minute = myHourList[bedtimeIndex]['minute'];
+        String period = (hour! < 12) ? 'AM' : 'PM';
+        hour = (hour > 12) ? hour - 12 : hour;
+
+        printedBedtime = '$hour:${minute.toString().padLeft(2, '0')} $period';
+        printedWakeUpTime = optimalWakeUpTime;
+        printednumOfCycles = numberOfCycles.toString();
+      });
+    }
   }
 
   String calculateTimeFromMinutes(int minutes, String referenceTime) {
