@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:sleepwell/screens/account_screen.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
 import 'package:sleepwell/widget/iconwidget.dart';
 
@@ -19,7 +20,10 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final _auth = FirebaseAuth.instance;
   late User signInUser;
-final _firestore=  FirebaseFirestore.instance ;
+  late String userId;
+  late String email;
+  late String firstName;
+  late String lastName;
   @override
   void initState() {
     super.initState();
@@ -30,8 +34,12 @@ final _firestore=  FirebaseFirestore.instance ;
     try {
       final user = _auth.currentUser;
       if (user != null) {
+        setState(() {
         signInUser = user;
-        print(signInUser.email);
+        userId = user.uid;
+        email = user.email!;
+      });
+      _fetchUserData();
       }
     } catch (e) {
       print(e);
@@ -43,7 +51,16 @@ final _firestore=  FirebaseFirestore.instance ;
  //print( name.data());
 //}
 //}
-
+  void _fetchUserData() async {
+    final userData = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(userId)
+        .get();
+    setState(() {
+      firstName = userData['Fname'];
+      lastName = userData['Lname'];
+    });
+  }
 
 
   @override
@@ -66,13 +83,15 @@ final _firestore=  FirebaseFirestore.instance ;
             child: ListView(
               padding: const EdgeInsets.all(24),
               children: [
-                const Text(
-                        '  Profile',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),),
+                 if (firstName != null)
+                  Text(
+                    '  Hi $firstName !',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                         SizedBox(height: 25,),
                 Container(
                   color: const Color(0xffd5defe),
@@ -189,7 +208,10 @@ final _firestore=  FirebaseFirestore.instance ;
         title: 'Account',
         leading: IconWidget(icon: Icons.person, color: const Color(0xFF040E3B)),
         onTap: () {
-          // Handle account logic here
+          Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AccountScreen()),
+      );
         },
       );
 

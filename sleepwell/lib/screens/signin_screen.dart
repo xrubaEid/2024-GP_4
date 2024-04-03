@@ -140,7 +140,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         showSpinner = false;
                       });
                       String errorMessage =
-                          'An error occurred! Please try again.';
+                          'Email format not correct';
                       if (e is FirebaseAuthException) {
                         switch (e.code) {
                           case 'user-not-found':
