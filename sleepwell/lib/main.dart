@@ -11,6 +11,7 @@ import 'package:sleepwell/screens/signin_screen.dart';
 import 'package:sleepwell/screens/signup_screen.dart';
 import 'package:sleepwell/screens/splash_screen.dart';
 import 'package:sleepwell/screens/welcoming_screen.dart';
+import 'package:sleepwell/feedback/feedback_page.dart';
 
 Future<void> main() async {
 //
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       initialRoute: SplashScreen.RouteScreen,
+      //initialRoute: FeedbackPage.RouteScreen,
       routes: {
         SignInScreen.RouteScreen: (context) => SignInScreen(),
         MyHomePage.RouteScreen: (context) => MyHomePage(),
@@ -45,6 +47,7 @@ class MyApp extends StatelessWidget {
         ProfileScreen.RouteScreen: (context) => ProfileScreen(),
         welcome.RouteScreen: (context) => welcome(),
         OnboardingScreen.RouteScreen: (context) => const OnboardingScreen(),
+        FeedbackPage.RouteScreen: (context) => FeedbackPage(),
       },
     );
   }

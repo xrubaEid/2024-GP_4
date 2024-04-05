@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:sleepwell/feedback/feedback_page.dart';
 import 'package:sleepwell/screens/account_screen.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
 import 'package:sleepwell/widget/iconwidget.dart';
@@ -22,12 +23,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late User signInUser;
   late String userId;
   late String email;
-  late String firstName;
-  late String lastName;
+  String? firstName;
+  String? lastName;
+
   @override
   void initState() {
     super.initState();
     getCurrentUser();
+    firstName = '';
+    lastName = '';
   }
 
   void getCurrentUser() {
@@ -35,33 +39,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final user = _auth.currentUser;
       if (user != null) {
         setState(() {
-        signInUser = user;
-        userId = user.uid;
-        email = user.email!;
-      });
-      _fetchUserData();
+          signInUser = user;
+          userId = user.uid;
+          email = user.email!;
+        });
+        _fetchUserData();
       }
     } catch (e) {
       print(e);
     }
   }
+
 //void getUsersinfo() async{
 //final Names = await _firestore.collection('Users').get();
 //for (var name in Names.docs) {
- //print( name.data());
+  //print( name.data());
 //}
 //}
   void _fetchUserData() async {
-    final userData = await FirebaseFirestore.instance
-        .collection('Users')
-        .doc(userId)
-        .get();
+    final userData =
+        await FirebaseFirestore.instance.collection('Users').doc(userId).get();
     setState(() {
-      firstName = userData['Fname'];
-      lastName = userData['Lname'];
+      firstName = userData['Fname'] ?? firstName;
+      lastName = userData['Lname'] ?? lastName;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -79,11 +81,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           child: Padding(
-            padding: const  EdgeInsets.only(top:10.0),
+            padding: const EdgeInsets.only(top: 10.0),
             child: ListView(
               padding: const EdgeInsets.all(24),
               children: [
-                 if (firstName != null)
+                if (firstName != null)
                   Text(
                     '  Hi $firstName !',
                     style: TextStyle(
@@ -92,7 +94,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                        SizedBox(height: 25,),
+                SizedBox(
+                  height: 25,
+                ),
                 Container(
                   color: const Color(0xffd5defe),
                   child: SettingsGroup(
@@ -134,6 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     children: <Widget>[
                       Sleepgoal(),
+                      Feedback(),
                     ],
                   ),
                 ),
@@ -209,9 +214,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         leading: IconWidget(icon: Icons.person, color: const Color(0xFF040E3B)),
         onTap: () {
           Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => AccountScreen()),
-      );
+            context,
+            MaterialPageRoute(builder: (context) => AccountScreen()),
+          );
         },
       );
 
@@ -233,6 +238,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: Icons.music_note_outlined, color: const Color(0xFF040E3B)),
         onTap: () {
           // Handle alarm sound logic here
+        },
+      );
+  Widget Feedback() => SimpleSettingsTile(
+        title: 'FeedBack',
+        leading: IconWidget(
+            icon: Icons.brightness_3, color: const Color(0xFF040E3B)),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => FeedbackPage()),
+          ); // Handle alarm sound logic here
         },
       );
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class aboutyou_screen extends StatelessWidget {
+  const aboutyou_screen({super.key});
+
   @override
   Widget build(BuildContext context) {
     Color myColor = const Color.fromARGB(255, 0, 74, 173);
@@ -8,7 +10,7 @@ class aboutyou_screen extends StatelessWidget {
       backgroundColor: myColor,
       appBar: AppBar(
         backgroundColor: myColor,
-        title:const Text('About You'),
+        title: const Text('About You'),
         titleTextStyle: const TextStyle(
           color: Colors.white,
           fontSize: 25,
@@ -17,7 +19,7 @@ class aboutyou_screen extends StatelessWidget {
       ),
       body: SafeArea(
         child: Container(
-           height: MediaQuery.of(context).size.height,
+          //color: [Color(0xFF004AAD), Color(0xFF040E3B)],
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               colors: [Color(0xFF004AAD), Color(0xFF040E3B)],
@@ -26,21 +28,8 @@ class aboutyou_screen extends StatelessWidget {
             ),
           ),
           padding: const EdgeInsets.all(15.0),
-          child: Column(
-           
-            children: [
-              Text(
-                'User Information',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-            ]   
-          ),
         ),
       ),
     );
   }
 }
- 
