@@ -241,7 +241,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         },
       );
   Widget Feedback() => SimpleSettingsTile(
-        title: 'FeedBack',
+        title: 'Feedback',
         leading: IconWidget(
             icon: Icons.brightness_3, color: const Color(0xFF040E3B)),
         onTap: () {
