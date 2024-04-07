@@ -7,7 +7,7 @@ import 'package:sleepwell/widget/regsterbutton.dart';
 
 class SignUpScreen extends StatefulWidget {
   static String RouteScreen = 'signup_screen';
-  const SignUpScreen({super.key});
+  const SignUpScreen({super.key,});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
