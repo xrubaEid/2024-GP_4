@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:sleepwell/screens/signin_screen.dart';
+import 'package:sleepwell/signup/question.dart';
 import 'package:sleepwell/widget/regsterbutton.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -207,10 +207,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         setState(() {
                           showSpinner = true;
                         });
-                        final newUser =
+                       final newUser =
                             await _auth.createUserWithEmailAndPassword(
                                 email: email, password: password);
-                        if (newUser != null) {
+                       if (newUser != null) {
                           final userId = newUser.user
                               ?.uid; // Access the UID of the newly created user
                           await _firestore.collection('Users').doc(userId).set({
@@ -218,28 +218,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             'Fname': name,
                             'Lname': Lname,
                             'Password': password,
+                             'UserId': userId, // ned to be hash later 
                           });
 
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title:const Text('Sign Up Successful'),
-                                titleTextStyle: TextStyle(
+                                title:const Text('Great job!'),
+                                titleTextStyle: const TextStyle(
                                   color:Colors.green,
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                 ),
-                                content: Text(
-                                    'You have successfully signed up! You can now Sign In to your accuont'),
+                                content: const Text(
+                                    'Your are almost there! Just a few more steps and you will be completely signed up with us.'),
                                 actions: [
                                   TextButton(
                                     onPressed: () {
                                       Navigator.of(context).pop();
-                                      Navigator.pushNamed(
-                                          context, SignInScreen.RouteScreen);
+                                       Navigator.pushNamed(
+                                        context, QuestionScreen.RouteScreen,
+                                         arguments: {
+                                          userId: userId,
+                                           'Fname': name,
+                                            'email': email,
+                                             'password': password,
+                                              },);
                                     },
-                                    child: Text('OK'),
+                                    child: const Text('OK'),
                                   ),
                                 ],
                               );

@@ -1,13 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:sleepwell/screens/signin_screen.dart';
 
 class QuestionScreen extends StatefulWidget {
   static String RouteScreen = 'question';
 
   @override
-  _QuestionScreenState createState() => _QuestionScreenState();
+  verbal createState() => verbal();
 }
 
-class _QuestionScreenState extends State<QuestionScreen> {
+class verbal extends State<QuestionScreen> {
+
+  //// How to make sure it's tha same user in signup screen 
+   String Fname = '';
+  String email = '';
+  String password = '';
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Retrieve the user's information from the RouteSettings
+    final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
+    Fname = arguments?['Fname'] ?? '';
+    email = arguments?['email'] ?? '';
+    password = arguments?['password'] ?? '';
+  }
+
+
   int currentQuestionIndex = 0;
   List<String> questions = [
     'What would you like the default bedtime to be on working days?',
@@ -30,56 +48,97 @@ class _QuestionScreenState extends State<QuestionScreen> {
     //['Option 1', 'Option 2', 'Option 3', 'Other'],
    // ['Option 1', 'Option 2', 'Option 3', 'Other'],
   ];
+  String? answerQ1;
+  String? answerQ2;
+  String? answerQ3;
+  String? answerQ4;
+  String? answerQ5;
+  String? answerQ6;
 
   List<String> answers = List.filled(6, ''); // Initialize with empty strings
   bool showError = false;
 
-  void _saveAnswer(String answer) {
-    setState(() {
-      if (answer == 'Other') {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            TextEditingController otherAnswerController = TextEditingController();
+void _saveAnswer(String answer) {
+  setState(() {
+    if (answer == 'Other') {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          TextEditingController otherAnswerController = TextEditingController();
 
-            return AlertDialog(
-              title: Text('Enter Your Answer'),
-              content: TextField(
-                controller: otherAnswerController,
+          return AlertDialog(
+            title: Text('Enter Your Answer'),
+            content: TextField(
+              controller: otherAnswerController,
+            ),
+            actions: [
+              ElevatedButton(
+                child: Text('Save'),
+                onPressed: () {
+                  String otherAnswer = otherAnswerController.text;
+                  if (currentQuestionIndex == 0) {
+                    answerQ1 = otherAnswer;
+                  } else if (currentQuestionIndex == 1) {
+                    answerQ2 = otherAnswer;
+                  } else if (currentQuestionIndex == 2) {
+                    answerQ3 = otherAnswer;
+                  } else if (currentQuestionIndex == 3) {
+                    answerQ4 = otherAnswer;
+                  } else if (currentQuestionIndex == 4) {
+                    answerQ5 = otherAnswer;
+                  } else if (currentQuestionIndex == 5) {
+                    answerQ6 = otherAnswer;
+                  }
+                  otherAnswerController.clear();
+                  Navigator.pop(context);
+                  showError = false; // Reset error state
+                },
               ),
-              actions: [
+              if (options[currentQuestionIndex].contains('Other'))
                 ElevatedButton(
-                  child: Text('Save'),
+                  child: Text('Cancel'),
                   onPressed: () {
-                    String otherAnswer = otherAnswerController.text;
-                    answers[currentQuestionIndex] = otherAnswer;
-                    otherAnswerController.clear();
+                    setState(() {
+                      if (currentQuestionIndex == 0) {
+                        answerQ1 = null;
+                      } else if (currentQuestionIndex == 1) {
+                        answerQ2 = null;
+                      } else if (currentQuestionIndex == 2) {
+                        answerQ3 = null;
+                      } else if (currentQuestionIndex == 3) {
+                        answerQ4 = null;
+                      } else if (currentQuestionIndex == 4) {
+                        answerQ5 = null;
+                      } else if (currentQuestionIndex == 5) {
+                        answerQ6 = null;
+                      }
+                      showError = false; // Reset error state
+                    });
                     Navigator.pop(context);
-                    showError = false; // Reset error state
                   },
                 ),
-                if (options[currentQuestionIndex].contains('Other'))
-                  ElevatedButton(
-                    child: Text('Cancel'),
-                    onPressed: () {
-                      setState(() {
-                        answers[currentQuestionIndex] = '';
-                        showError = false; // Reset error state
-                      });
-                      Navigator.pop(context);
-                    },
-                  ),
-              ],
-            );
-          },
-        );
-      } else {
-        answers[currentQuestionIndex] = answer;
-        showError = false; // Reset error state
+            ],
+          );
+        },
+      );
+    } else {
+      if (currentQuestionIndex == 0) {
+        answerQ1 = answer;
+      } else if (currentQuestionIndex == 1) {
+        answerQ2 = answer;
+      } else if (currentQuestionIndex == 2) {
+        answerQ3 = answer;
+      } else if (currentQuestionIndex == 3) {
+        answerQ4 = answer;
+      } else if (currentQuestionIndex == 4) {
+        answerQ5 = answer;
+      } else if (currentQuestionIndex == 5) {
+        answerQ6 = answer;
       }
-    });
-  }
-
+      showError = false; // Reset error state
+    }
+  });
+}
   void _nextQuestion() {
     setState(() {
       if (answers[currentQuestionIndex].isEmpty) {
@@ -88,10 +147,36 @@ class _QuestionScreenState extends State<QuestionScreen> {
         currentQuestionIndex++;
       } else {
         // All questions answered, do something
+        
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title:Text('Thank you $Fname'),
+                                titleTextStyle: TextStyle(
+                                  color:Colors.green,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                content: Text(
+                                    'Your Answer will help us serve you better.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                       Navigator.pushNamed(
+                                        context, SignInScreen.RouteScreen, );
+                                    },
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
       }
     });
   }
-
+ // method back to the previous Question 
   void _previousQuestion() {
     setState(() {
       if (currentQuestionIndex > 0) {
@@ -99,6 +184,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
       }
     });
   }
+  
 
   @override
   Widget build(BuildContext context) {
