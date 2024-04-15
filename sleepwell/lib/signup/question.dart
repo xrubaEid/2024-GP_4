@@ -1,30 +1,57 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
 
 class QuestionScreen extends StatefulWidget {
   static String RouteScreen = 'question';
+ const QuestionScreen({Key? key}) : super(key: key);
 
   @override
-  verbal createState() => verbal();
+  State<QuestionScreen> createState() => _QuestionScreenState();
+ 
+ // @override
+  //_QuestionScreenState createState() => _QuestionScreenState();
 }
 
-class verbal extends State<QuestionScreen> {
+class _QuestionScreenState extends State<QuestionScreen> {
+  final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
+  bool showSpinner = false;
+  late String userId;
+  late  String Fname;
+  late String email;
 
-  //// How to make sure it's tha same user in signup screen 
-   String Fname = '';
-  String email = '';
-  String password = '';
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Retrieve the user's information from the RouteSettings
-    final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, String>?;
-    Fname = arguments?['Fname'] ?? '';
-    email = arguments?['email'] ?? '';
-    password = arguments?['password'] ?? '';
+ @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
   }
 
+  void getCurrentUser() async {
+    try {
+      setState(() {
+        showSpinner = true; // Show spinner while fetching user
+      });
+
+      final user = await _auth.currentUser;
+      if (user != null) {
+        setState(() {
+          userId = user.uid;
+          email = user.email!;
+        });
+      }
+
+      setState(() {
+        showSpinner = false; // Hide spinner after fetching user
+      });
+    } catch (e) {
+      print(e);
+      setState(() {
+        showSpinner = false; // Hide spinner in case of an error
+      });
+    }
+  }
 
   int currentQuestionIndex = 0;
   List<String> questions = [
@@ -48,97 +75,56 @@ class verbal extends State<QuestionScreen> {
     //['Option 1', 'Option 2', 'Option 3', 'Other'],
    // ['Option 1', 'Option 2', 'Option 3', 'Other'],
   ];
-  String? answerQ1;
-  String? answerQ2;
-  String? answerQ3;
-  String? answerQ4;
-  String? answerQ5;
-  String? answerQ6;
 
   List<String> answers = List.filled(6, ''); // Initialize with empty strings
   bool showError = false;
 
-void _saveAnswer(String answer) {
-  setState(() {
-    if (answer == 'Other') {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          TextEditingController otherAnswerController = TextEditingController();
+  void _saveAnswer(String answer) {
+    setState(() {
+      if (answer == 'Other') {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            TextEditingController otherAnswerController = TextEditingController();
 
-          return AlertDialog(
-            title: Text('Enter Your Answer'),
-            content: TextField(
-              controller: otherAnswerController,
-            ),
-            actions: [
-              ElevatedButton(
-                child: Text('Save'),
-                onPressed: () {
-                  String otherAnswer = otherAnswerController.text;
-                  if (currentQuestionIndex == 0) {
-                    answerQ1 = otherAnswer;
-                  } else if (currentQuestionIndex == 1) {
-                    answerQ2 = otherAnswer;
-                  } else if (currentQuestionIndex == 2) {
-                    answerQ3 = otherAnswer;
-                  } else if (currentQuestionIndex == 3) {
-                    answerQ4 = otherAnswer;
-                  } else if (currentQuestionIndex == 4) {
-                    answerQ5 = otherAnswer;
-                  } else if (currentQuestionIndex == 5) {
-                    answerQ6 = otherAnswer;
-                  }
-                  otherAnswerController.clear();
-                  Navigator.pop(context);
-                  showError = false; // Reset error state
-                },
+            return AlertDialog(
+              title: const Text('Enter Your Answer'),
+              content: TextField(
+                controller: otherAnswerController,
               ),
-              if (options[currentQuestionIndex].contains('Other'))
+              actions: [
                 ElevatedButton(
-                  child: Text('Cancel'),
+                  child:const  Text('Save'),
                   onPressed: () {
-                    setState(() {
-                      if (currentQuestionIndex == 0) {
-                        answerQ1 = null;
-                      } else if (currentQuestionIndex == 1) {
-                        answerQ2 = null;
-                      } else if (currentQuestionIndex == 2) {
-                        answerQ3 = null;
-                      } else if (currentQuestionIndex == 3) {
-                        answerQ4 = null;
-                      } else if (currentQuestionIndex == 4) {
-                        answerQ5 = null;
-                      } else if (currentQuestionIndex == 5) {
-                        answerQ6 = null;
-                      }
-                      showError = false; // Reset error state
-                    });
+                    String otherAnswer = otherAnswerController.text;
+                    answers[currentQuestionIndex] = otherAnswer;
+                    otherAnswerController.clear();
                     Navigator.pop(context);
+                    showError = false; // Reset error state
                   },
                 ),
-            ],
-          );
-        },
-      );
-    } else {
-      if (currentQuestionIndex == 0) {
-        answerQ1 = answer;
-      } else if (currentQuestionIndex == 1) {
-        answerQ2 = answer;
-      } else if (currentQuestionIndex == 2) {
-        answerQ3 = answer;
-      } else if (currentQuestionIndex == 3) {
-        answerQ4 = answer;
-      } else if (currentQuestionIndex == 4) {
-        answerQ5 = answer;
-      } else if (currentQuestionIndex == 5) {
-        answerQ6 = answer;
+                if (options[currentQuestionIndex].contains('Other'))
+                  ElevatedButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      setState(() {
+                        answers[currentQuestionIndex] = '';
+                        showError = false; // Reset error state
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+              ],
+            );
+          },
+        );
+      } else {
+        answers[currentQuestionIndex] = answer;
+        showError = false; // Reset error state
       }
-      showError = false; // Reset error state
-    }
-  });
-}
+    });
+  }
+
   void _nextQuestion() {
     setState(() {
       if (answers[currentQuestionIndex].isEmpty) {
@@ -147,36 +133,11 @@ void _saveAnswer(String answer) {
         currentQuestionIndex++;
       } else {
         // All questions answered, do something
-        
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title:Text('Thank you $Fname'),
-                                titleTextStyle: TextStyle(
-                                  color:Colors.green,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                content: Text(
-                                    'Your Answer will help us serve you better.'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                       Navigator.pushNamed(
-                                        context, SignInScreen.RouteScreen, );
-                                    },
-                                    child: Text('OK'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
+        _submitAnswers();
       }
     });
   }
- // method back to the previous Question 
+
   void _previousQuestion() {
     setState(() {
       if (currentQuestionIndex > 0) {
@@ -184,27 +145,75 @@ void _saveAnswer(String answer) {
       }
     });
   }
-  
+ void _submitAnswers() async {
+  try {
+    setState(() {
+      showSpinner = true;
+    });
 
+    await _firestore.collection('Users').doc(userId).update({
+      'answerQ1': answers[0],
+      'answerQ2': answers[1],
+      'answerQ3': answers[2],
+      'answerQ4': answers[3],
+      'answerQ5': answers[4],
+      'answerQ6': answers[5],
+    });
+
+    // Show a dialog to inform the user that their answer is saved
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title:const  Text('you are sign up successfully'),
+          content:const  Text('Thank you for joining us , we know more about you can sign in to your account now '),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.pushNamed(context, SignInScreen.RouteScreen);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    setState(() {
+      showSpinner = false;
+    });
+  } catch (e) {
+    print('Error while submitting answers: $e');
+    setState(() {
+      showSpinner = false;
+    });
+  }
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('More About You'),
-        backgroundColor: Colors.grey,
-      ),
       body: Container(
         color: Colors.grey[300],
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              SizedBox(height: 20),
-              Text(
-                questions[currentQuestionIndex],
-                style: TextStyle(fontSize: 18),
+            const SizedBox(height: 20),
+           const Text(
+               'More About You ',
+                style: TextStyle(fontSize: 20,
+                fontWeight: FontWeight.bold,
+                ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 25),
+             Padding(
+               padding: const EdgeInsets.all(8.0),
+               child: Text(
+                  questions[currentQuestionIndex],
+                  style:const TextStyle(fontSize: 18),
+                ),
+             ),
+             const  SizedBox(height: 20),
               Column(
                 children: options[currentQuestionIndex].map((option) {
                   return RadioListTile<String>(
@@ -220,27 +229,27 @@ void _saveAnswer(String answer) {
                 }).toList(),
               ),
               if (showError)
-                Text(
+               const  Text(
                   'Please select an answer.',
                   style: TextStyle(color: Colors.red),
                 ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    child: Text('Back'),
+                    child: const Text('Back'),
                     onPressed: _previousQuestion,
                   ),
                   ElevatedButton(
-                    child: Text('Next'),
+                    child: const Text('Next'),
                     onPressed: answers[currentQuestionIndex].isEmpty
                         ? null
                         : _nextQuestion,
                   ),
                   if (showError && options[currentQuestionIndex].contains('Other'))
                     ElevatedButton(
-                      child: Text('Cancel'),
+                      child:const Text('Cancel'),
                       onPressed: () {
                         setState(() {
                           answers[currentQuestionIndex] = '';
