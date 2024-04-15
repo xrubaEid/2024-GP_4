@@ -24,6 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late String email;
   late String firstName;
   late String lastName;
+
   @override
   void initState() {
     super.initState();
@@ -35,31 +36,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final user = _auth.currentUser;
       if (user != null) {
         setState(() {
-        signInUser = user;
-        userId = user.uid;
-        email = user.email!;
-      });
-      _fetchUserData();
+          signInUser = user;
+          userId = user.uid;
+          email = user.email!;
+        });
+        _fetchUserData();
       }
     } catch (e) {
       print(e);
     }
   }
-//void getUsersinfo() async{
-//final Names = await _firestore.collection('Users').get();
-//for (var name in Names.docs) {
- //print( name.data());
-//}
-//}
+
   void _fetchUserData() async {
-    final userData = await FirebaseFirestore.instance
-        .collection('Users')
-        .doc(userId)
-        .get();
-    setState(() {
-      firstName = userData['Fname'];
-      lastName = userData['Lname'];
-    });
+    try {
+      final userData = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(userId)
+          .get();
+      if (userData.exists) {
+        setState(() {
+          firstName = userData['Fname'] ?? '';
+          lastName = userData['Lname'] ?? '';
+        });
+      } else {
+        print('User data does not exist');
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
   }
 
 
@@ -67,96 +71,124 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     Color myColor = const Color.fromARGB(255, 0, 74, 173);
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 16, 95, 199),
-      body: SafeArea(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF004AAD), Color(0xFF040E3B)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          child: Padding(
-            padding: const  EdgeInsets.only(top:10.0),
-            child: ListView(
-              padding: const EdgeInsets.all(24),
-              children: [
-                 if (firstName != null)
-                  Text(
-                    '  Hi $firstName !',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                        SizedBox(height: 25,),
-                Container(
-                  color: const Color(0xffd5defe),
-                  child: SettingsGroup(
-                    title: 'Personal',
-                    titleTextStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    children: <Widget>[
-                      Account(),
-                      AboutYou(),
-                    ],
-                  ),
-                ),
-                Container(
-                  color: Color(0xffd5defe),
-                  child: SettingsGroup(
-                    title: 'Alarm',
-                    titleTextStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    children: <Widget>[
-                      AlarmSound(),
-                      Snooze(),
-                    ],
-                  ),
-                ),
-                Container(
-                  color: Color(0xffd5defe),
-                  child: SettingsGroup(
-                    title: 'Setting',
-                    titleTextStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    children: <Widget>[
-                      Sleepgoal(),
-                    ],
-                  ),
-                ),
-                Container(
-                  color: Color(0xffd5defe),
-                  child: SettingsGroup(
-                    title: 'Account Actions',
-                    titleTextStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    children: <Widget>[
-                      buildLogOut(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+  backgroundColor: const Color.fromARGB(255, 16, 95, 199),
+  body: SafeArea(
+    child: Container(
+      height: MediaQuery.of(context).size.height,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF004AAD), Color(0xFF040E3B)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
       ),
-    );
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10.0),
+        child: ListView(
+          padding: const EdgeInsets.all(24),
+          children: [
+            FutureBuilder<DocumentSnapshot>(
+              future: FirebaseFirestore.instance
+                  .collection('Users')
+                  .doc(userId)
+                  .get(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  // Show a loading indicator while fetching data
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  // Handle error state
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  // Data has been fetched successfully
+                  final userData =
+                      snapshot.data?.data() as Map<String, dynamic>?;
+                  if (userData != null) {
+                    firstName = userData['Fname'] ?? '';
+                    lastName = userData['Lname'] ?? '';
+                  }
+                  return Column(
+                    children: [
+                      if (firstName != null)
+                        Text(
+                          'Hi $firstName!',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      const SizedBox(height: 25,),
+                      Container(
+                        color: const Color(0xffd5defe),
+                        child: SettingsGroup(
+                          title: 'Personal',
+                          titleTextStyle: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          children: <Widget>[
+                            Account(),
+                            AboutYou(),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        color: Color(0xffd5defe),
+                        child: SettingsGroup(
+                          title: 'Alarm',
+                          titleTextStyle: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          children: <Widget>[
+                            AlarmSound(),
+                            Snooze(),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        color: Color(0xffd5defe),
+                        child: SettingsGroup(
+                          title: 'Setting',
+                          titleTextStyle: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          children: <Widget>[
+                            Sleepgoal(),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        color: Color(0xffd5defe),
+                        child: SettingsGroup(
+                          title: 'Account Actions',
+                          titleTextStyle: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          children: <Widget>[
+                            buildLogOut(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    ),
+  ),
+);
   }
 
   Widget buildLogOut() => SimpleSettingsTile(

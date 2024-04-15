@@ -19,7 +19,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
   final _auth = FirebaseAuth.instance;
   bool showSpinner = false;
   late String userId;
-  late  String Fname;
   late String email;
 
  @override
