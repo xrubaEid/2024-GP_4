@@ -29,7 +29,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 0, 74, 173),
+        backgroundColor:const Color.fromARGB(255, 0, 74, 173),
         title: const Text(''),
       ),
       body: ModalProgressHUD(
@@ -44,7 +44,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
           child: Padding(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             child: ListView(
               shrinkWrap: true,
               children: [
@@ -120,7 +120,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   decoration: InputDecoration(
                     fillColor: Colors.white,
                     filled: true,
-                    suffixIcon: Icon(Icons.email),
+                    suffixIcon:const Icon(Icons.email),
                     hintText: 'Email Address',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -196,7 +196,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   height: 10,
                 ),
                 regsterbutton(
-                  color: Color(0xffd5defe),
+                  color:const  Color(0xffd5defe),
                   title: 'Create Account',
                   onPressed: () async {
                       if (password.length >= 8 &&
@@ -218,7 +218,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             'Fname': name,
                             'Lname': Lname,
                             'Password': password,
-                             'UserId': userId, // ned to be hash later 
+                             'UserId': userId, // need to be hash later 
                           });
 
                           showDialog(
@@ -237,14 +237,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   TextButton(
                                     onPressed: () {
                                       Navigator.of(context).pop();
-                                       Navigator.pushNamed(
-                                        context, QuestionScreen.RouteScreen,
-                                         arguments: {
-                                          userId: userId,
-                                           'Fname': name,
-                                            'email': email,
-                                             'password': password,
-                                              },);
+                                       Navigator.pushNamed(context,QuestionScreen.RouteScreen,);
                                     },
                                     child: const Text('OK'),
                                   ),
