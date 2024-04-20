@@ -54,12 +54,12 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
   int currentQuestionIndex = 0;
   List<String> questions = [
-    'What would you like the default bedtime to be on working days?',
-    'What time would you like the default wake-up time to be on working days?',
-    'What time would you like the default bedtime to be on weekends?',
-    'What time would you like the default wake-up time to be on weekends?',
-    'When do you typically stop consuming coffee, tea, smoking, and other substances before bedtime?',
-    'What activities do you typically engage in during the two hours leading up to your bedtime?',
+    'Q1: What would you like the default bedtime to be on working days?',
+    'Q2:What time would you like the default wake-up time to be on working days?',
+    'Q3:What time would you like the default bedtime to be on weekends?',
+    'Q4:What time would you like the default wake-up time to be on weekends?',
+    'Q5:When do you typically stop consuming coffee, tea, smoking, and other substances before bedtime?',
+    'Q6:What activities do you typically engage in during the two hours leading up to your bedtime?',
     //'Question 7',
     //'Question 8',
   ];
@@ -197,7 +197,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 70),
            const Text(
                'More About You ',
                 style: TextStyle(fontSize: 20,

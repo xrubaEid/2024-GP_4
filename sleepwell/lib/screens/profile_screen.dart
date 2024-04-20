@@ -2,11 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:sleepwell/profile/about_you_screen.dart';
 import 'package:sleepwell/screens/account_screen.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
 import 'package:sleepwell/widget/iconwidget.dart';
-
-import 'aboutyou_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const String RouteScreen = 'profile_screen';
@@ -238,7 +237,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget Account() => SimpleSettingsTile(
         title: 'Account',
-        leading: IconWidget(icon: Icons.person, color: const Color(0xFF040E3B)),
+        leading:  IconWidget(icon: Icons.person, color: const Color(0xFF040E3B)),
         onTap: () {
           Navigator.push(
         context,
@@ -254,7 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => aboutyou_screen()),
+            MaterialPageRoute(builder: (context) => AboutYouPage()),
           );
         },
       );

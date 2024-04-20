@@ -23,6 +23,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   late String email;
   late String password;
   late String cpassword;
+  late String age;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +77,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 TextField(
                   keyboardType: TextInputType.name,
                   onChanged: (value) {
-                    // here i save the  value of email from user
+                    // here i save the  value of name from user
                     name = value;
                   },
                   decoration: InputDecoration(
@@ -95,7 +96,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 TextField(
                   keyboardType: TextInputType.name,
                   onChanged: (value) {
-                    // here i save the  value of email from user
+                    // here i save the  value of name from user
                     Lname = value;
                   },
                   decoration: InputDecoration(
@@ -109,6 +110,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 const SizedBox(
+                  height: 15,
+                ),
+                 TextField(
+                  keyboardType: TextInputType.name,
+                  onChanged: (value) {
+                    // here i save the  value of age from user
+                    age = value;
+                  },
+                  decoration: InputDecoration(
+                    fillColor: Colors.white,
+                    filled: true,
+                    suffixIcon: const Icon(Icons.date_range),
+                    hintText: ' your Age ',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                 const SizedBox(
                   height: 15,
                 ),
                 TextField(
@@ -134,7 +154,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 TextField(
                   keyboardType: TextInputType.visiblePassword,
                   onChanged: (value) {
-                    // here i save the  value of email from user
+                    // here i save the  value of password from user
                     password = value;
                   },
                   obscureText: true,
@@ -154,7 +174,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 TextField(
                   keyboardType: TextInputType.visiblePassword,
                   onChanged: (value) {
-                    // here i save the  value of email from user
+                    // here i save the  value of cpassword from user
                     cpassword = value;
                   },
                   obscureText: true,
@@ -217,8 +237,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             'Email': email,
                             'Fname': name,
                             'Lname': Lname,
+                            'Age':age,
                             'Password': password,
-                             'UserId': userId, // need to be hash later 
+                            
                           });
 
                           showDialog(
