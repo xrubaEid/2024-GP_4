@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:sleepwell/feedback/feedback_page.dart';
 import 'package:sleepwell/profile/about_you_screen.dart';
 import 'package:sleepwell/screens/account_screen.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
@@ -28,6 +29,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     getCurrentUser();
+    firstName = '';
+    lastName = '';
   }
 
   void getCurrentUser() {
@@ -64,7 +67,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print('Error fetching user data: $e');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -146,6 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: <Widget>[
                             AlarmSound(),
                             Snooze(),
+                            Feedback(),
                           ],
                         ),
                       ),
@@ -240,9 +243,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         leading:  IconWidget(icon: Icons.person, color: const Color(0xFF040E3B)),
         onTap: () {
           Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => AccountScreen()),
-      );
+            context,
+            MaterialPageRoute(builder: (context) => AccountScreen()),
+          );
         },
       );
 
@@ -264,6 +267,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: Icons.music_note_outlined, color: const Color(0xFF040E3B)),
         onTap: () {
           // Handle alarm sound logic here
+        },
+      );
+  Widget Feedback() => SimpleSettingsTile(
+        title: 'Feedback',
+        leading: IconWidget(
+            icon: Icons.brightness_3, color: const Color(0xFF040E3B)),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => FeedbackPage()),
+          ); // Handle alarm sound logic here
         },
       );
 

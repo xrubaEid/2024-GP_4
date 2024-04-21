@@ -2,6 +2,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:sleepwell/feedback/feedback_page.dart';
 import 'package:sleepwell/firebase_options.dart';
 import 'package:sleepwell/screens/alarm_screen.dart';
 import 'package:sleepwell/screens/home_screen.dart';
@@ -12,7 +13,7 @@ import 'package:sleepwell/screens/signup_screen.dart';
 import 'package:sleepwell/screens/splash_screen.dart';
 import 'package:sleepwell/screens/welcoming_screen.dart';
 import 'package:sleepwell/signup/question.dart';
-import 'package:sleepwell/signup/signup_steps.dart';
+
 
 Future<void> main() async {
 //
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       initialRoute: SplashScreen.RouteScreen,
+      //initialRoute: FeedbackPage.RouteScreen,
       routes: {
         SignInScreen.RouteScreen: (context) => SignInScreen(),
         MyHomePage.RouteScreen: (context) => MyHomePage(),
@@ -47,7 +49,7 @@ class MyApp extends StatelessWidget {
         ProfileScreen.RouteScreen: (context) => ProfileScreen(),
         welcome.RouteScreen: (context) => welcome(),
         OnboardingScreen.RouteScreen: (context) => const OnboardingScreen(),
-        SignUpSteepsScreen.RouteScreen: (context) => SignUpSteepsScreen(),
+        FeedbackPage.RouteScreen: (context) => FeedbackPage(),
        QuestionScreen.RouteScreen: (context) => QuestionScreen(),
       },
     );
