@@ -2,10 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:sleepwell/feedback/feedback_page.dart';
 import 'package:sleepwell/profile/about_you_screen.dart';
 import 'package:sleepwell/screens/account_screen.dart';
+import 'package:sleepwell/screens/edite_alarm_screen.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
+import 'package:sleepwell/widget/counter_widget.dart';
 import 'package:sleepwell/widget/iconwidget.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -136,7 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                       ),
-                      Container(
+                      /*sContainer(
                         color: Color(0xffd5defe),
                         child: SettingsGroup(
                           title: 'Alarm',
@@ -151,7 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Feedback(),
                           ],
                         ),
-                      ),
+                      ),*/
                       Container(
                         color: Color(0xffd5defe),
                         child: SettingsGroup(
@@ -163,6 +167,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           children: <Widget>[
                             Sleepgoal(),
+                            editeAlaram(),
+                            Snooze(),
+                            Feedback(),
                           ],
                         ),
                       ),
@@ -285,7 +292,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: 'Snooze',
         leading: IconWidget(icon: Icons.snooze, color: const Color(0xFF040E3B)),
         onTap: () {
-          // Handle snooze logic here
+          // Handle snooze logic 
+          Get.dialog(Dialog(child: CounterWidget(),));
         },
       );
 
@@ -296,6 +304,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: const Color(0xFF040E3B)),
         onTap: () {
           // Handle sign out logic here
+        },
+      );
+      Widget editeAlaram() => SimpleSettingsTile(
+        title: 'Edit Alarm',
+        leading: const IconWidget(icon: Icons.edit, color: Color(0xFF040E3B)),
+        onTap: () {
+          // Handle sign out logic here
+          Get.to(() => EditAlarmScreen());
         },
       );
 }

@@ -63,7 +63,13 @@ dependencies:
   
   #on boarding page 
   smooth_page_indicator: ^1.1.0
-  shared_preferences: ^2.2.2
+  shared_preferences: ^2.2.3
+  #math option
+  math_expressions: ^2.4.0
+  alarm: ^3.0.14
+  permission_handler: ^11.3.1
+  audioplayers: ^5.2.1
+  flutter_spinbox: ^0.13.1
 
 dev_dependencies:
   flutter_test:

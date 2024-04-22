@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sleepwell/alarm.dart';
 import 'package:sleepwell/screens/clockview.dart';
 
 class AlarmScreen extends StatefulWidget {
@@ -152,6 +153,10 @@ class _AlarmScreenState extends State<AlarmScreen> {
         printedWakeUpTime = optimalWakeUpTime;
         printednumOfCycles = numberOfCycles.toString();
       });
+
+      // set alarm to optimal wake-up date
+      await AppAlarm.saveAlarm(selectedBedtime, optimalWakeUpTime);
+      AppAlarm.getAlarms();
     }
   }
 
@@ -348,6 +353,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
       backgroundColor: Color.fromARGB(255, 16, 95, 199),
       body: Container(
         height: MediaQuery.of(context).size.height,
+        padding: const EdgeInsets.all(30),
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Color(0xFF004AAD), Color(0xFF040E3B)],
@@ -355,187 +361,187 @@ class _AlarmScreenState extends State<AlarmScreen> {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: Container(
-          padding: const EdgeInsets.all(30),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                flex: 1,
-                child: Column(
+        child: Column(
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(height: MediaQuery.of(context).padding.top),
+            const Text(
+              'SleepWell Cycle',
+              style: TextStyle(
+                color: Color.fromARGB(255, 255, 255, 255),
+                fontSize: 20,
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        formattedTime,
+                        style: const TextStyle(
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          fontSize: 40,
+                        ),
+                      ),
+                      Text(
+                        formattedDate,
+                        style: const TextStyle(
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          fontSize: 15,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ClockView(),
+                ),
+              ],
+            ),
+            const SizedBox(height: 40),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                SizedBox(width: 20),
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    const Text(
-                      'SleepWell Cycle',
+                    Text(
+                      "BEDTIME",
                       style: TextStyle(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        fontSize: 20,
+                        color: Color(0xffff0863),
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.3,
                       ),
                     ),
-                    SafeArea(
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  formattedTime,
-                                  style: const TextStyle(
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                    fontSize: 40,
-                                  ),
-                                ),
-                                Text(
-                                  formattedDate,
-                                  style: const TextStyle(
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ],
+                    GestureDetector(
+                      onTap: _showBedtimePicker,
+                      child: AbsorbPointer(
+                        child: TextFormField(
+                          controller: bedtimeController,
+                          decoration: InputDecoration(
+                            hintText: "Select bedtime",
+                            hintStyle: TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: ClockView(),
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        SizedBox(width: 20),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              "BEDTIME",
-                              style: TextStyle(
-                                color: Color(0xffff0863),
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 1.3,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: _showBedtimePicker,
-                              child: AbsorbPointer(
-                                child: TextFormField(
-                                  controller: bedtimeController,
-                                  decoration: InputDecoration(
-                                    hintText: "Select bedtime",
-                                    hintStyle: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            Text(
-                              "WAKE UP TIME",
-                              style: TextStyle(
-                                  color: Color(0xffff0863),
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 1.3),
-                            ),
-                            GestureDetector(
-                              onTap: _showWakeUpTimePicker,
-                              child: AbsorbPointer(
-                                child: TextFormField(
-                                  controller: wakeUpTimeController,
-                                  decoration: InputDecoration(
-                                    hintText: "Select wake-up time",
-                                    hintStyle: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
                         ),
-                      ],
+                      ),
                     ),
-                    SizedBox(height: 10),
-                    Align(
-                        alignment: Alignment.center,
-                        child: Center(
-                            child: TextButton(
-                          onPressed: _saveTimes,
-                          style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all<Color>(Colors.pink),
-                            foregroundColor:
-                                MaterialStateProperty.all<Color>(Colors.white),
+                    SizedBox(height: 20),
+                    Text(
+                      "WAKE UP TIME",
+                      style: TextStyle(
+                          color: Color(0xffff0863),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.3),
+                    ),
+                    GestureDetector(
+                      onTap: _showWakeUpTimePicker,
+                      child: AbsorbPointer(
+                        child: TextFormField(
+                          controller: wakeUpTimeController,
+                          decoration: InputDecoration(
+                            hintText: "Select wake-up time",
+                            hintStyle: TextStyle(
+                              color: Colors.white,
+                              fontSize: 30,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
-                          child: Text('Save'),
-                        ))),
-                    SizedBox(height: 8),
-                    SafeArea(
-                      child: BottomAppBar(
-                        color: Colors.transparent,
-                        child: Column(
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  'Actual sleep time is: $printedBedtime',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            //SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  'Optimal wake-up time is: $printedWakeUpTime',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Align(
+                alignment: Alignment.center,
+                child: Center(
+                    child: TextButton(
+                  onPressed: _saveTimes,
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.pink),
+                    foregroundColor:
+                        MaterialStateProperty.all<Color>(Colors.white),
+                  ),
+                  child: Text('Save'),
+                ))),
+            SizedBox(height: 8),
+            BottomAppBar(
+              color: Colors.transparent,
+              child: Column(
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'Actual sleep time is: $printedBedtime',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  //SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'Optimal wake-up time is: $printedWakeUpTime',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              /* Expanded(
-                flex: 1,
-                child: ClockView(),
-              ),*/
-            ],
-          ),
+            ),
+            
+            Container(
+              alignment: Alignment.bottomCenter,
+              child: const Text(
+                "Go to settings(from profile) to edit alarm settings.",
+                style: TextStyle(color: Colors.white),
+              ),
+            )
+          ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          DateTime now = DateTime.now();
+          final nowTime = TimeOfDay.fromDateTime(now);
+          await AppAlarm.saveAlarm(
+              nowTime, "${nowTime.hour}:${nowTime.minute + 1} AM");
+          AppAlarm.getAlarms();
+        },
       ),
     );
   }
