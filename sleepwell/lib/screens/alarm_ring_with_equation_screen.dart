@@ -2,6 +2,7 @@ import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:sleepwell/widget/equation_widget.dart';
+import 'package:sleepwell/main.dart';
 
 class AlarmRingWithEquationScreen extends StatelessWidget {
   final AlarmSettings alarmSettings;
@@ -37,7 +38,7 @@ class AlarmRingWithEquationScreen extends StatelessWidget {
               child: TextButton(
                 onPressed: () {
                   final now = DateTime.now();
-                  int snooze = prefs.getInt("snooze")?? 1;
+                  int snooze = prefs.getInt("snooze") ?? 1;
                   Alarm.set(
                     alarmSettings: alarmSettings.copyWith(
                       dateTime: DateTime(

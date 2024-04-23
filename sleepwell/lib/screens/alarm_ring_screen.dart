@@ -2,6 +2,7 @@ import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sleepwell/main.dart';
 
 class AlarmRingScreen extends StatelessWidget {
   final AlarmSettings alarmSettings;
@@ -16,7 +17,7 @@ class AlarmRingScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Text(
-             "Rining...\nOptimal time to WAKE UP",
+              "Rining...\nOptimal time to WAKE UP",
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge,
             ),
@@ -27,7 +28,7 @@ class AlarmRingScreen extends StatelessWidget {
                 RawMaterialButton(
                   onPressed: () {
                     final now = DateTime.now();
-                    int snooze = prefs.getInt("snooze")?? 1;
+                    int snooze = prefs.getInt("snooze") ?? 1;
                     Alarm.set(
                       alarmSettings: alarmSettings.copyWith(
                         dateTime: DateTime(

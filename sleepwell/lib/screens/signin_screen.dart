@@ -139,8 +139,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       setState(() {
                         showSpinner = false;
                       });
-                      String errorMessage =
-                          'Email format not correct';
+                      String errorMessage = 'Email format not correct';
                       if (e is FirebaseAuthException) {
                         switch (e.code) {
                           case 'user-not-found':
@@ -192,9 +191,9 @@ class _SignInScreenState extends State<SignInScreen> {
                   ],
                 ),
                 SizedBox(height: 10),
-                Divider(),
-                SizedBox(height: 10),
-                Text(
+                //Divider(),
+                //SizedBox(height: 10),
+                /*Text(
                   'Or sign in with Google',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -202,9 +201,9 @@ class _SignInScreenState extends State<SignInScreen> {
                     fontSize: 20,
                     //fontWeight: FontWeight.bold,
                   ),
-                ),
+                ),*/
                 SizedBox(height: 10),
-                Row(
+                /*Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     //google button
@@ -243,7 +242,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       imagePath: 'assets/googleLogo.png',
                     ),
                   ],
-                ),
+                ),*/
               ],
             ),
           ),

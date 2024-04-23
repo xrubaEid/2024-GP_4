@@ -13,11 +13,23 @@ import 'package:sleepwell/screens/signup_screen.dart';
 import 'package:sleepwell/screens/splash_screen.dart';
 import 'package:sleepwell/screens/welcoming_screen.dart';
 import 'package:sleepwell/signup/question.dart';
+import 'package:sleepwell/widget/counter_widget.dart';
+import 'package:sleepwell/screens/edite_alarm_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:alarm/alarm.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 
-
+late SharedPreferences prefs;
 Future<void> main() async {
 //
-  final WidgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  // final WidgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
+  // GetX local storege
+  await GetStorage.init();
+  prefs = await SharedPreferences.getInstance();
+
+  await Alarm.init(showDebugLogs: true);
+
 // GetX local storege
   await GetStorage.init();
 //coenact to fire base
@@ -32,13 +44,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    bool loginStatus = prefs.getBool("isLogin") ?? false;
+    return GetMaterialApp(
       title: 'SleepWell',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      initialRoute: SplashScreen.RouteScreen,
+      debugShowCheckedModeBanner: false,
+      initialRoute:
+          loginStatus ? MyHomePage.RouteScreen : SplashScreen.RouteScreen,
+      //initialRoute: SplashScreen.RouteScreen,
       //initialRoute: FeedbackPage.RouteScreen,
       routes: {
         SignInScreen.RouteScreen: (context) => SignInScreen(),
@@ -50,7 +66,7 @@ class MyApp extends StatelessWidget {
         welcome.RouteScreen: (context) => welcome(),
         OnboardingScreen.RouteScreen: (context) => const OnboardingScreen(),
         FeedbackPage.RouteScreen: (context) => FeedbackPage(),
-       QuestionScreen.RouteScreen: (context) => QuestionScreen(),
+        QuestionScreen.RouteScreen: (context) => QuestionScreen(),
       },
     );
   }
