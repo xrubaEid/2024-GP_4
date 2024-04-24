@@ -70,28 +70,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
     }
   }
 
-/*
-  void _saveTimes() {
-    final String bedtime = bedtimeController.text;
-    final String wakeUpTime = wakeUpTimeController.text;
-
-    int bedtimeMinutes = calculateMinutesFromTime(bedtime);
-    int wakeupMinutes = calculateMinutesFromTime(wakeUpTime);
-
-    int sleepCycleMinutes = 90; // Duration of each sleep cycle in minutes
-    int numberOfCycles =
-        ((wakeupMinutes - bedtimeMinutes) / sleepCycleMinutes).floor();
-
-    int optimalWakeUpMinutes =
-        bedtimeMinutes + (numberOfCycles * sleepCycleMinutes);
-    String optimalWakeUpTime =
-        calculateTimeFromMinutes(optimalWakeUpMinutes, wakeUpTime);
-
-    setState(() {
-      printedBedtime = bedtime;
-      printedWakeUpTime = optimalWakeUpTime;
-    });
-  }*/
   void _saveTimes() async {
     //await _showBedtimePicker();
     TimeOfDay? selectedTime = selectedBedtime;
@@ -204,86 +182,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
     return parsedDateTime.isBefore(targetDateTime) ||
         parsedDateTime.isAtSameMomentAs(targetDateTime);
   }
-
-  /* List<Map<String, int>> timeAndHeart() {
-    List<Map<String, int>> myHourList = [];
-
-    DateTime startTime = DateTime(
-      DateTime.now().year,
-      DateTime.now().month,
-      DateTime.now().day,
-      11,
-      0,
-      0,
-    );
-    DateTime endTime = DateTime(
-      DateTime.now().year,
-      DateTime.now().month,
-      DateTime.now().day,
-      12,
-      0,
-      0,
-    );
-
-    int initialHeartRate = 120;
-    int finalHeartRate = 75;
-
-    DateTime currentTime = startTime;
-    while (currentTime.isBefore(endTime)) {
-      int heartRate;
-      if (currentTime.isBefore(DateTime(
-        DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day,
-        11,
-        30,
-      ))) {
-        // Decrease heart rate gradually from initialHeartRate to 95 bpm
-        double progress = currentTime.difference(startTime).inMinutes /
-            (DateTime(
-              DateTime.now().year,
-              DateTime.now().month,
-              DateTime.now().day,
-              11,
-              30,
-            ).difference(startTime))
-                .inMinutes;
-
-        int decreaseAmount = (progress * (initialHeartRate - 95)).round();
-        heartRate = initialHeartRate - decreaseAmount;
-      } else {
-        // Decrease heart rate gradually from 95 bpm to finalHeartRate
-        double progress = currentTime
-                .difference(DateTime(
-                  DateTime.now().year,
-                  DateTime.now().month,
-                  DateTime.now().day,
-                  11,
-                  30,
-                ))
-                .inMinutes /
-            (endTime.difference(DateTime(
-              DateTime.now().year,
-              DateTime.now().month,
-              DateTime.now().day,
-              11,
-              30,
-            ))).inMinutes;
-
-        int decreaseAmount = (progress * (95 - finalHeartRate)).round();
-        heartRate = 95 - decreaseAmount;
-      }
-
-      myHourList.add({
-        'hour': currentTime.hour,
-        'minute': currentTime.minute,
-        'heartRate': heartRate
-      });
-      currentTime = currentTime.add(Duration(minutes: 1));
-    }
-
-    return myHourList;
-  }*/
 
   List<Map<String, int>> timeAndHeart(TimeOfDay bedtime) {
     List<Map<String, int>> myHourList = [];
@@ -523,7 +421,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 ],
               ),
             ),
-            
             Container(
               alignment: Alignment.bottomCenter,
               child: const Text(
@@ -546,3 +443,106 @@ class _AlarmScreenState extends State<AlarmScreen> {
     );
   }
 }
+
+  /* List<Map<String, int>> timeAndHeart() {
+    List<Map<String, int>> myHourList = [];
+
+    DateTime startTime = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+      11,
+      0,
+      0,
+    );
+    DateTime endTime = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+      12,
+      0,
+      0,
+    );
+
+    int initialHeartRate = 120;
+    int finalHeartRate = 75;
+
+    DateTime currentTime = startTime;
+    while (currentTime.isBefore(endTime)) {
+      int heartRate;
+      if (currentTime.isBefore(DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day,
+        11,
+        30,
+      ))) {
+        // Decrease heart rate gradually from initialHeartRate to 95 bpm
+        double progress = currentTime.difference(startTime).inMinutes /
+            (DateTime(
+              DateTime.now().year,
+              DateTime.now().month,
+              DateTime.now().day,
+              11,
+              30,
+            ).difference(startTime))
+                .inMinutes;
+
+        int decreaseAmount = (progress * (initialHeartRate - 95)).round();
+        heartRate = initialHeartRate - decreaseAmount;
+      } else {
+        // Decrease heart rate gradually from 95 bpm to finalHeartRate
+        double progress = currentTime
+                .difference(DateTime(
+                  DateTime.now().year,
+                  DateTime.now().month,
+                  DateTime.now().day,
+                  11,
+                  30,
+                ))
+                .inMinutes /
+            (endTime.difference(DateTime(
+              DateTime.now().year,
+              DateTime.now().month,
+              DateTime.now().day,
+              11,
+              30,
+            ))).inMinutes;
+
+        int decreaseAmount = (progress * (95 - finalHeartRate)).round();
+        heartRate = 95 - decreaseAmount;
+      }
+
+      myHourList.add({
+        'hour': currentTime.hour,
+        'minute': currentTime.minute,
+        'heartRate': heartRate
+      });
+      currentTime = currentTime.add(Duration(minutes: 1));
+    }
+
+    return myHourList;
+  }*/
+
+/*
+  void _saveTimes() {
+    final String bedtime = bedtimeController.text;
+    final String wakeUpTime = wakeUpTimeController.text;
+
+    int bedtimeMinutes = calculateMinutesFromTime(bedtime);
+    int wakeupMinutes = calculateMinutesFromTime(wakeUpTime);
+
+    int sleepCycleMinutes = 90; // Duration of each sleep cycle in minutes
+    int numberOfCycles =
+        ((wakeupMinutes - bedtimeMinutes) / sleepCycleMinutes).floor();
+
+    int optimalWakeUpMinutes =
+        bedtimeMinutes + (numberOfCycles * sleepCycleMinutes);
+    String optimalWakeUpTime =
+        calculateTimeFromMinutes(optimalWakeUpMinutes, wakeUpTime);
+
+    setState(() {
+      printedBedtime = bedtime;
+      printedWakeUpTime = optimalWakeUpTime;
+    });
+  }*/
