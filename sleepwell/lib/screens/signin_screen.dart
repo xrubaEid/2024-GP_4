@@ -4,9 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/signup_screen.dart';
-import 'package:sleepwell/services/auth_service.dart';
+//import 'package:sleepwell/services/auth_service.dart';
 import 'package:sleepwell/widget/regsterbutton.dart';
-import 'package:sleepwell/widget/square_tile.dart';
+
+//import 'package:sleepwell/widget/square_tile.dart';
 
 class SignInScreen extends StatefulWidget {
   static String RouteScreen = 'signin_screen';
@@ -18,7 +19,6 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   final _auth = FirebaseAuth.instance;
-  //final GoogleSignIn googleSignIn = signinwithgoogle();
   bool showSpinner = false;
   late String email;
   late String password;
@@ -31,6 +31,7 @@ class _SignInScreenState extends State<SignInScreen> {
       appBar: AppBar(
         backgroundColor: myColor,
         title: const Text(''),
+        automaticallyImplyLeading: false, // This removes the arrow
       ),
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
@@ -190,7 +191,14 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
                 //Divider(),
                 //SizedBox(height: 10),
                 /*Text(
@@ -202,7 +210,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     //fontWeight: FontWeight.bold,
                   ),
                 ),*/
-                SizedBox(height: 10),
+                //SizedBox(height: 10),
                 /*Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -243,14 +251,14 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                   ],
                 ),*/
-              ],
+             /* ],
             ),
           ),
         ),
       ),
     );
   }
-}
+}*/
   /*void signinwithgoogle() async {
   //begin interactive sign in process
   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();

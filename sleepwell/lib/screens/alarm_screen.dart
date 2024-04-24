@@ -244,8 +244,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
     var formattedDate = DateFormat('EEE, d MMM').format(now);
     var formattedTime = DateFormat('hh:mm').format(now);
 
-    var white = Colors.white;
-    const color = Color.fromARGB(255, 255, 255, 255);
+    //var white = Colors.white;
+    //const color = Color.fromARGB(255, 255, 255, 255);
 
     return Scaffold(
       backgroundColor: Color.fromARGB(255, 16, 95, 199),
@@ -424,7 +424,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
             Container(
               alignment: Alignment.bottomCenter,
               child: const Text(
-                "Go to settings(from profile) to edit alarm settings.",
+                "Go to profile page to edit alarm settings",
                 style: TextStyle(color: Colors.white),
               ),
             )
@@ -439,6 +439,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
               nowTime, "${nowTime.hour}:${nowTime.minute + 1} AM");
           AppAlarm.getAlarms();
         },
+        child: Icon(Icons.alarm),
       ),
     );
   }

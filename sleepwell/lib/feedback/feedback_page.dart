@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+//import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sleepwell/screens/profile_screen.dart';
@@ -130,7 +130,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
             ElevatedButton(
                 child: Text('OK'),
                 onPressed: () {
-                  Navigator.pushReplacement(
+                  Navigator.pop(
                     context,
                     MaterialPageRoute(builder: (context) => ProfileScreen()),
                   );

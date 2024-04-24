@@ -13,8 +13,8 @@ import 'package:sleepwell/screens/signup_screen.dart';
 import 'package:sleepwell/screens/splash_screen.dart';
 import 'package:sleepwell/screens/welcoming_screen.dart';
 import 'package:sleepwell/signup/question.dart';
-import 'package:sleepwell/widget/counter_widget.dart';
-import 'package:sleepwell/screens/edite_alarm_screen.dart';
+//import 'package:sleepwell/widget/counter_widget.dart';
+//import 'package:sleepwell/screens/edite_alarm_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:alarm/alarm.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -22,7 +22,7 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 late SharedPreferences prefs;
 Future<void> main() async {
 //
-  // final WidgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  //final WidgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   // GetX local storege
   await GetStorage.init();

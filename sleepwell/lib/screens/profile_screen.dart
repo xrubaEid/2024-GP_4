@@ -76,71 +76,73 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     Color myColor = const Color.fromARGB(255, 0, 74, 173);
     return Scaffold(
-  backgroundColor: const Color.fromARGB(255, 16, 95, 199),
-  body: SafeArea(
-    child: Container(
-      height: MediaQuery.of(context).size.height,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF004AAD), Color(0xFF040E3B)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 10.0),
-        child: ListView(
-          padding: const EdgeInsets.all(24),
-          children: [
-            FutureBuilder<DocumentSnapshot>(
-              future: FirebaseFirestore.instance
-                  .collection('Users')
-                  .doc(userId)
-                  .get(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  // Show a loading indicator while fetching data
-                  return CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  // Handle error state
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  // Data has been fetched successfully
-                  final userData =
-                      snapshot.data?.data() as Map<String, dynamic>?;
-                  if (userData != null) {
-                    firstName = userData['Fname'] ?? '';
-                    lastName = userData['Lname'] ?? '';
-                  }
-                  return Column(
-                    children: [
-                      if (firstName != null)
-                        Text(
-                          'Hi $firstName!',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
+      backgroundColor: myColor,
+      body: SafeArea(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF004AAD), Color(0xFF040E3B)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 10.0),
+            child: ListView(
+              padding: const EdgeInsets.all(24),
+              children: [
+                FutureBuilder<DocumentSnapshot>(
+                  future: FirebaseFirestore.instance
+                      .collection('Users')
+                      .doc(userId)
+                      .get(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      // Show a loading indicator while fetching data
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      // Handle error state
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      // Data has been fetched successfully
+                      final userData =
+                          snapshot.data?.data() as Map<String, dynamic>?;
+                      if (userData != null) {
+                        firstName = userData['Fname'] ?? '';
+                        lastName = userData['Lname'] ?? '';
+                      }
+                      return Column(
+                        children: [
+                          if (firstName != null)
+                            Text(
+                              'Hi $firstName!',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          const SizedBox(
+                            height: 25,
                           ),
-                        ),
-                      const SizedBox(height: 25,),
-                      Container(
-                        color: const Color(0xffd5defe),
-                        child: SettingsGroup(
-                          title: 'Personal',
-                          titleTextStyle: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
+                          Container(
+                            color: const Color(0xffd5defe),
+                            child: SettingsGroup(
+                              title: 'Personal',
+                              titleTextStyle: TextStyle(
+                                color: Colors.black,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              children: <Widget>[
+                                Account(),
+                                AboutYou(),
+                              ],
+                            ),
                           ),
-                          children: <Widget>[
-                            Account(),
-                            AboutYou(),
-                          ],
-                        ),
-                      ),
-                      /*sContainer(
+                          /*sContainer(
                         color: Color(0xffd5defe),
                         child: SettingsGroup(
                           title: 'Alarm',
@@ -156,48 +158,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                       ),*/
-                      Container(
-                        color: Color(0xffd5defe),
-                        child: SettingsGroup(
-                          title: 'Setting',
-                          titleTextStyle: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
+                          Container(
+                            color: Color(0xffd5defe),
+                            child: SettingsGroup(
+                              title: 'Setting',
+                              titleTextStyle: TextStyle(
+                                color: Colors.black,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              children: <Widget>[
+                                Sleepgoal(),
+                                editeAlaram(),
+                                Snooze(),
+                                Feedback(),
+                              ],
+                            ),
                           ),
-                          children: <Widget>[
-                            Sleepgoal(),
-                            editeAlaram(),
-                            Snooze(),
-                            Feedback(),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        color: Color(0xffd5defe),
-                        child: SettingsGroup(
-                          title: 'Account Actions',
-                          titleTextStyle: TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
+                          Container(
+                            color: Color(0xffd5defe),
+                            child: SettingsGroup(
+                              title: 'Account Actions',
+                              titleTextStyle: TextStyle(
+                                color: Colors.black,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              children: <Widget>[
+                                buildLogOut(),
+                              ],
+                            ),
                           ),
-                          children: <Widget>[
-                            buildLogOut(),
-                          ],
-                        ),
-                      ),
-                    ],
-                  );
-                }
-              },
+                        ],
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
-    ),
-  ),
-);
+    );
   }
 
   Widget buildLogOut() => SimpleSettingsTile(
@@ -235,7 +237,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: const Text('Sign Out'),
                     onPressed: () {
                       _auth.signOut();
-                      Navigator.pushNamed(context, SignInScreen.RouteScreen);
+                      Navigator.pushReplacementNamed(
+                          context, SignInScreen.RouteScreen);
                     },
                   ),
                 ],
@@ -247,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget Account() => SimpleSettingsTile(
         title: 'Account',
-        leading:  IconWidget(icon: Icons.person, color: const Color(0xFF040E3B)),
+        leading: IconWidget(icon: Icons.person, color: const Color(0xFF040E3B)),
         onTap: () {
           Navigator.push(
             context,
@@ -292,8 +295,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: 'Snooze',
         leading: IconWidget(icon: Icons.snooze, color: const Color(0xFF040E3B)),
         onTap: () {
-          // Handle snooze logic 
-          Get.dialog(Dialog(child: CounterWidget(),));
+          // Handle snooze logic
+          Get.dialog(Dialog(
+            child: CounterWidget(),
+          ));
         },
       );
 
@@ -306,7 +311,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Handle sign out logic here
         },
       );
-      Widget editeAlaram() => SimpleSettingsTile(
+  Widget editeAlaram() => SimpleSettingsTile(
         title: 'Edit Alarm',
         leading: const IconWidget(icon: Icons.edit, color: Color(0xFF040E3B)),
         onTap: () {

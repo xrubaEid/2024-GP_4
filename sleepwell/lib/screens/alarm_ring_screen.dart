@@ -1,8 +1,9 @@
 import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleepwell/main.dart';
+import 'package:sleepwell/feedback/feedback_page.dart';
 
 class AlarmRingScreen extends StatelessWidget {
   final AlarmSettings alarmSettings;
@@ -50,8 +51,13 @@ class AlarmRingScreen extends StatelessWidget {
                 ),
                 RawMaterialButton(
                   onPressed: () {
-                    Alarm.stop(alarmSettings.id)
-                        .then((_) => Navigator.pop(context));
+                    Alarm.stop(alarmSettings.id).then((_) {
+                      // Navigate to the feedback screen after stopping the alarm
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => FeedbackPage()),
+                      );
+                    });
                   },
                   child: Text(
                     "Stop",
