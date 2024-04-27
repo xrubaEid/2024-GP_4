@@ -1,23 +1,36 @@
+import 'dart:async';
+
 import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
 import 'package:sleepwell/models/difficult_equation_model.dart';
 import 'package:sleepwell/models/easy_equation_model.dart';
 import 'package:sleepwell/models/equation_abstrat_model.dart';
+import 'package:sleepwell/feedback/feedback_page.dart';
+import 'package:sleepwell/screens/home_screen.dart';
 
 class EquationWidget extends StatefulWidget {
   final bool showEasyEquation;
   final int alarmId;
   const EquationWidget({
-    super.key,
+    Key? key,
     required this.alarmId,
     this.showEasyEquation = false,
-  });
+  }) : super(key: key);
 
   @override
   State<EquationWidget> createState() => _EquationWidgetState();
 }
 
 class _EquationWidgetState extends State<EquationWidget> {
+  bool _showFeedbackDialog = true;
+  Timer? _reminderTimer;
+
+  @override
+  void dispose() {
+    _reminderTimer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     EquationModel equationModel = widget.showEasyEquation
@@ -36,14 +49,7 @@ class _EquationWidgetState extends State<EquationWidget> {
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 16),
           ),
-          // const SizedBox(height: 5),
-          // const Text(
-          //   "Note: If the answer is wrong, the equation will be changed.",
-          //   textAlign: TextAlign.center,
-          // ),
           const SizedBox(height: 20),
-
-          // show the equation
           Container(
             width: double.infinity,
             alignment: AlignmentDirectional.center,
@@ -59,8 +65,6 @@ class _EquationWidgetState extends State<EquationWidget> {
             ),
           ),
           const SizedBox(height: 30),
-
-          // options to solve the equation
           Container(
             alignment: AlignmentDirectional.center,
             height: 50,
@@ -70,7 +74,6 @@ class _EquationWidgetState extends State<EquationWidget> {
               itemBuilder: (context, index) {
                 final widthScreen = width - 30;
                 final optionsCount = equationModel.options.length;
-                // margin for all option from right and left
                 const margin = 10 * 2;
                 final allOptionsMargin = optionsCount * margin;
 
@@ -79,14 +82,52 @@ class _EquationWidgetState extends State<EquationWidget> {
                   margin: const EdgeInsets.symmetric(horizontal: margin / 2),
                   child: FloatingActionButton(
                     heroTag: equationModel.options[index],
-                    // shape: const CircleBorder(),
-                    onPressed: () {
+                    onPressed: () async {
                       if (equationModel.options[index] ==
                           equationModel.result) {
-                        print(":::::::::::::::::: Success choosen");
-                        Alarm.stop(widget.alarmId).then((_) => Navigator.pop(context));
+                        print(":::::::::::::::::: Success chosen");
+                        await Alarm.stop(widget.alarmId);
+                        final shouldShowFeedbackDialog = await showDialog<bool>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Daily Feedback'),
+                              content: Text(
+                                  'Do you want to give your feedback now?'),
+                              actions: [
+                                TextButton(
+                                  child: Text('Remind me later'),
+                                  onPressed: () {
+                                    Navigator.pop(context, false);
+                                    _showFeedbackDialog = false;
+                                    _startReminderTimer();
+                                  },
+                                ),
+                                TextButton(
+                                  child: Text('Yes'),
+                                  onPressed: () {
+                                    Navigator.pop(context, true);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => FeedbackPage()),
+                                    );
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        if (!(shouldShowFeedbackDialog ?? false)) {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MyHomePage()),
+                            (route) => false,
+                          );
+                        }
                       } else {
-                        print(":::::::::::::::::: Wrong chossen");
+                        print(":::::::::::::::::: Wrong chosen");
                         setState(() {});
                       }
                     },
@@ -101,5 +142,40 @@ class _EquationWidgetState extends State<EquationWidget> {
         ],
       ),
     );
+  }
+
+  void _startReminderTimer() {
+    _reminderTimer = Timer(Duration(minutes: 1), () {
+      if (_showFeedbackDialog) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Daily Feedback Reminder'),
+              content: Text('Do you want to give your feedback now?'),
+              actions: [
+                TextButton(
+                  child: Text('Remind me later'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _startReminderTimer();
+                  },
+                ),
+                TextButton(
+                  child: Text('Yes'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => FeedbackPage()),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    });
   }
 }

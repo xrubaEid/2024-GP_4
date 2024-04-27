@@ -13,8 +13,8 @@ import 'package:sleepwell/screens/signup_screen.dart';
 import 'package:sleepwell/screens/splash_screen.dart';
 import 'package:sleepwell/screens/welcoming_screen.dart';
 import 'package:sleepwell/signup/question.dart';
-//import 'package:sleepwell/widget/counter_widget.dart';
-//import 'package:sleepwell/screens/edite_alarm_screen.dart';
+import 'package:sleepwell/widget/counter_widget.dart';
+import 'package:sleepwell/screens/edite_alarm_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:alarm/alarm.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -25,13 +25,13 @@ Future<void> main() async {
   //final WidgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   // GetX local storege
-  await GetStorage.init();
+  //await GetStorage.init();
   prefs = await SharedPreferences.getInstance();
 
   await Alarm.init(showDebugLogs: true);
 
 // GetX local storege
-  await GetStorage.init();
+  // await GetStorage.init();
 //coenact to fire base
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'SleepWell',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,

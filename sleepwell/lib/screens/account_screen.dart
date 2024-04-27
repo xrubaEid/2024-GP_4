@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AccountScreen extends StatefulWidget {
-
   const AccountScreen({super.key});
 
   @override
@@ -11,84 +10,90 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-   final _auth = FirebaseAuth.instance;
+  final _auth = FirebaseAuth.instance;
   late User signInUser;
   late String userId;
   late String email;
-  late String firstName;
-  late String lastName;
-  @override
-  void initState() {
-    super.initState();
-    getCurrentUser();
-  }
 
-  void getCurrentUser() {
+  Future<Map<String, dynamic>?> fetchUserData() async {
     try {
       final user = _auth.currentUser;
       if (user != null) {
-        setState(() {
-        signInUser = user;
         userId = user.uid;
         email = user.email!;
-      });
-      _fetchUserData();
+        final doc = await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(userId)
+            .get();
+        return doc.data();
       }
     } catch (e) {
-      print(e);
+      print('Error fetching user data: $e');
     }
-  }
-
-  void _fetchUserData() async {
-    final userData = await FirebaseFirestore.instance
-        .collection('Users')
-        .doc(userId)
-        .get();
-    setState(() {
-      firstName = userData['Fname'];
-      lastName = userData['Lname'];
-    });
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
-     Color myColor = const Color.fromARGB(255, 0, 74, 173);
+    Color myColor = const Color.fromARGB(255, 0, 74, 173);
     return Scaffold(
-       appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: myColor,
-        title:const Text('Account '),
+        title: const Text('Account'),
         titleTextStyle: const TextStyle(
           color: Colors.white,
           fontSize: 25,
           fontWeight: FontWeight.bold,
         ),
       ),
-      body: SafeArea(
-        child: Container(
-            height: MediaQuery.of(context).size.height,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF004AAD), Color(0xFF040E3B)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(80.0, 60.0, 80.0, 40.0),
-              child: Column(
-                children: [
-                   Text(
-                        'Email: $email',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+      body: Container(
+        // Removed SafeArea
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF004AAD), Color(0xFF040E3B)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: FutureBuilder<Map<String, dynamic>?>(
+          future: fetchUserData(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (snapshot.data == null) {
+              return const Center(child: Text("No user data available"));
+            } else {
+              final userData = snapshot.data!;
+              final firstName = userData['Fname'] ?? 'N/A';
+              final lastName = userData['Lname'] ?? 'N/A';
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20),
+                    Text(
+                      'Email: $email',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
                       ),
-                ],
-              ),
-            ),),
-      )
+                    ),
+                    Text(
+                      'Name: $firstName $lastName',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+          },
+        ),
+      ),
     );
   }
 }
