@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleepwell/main.dart';
 import 'package:sleepwell/feedback/feedback_page.dart';
@@ -18,7 +21,7 @@ class AlarmRingScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Text(
-              "Rining...\nOptimal time to WAKE UP",
+              "Ringing...\nOptimal time to WAKE UP",
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge,
             ),
@@ -29,7 +32,8 @@ class AlarmRingScreen extends StatelessWidget {
                 RawMaterialButton(
                   onPressed: () {
                     final now = DateTime.now();
-                    int snooze = prefs.getInt("snooze") ?? 1;
+                    int snooze = prefs.getInt("snooze") ??
+                        1; // This line will give an error if 'prefs' is not defined in this scope.
                     Alarm.set(
                       alarmSettings: alarmSettings.copyWith(
                         dateTime: DateTime(
@@ -50,14 +54,77 @@ class AlarmRingScreen extends StatelessWidget {
                   ),
                 ),
                 RawMaterialButton(
-                  onPressed: () {
-                    Alarm.stop(alarmSettings.id).then((_) {
-                      // Navigate to the feedback screen after stopping the alarm
+                  onPressed: () async {
+                    // Show a dialog asking if the user wants to give feedback
+                    final shouldShowFeedbackDialog = await showDialog<bool>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Daily Feedback'),
+                          content:
+                              Text('Do you want to give you feedback now?'),
+                          actions: [
+                            TextButton(
+                              child: Text('Remiend me later'),
+                              onPressed: () {
+                                Alarm.stop(alarmSettings.id)
+                                    .then((_) => Navigator.pop(context, false));
+                              },
+                            ),
+                            TextButton(
+                              child: Text('Yes'),
+                              onPressed: () {
+                                Alarm.stop(alarmSettings.id)
+                                    .then((_) => Navigator.pop(context, true));
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+
+                    // If the user wants to give feedback, navigate to the FeedbackPage
+                    if (shouldShowFeedbackDialog ?? false) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => FeedbackPage()),
                       );
-                    });
+                    } else {
+                      // Otherwise, stop the alarm and schedule a callback to show the dialog again after an hour
+                      Alarm.stop(alarmSettings.id)
+                          .then((_) => Navigator.pop(context));
+                      Timer(Duration(minutes: 1), () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Daily Feedback'),
+                              content:
+                                  Text('Do you want to give you feedback now?'),
+                              actions: [
+                                TextButton(
+                                  child: Text('remiend me later'),
+                                  onPressed: () {
+                                    Alarm.stop(alarmSettings.id).then(
+                                        (_) => Navigator.pop(context, false));
+                                  },
+                                ),
+                                TextButton(
+                                  child: Text('Yes'),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => FeedbackPage()),
+                                    );
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      });
+                    }
                   },
                   child: Text(
                     "Stop",

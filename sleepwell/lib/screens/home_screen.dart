@@ -1,5 +1,12 @@
+import 'dart:async';
+
+import 'package:alarm/alarm.dart';
+import 'package:alarm/model/alarm_settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:sleepwell/alarm.dart';
+import 'package:sleepwell/screens/alarm_ring_screen.dart';
 import 'package:sleepwell/screens/alarm_screen.dart';
 import 'package:sleepwell/screens/profile_screen.dart';
 
@@ -14,10 +21,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final _auth = FirebaseAuth.instance;
   late User signInUser;
-
+  StreamSubscription<AlarmSettings>? subscription;
   @override
   void initState() {
     super.initState();
+    AppAlarm.initAlarms();
     getCurrentUser();
   }
 
@@ -47,7 +55,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     
       bottomNavigationBar: NavigationBar(
         selectedIndex: index,
         onDestinationSelected: (index) => setState(() => this.index = index),
