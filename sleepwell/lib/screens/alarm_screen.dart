@@ -435,8 +435,10 @@ class _AlarmScreenState extends State<AlarmScreen> {
         onPressed: () async {
           DateTime now = DateTime.now();
           final nowTime = TimeOfDay.fromDateTime(now);
+          final nowTimehour =
+              (nowTime.hour > 12) ? nowTime.hour - 12 : nowTime.hour;
           await AppAlarm.saveAlarm(
-              nowTime, "${nowTime.hour}:${nowTime.minute + 1} AM");
+              nowTime, "${nowTimehour}:${nowTime.minute + 1} PM");
           AppAlarm.getAlarms();
         },
         child: Icon(Icons.alarm),

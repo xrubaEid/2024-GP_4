@@ -5,12 +5,12 @@ import 'package:sleepwell/screens/signin_screen.dart';
 
 class QuestionScreen extends StatefulWidget {
   static String RouteScreen = 'question';
- const QuestionScreen({Key? key}) : super(key: key);
+  const QuestionScreen({Key? key}) : super(key: key);
 
   @override
   State<QuestionScreen> createState() => _QuestionScreenState();
- 
- // @override
+
+  // @override
   //_QuestionScreenState createState() => _QuestionScreenState();
 }
 
@@ -21,7 +21,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
   late String userId;
   late String email;
 
- @override
+  @override
   void initState() {
     super.initState();
     getCurrentUser();
@@ -69,10 +69,21 @@ class _QuestionScreenState extends State<QuestionScreen> {
     ['6 AM', '7 AM', '8 AM', 'Other'],
     ['11:30 PM', '12:30 AM', '12:30 AM', 'Other'],
     ['8:30 AM', '9 AM', '10 AM', 'Other'],
-    ['I usually stop consuming coffee, tea, and smoking at least three hours before bedtime.', 'About 2 hours before bedtime, I avoid coffee, tea, and smoking to ensure better sleep.', 'I try to cut off coffee, tea, and smoking at least 4 hours before my bedtime.', 'Other'],
-    ['Reading a book or listening to calming music.', 'Meditation or deep breathing', ' stretching or yoga',' play a sport or engage in a physical activity ', 'Other'],
+    [
+      'I usually stop consuming coffee, tea, and smoking at least three hours before bedtime.',
+      'About 2 hours before bedtime, I avoid coffee, tea, and smoking to ensure better sleep.',
+      'I try to cut off coffee, tea, and smoking at least 4 hours before my bedtime.',
+      'Other'
+    ],
+    [
+      'Reading a book or listening to calming music.',
+      'Meditation or deep breathing',
+      ' stretching or yoga',
+      ' play a sport or engage in a physical activity ',
+      'Other'
+    ],
     //['Option 1', 'Option 2', 'Option 3', 'Other'],
-   // ['Option 1', 'Option 2', 'Option 3', 'Other'],
+    // ['Option 1', 'Option 2', 'Option 3', 'Other'],
   ];
 
   List<String> answers = List.filled(6, ''); // Initialize with empty strings
@@ -84,7 +95,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            TextEditingController otherAnswerController = TextEditingController();
+            TextEditingController otherAnswerController =
+                TextEditingController();
 
             return AlertDialog(
               title: const Text('Enter Your Answer'),
@@ -93,7 +105,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
               ),
               actions: [
                 ElevatedButton(
-                  child:const  Text('Save'),
+                  child: const Text('Save'),
                   onPressed: () {
                     String otherAnswer = otherAnswerController.text;
                     answers[currentQuestionIndex] = otherAnswer;
@@ -144,83 +156,103 @@ class _QuestionScreenState extends State<QuestionScreen> {
       }
     });
   }
- void _submitAnswers() async {
-  try {
-    setState(() {
-      showSpinner = true;
-    });
 
-    await _firestore.collection('Users').doc(userId).update({
-      'answerQ1': answers[0],
-      'answerQ2': answers[1],
-      'answerQ3': answers[2],
-      'answerQ4': answers[3],
-      'answerQ5': answers[4],
-      'answerQ6': answers[5],
-    });
+  void _submitAnswers() async {
+    try {
+      setState(() {
+        showSpinner = true;
+      });
 
-    // Show a dialog to inform the user that their answer is saved
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title:const  Text('you are sign up successfully'),
-          content:const  Text('Thank you for joining us , we know more about you can sign in to your account now '),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.pushNamed(context, SignInScreen.RouteScreen);
-              },
-            ),
-          ],
-        );
-      },
-    );
+      await _firestore.collection('Users').doc(userId).update({
+        'answerQ1': answers[0],
+        'answerQ2': answers[1],
+        'answerQ3': answers[2],
+        'answerQ4': answers[3],
+        'answerQ5': answers[4],
+        'answerQ6': answers[5],
+      });
 
-    setState(() {
-      showSpinner = false;
-    });
-  } catch (e) {
-    print('Error while submitting answers: $e');
-    setState(() {
-      showSpinner = false;
-    });
+      // Show a dialog to inform the user that their answer is saved
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('you are sign up successfully'),
+            content: const Text(
+                'Thank you for joining us , we know more about you can sign in to your account now '),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.pushNamed(context, SignInScreen.RouteScreen);
+                },
+              ),
+            ],
+          );
+        },
+      );
+
+      setState(() {
+        showSpinner = false;
+      });
+    } catch (e) {
+      print('Error while submitting answers: $e');
+      setState(() {
+        showSpinner = false;
+      });
+    }
   }
-}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.grey[300],
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF004AAD), Color(0xFF040E3B)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-            const SizedBox(height: 70),
-           const Text(
-               'More About You ',
-                style: TextStyle(fontSize: 20,
-                fontWeight: FontWeight.bold,
+              const SizedBox(height: 70),
+              const Text(
+                'More About You ',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 25),
-             Padding(
-               padding: const EdgeInsets.all(8.0),
-               child: Text(
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
                   questions[currentQuestionIndex],
-                  style:const TextStyle(fontSize: 18),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
                 ),
-             ),
-             const  SizedBox(height: 20),
+              ),
+              const SizedBox(height: 20),
               Column(
                 children: options[currentQuestionIndex].map((option) {
                   return RadioListTile<String>(
-                    title: Text(option),
+                    title: DefaultTextStyle(
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      child: Text(option),
+                    ),
                     value: option,
-                    groupValue: answers[currentQuestionIndex] == option
-                        ? option
-                        : null,
+                    groupValue:
+                        answers[currentQuestionIndex] == option ? option : null,
                     onChanged: (dynamic value) {
                       _saveAnswer(value as String);
                     },
@@ -228,7 +260,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 }).toList(),
               ),
               if (showError)
-               const  Text(
+                const Text(
                   'Please select an answer.',
                   style: TextStyle(color: Colors.red),
                 ),
@@ -246,9 +278,10 @@ class _QuestionScreenState extends State<QuestionScreen> {
                         ? null
                         : _nextQuestion,
                   ),
-                  if (showError && options[currentQuestionIndex].contains('Other'))
+                  if (showError &&
+                      options[currentQuestionIndex].contains('Other'))
                     ElevatedButton(
-                      child:const Text('Cancel'),
+                      child: const Text('Cancel'),
                       onPressed: () {
                         setState(() {
                           answers[currentQuestionIndex] = '';
