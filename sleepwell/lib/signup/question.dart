@@ -54,28 +54,29 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
   int currentQuestionIndex = 0;
   List<String> questions = [
-    'Q1: What would you like the default bedtime to be on working days?',
-    'Q2:What time would you like the default wake-up time to be on working days?',
-    'Q3:What time would you like the default bedtime to be on weekends?',
-    'Q4:What time would you like the default wake-up time to be on weekends?',
+    'Q1:How consistent is your sleep schedule?',
+    'Q2:Do you have a regular bedtime routine? ',
+    'Q3: Do you use your smartphone within 30 minutes before bedtime?',
+    'Q3:Do you have a regular bedtime routine? ',
+    'Q4:Do you consume caffeine close to bedtime?',
     'Q5:When do you typically stop consuming coffee, tea, smoking, and other substances before bedtime?',
     'Q6:What activities do you typically engage in during the two hours leading up to your bedtime?',
-    //'Question 7',
+    'Q7:Do you frequently consume food or snacks during the night?',
     //'Question 8',
   ];
 
   List<List<String>> options = [
-    ['9:30 PM', '10:00 PM', '11:00 PM', 'Other'],
-    ['6 AM', '7 AM', '8 AM', 'Other'],
-    ['11:30 PM', '12:30 AM', '12:30 AM', 'Other'],
-    ['8:30 AM', '9 AM', '10 AM', 'Other'],
+    ['Very consistent', 'Somewhat consistent', 'Inconsistent'],
+    ['Yes', 'Occasionally', 'No'],
+    ['Yes', 'Occasionally', 'No'],
+    ['Yes', 'Occasionally', 'No'],
     ['I usually stop consuming coffee, tea, and smoking at least three hours before bedtime.', 'About 2 hours before bedtime, I avoid coffee, tea, and smoking to ensure better sleep.', 'I try to cut off coffee, tea, and smoking at least 4 hours before my bedtime.', 'Other'],
-    ['Reading a book or listening to calming music.', 'Meditation or deep breathing', ' stretching or yoga',' play a sport or engage in a physical activity ', 'Other'],
-    //['Option 1', 'Option 2', 'Option 3', 'Other'],
+    ['Engage in relaxation techniques', 'Engage in physical activity or exercise', ' Engage in activities that may increase stress ', 'Other'],
+    ['Yes', 'Occasionally', 'No'],
    // ['Option 1', 'Option 2', 'Option 3', 'Other'],
   ];
 
-  List<String> answers = List.filled(6, ''); // Initialize with empty strings
+  List<String> answers = List.filled(7, ''); // Initialize with empty strings
   bool showError = false;
 
   void _saveAnswer(String answer) {
@@ -157,6 +158,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
       'answerQ4': answers[3],
       'answerQ5': answers[4],
       'answerQ6': answers[5],
+      'answerQ7': answers[6],
     });
 
     // Show a dialog to inform the user that their answer is saved
