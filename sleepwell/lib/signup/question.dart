@@ -5,12 +5,12 @@ import 'package:sleepwell/screens/signin_screen.dart';
 
 class QuestionScreen extends StatefulWidget {
   static String RouteScreen = 'question';
- const QuestionScreen({Key? key}) : super(key: key);
+  const QuestionScreen({Key? key}) : super(key: key);
 
   @override
   State<QuestionScreen> createState() => _QuestionScreenState();
- 
- // @override
+
+  // @override
   //_QuestionScreenState createState() => _QuestionScreenState();
 }
 
@@ -21,7 +21,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
   late String userId;
   late String email;
 
- @override
+  @override
   void initState() {
     super.initState();
     getCurrentUser();
@@ -85,7 +85,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            TextEditingController otherAnswerController = TextEditingController();
+            TextEditingController otherAnswerController =
+                TextEditingController();
 
             return AlertDialog(
               title: const Text('Enter Your Answer'),
@@ -94,7 +95,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
               ),
               actions: [
                 ElevatedButton(
-                  child:const  Text('Save'),
+                  child: const Text('Save'),
                   onPressed: () {
                     String otherAnswer = otherAnswerController.text;
                     answers[currentQuestionIndex] = otherAnswer;
@@ -145,84 +146,104 @@ class _QuestionScreenState extends State<QuestionScreen> {
       }
     });
   }
- void _submitAnswers() async {
-  try {
-    setState(() {
-      showSpinner = true;
+
+  void _submitAnswers() async {
+    try {
+      setState(() {
+        showSpinner = true;
+      });
+
+      await _firestore.collection('Users').doc(userId).update({
+        'answerQ1': answers[0],
+        'answerQ2': answers[1],
+        'answerQ3': answers[2],
+        'answerQ4': answers[3],
+        'answerQ5': answers[4],
+        'answerQ6': answers[5],
+        'answerQ7': answers[6],
     });
 
-    await _firestore.collection('Users').doc(userId).update({
-      'answerQ1': answers[0],
-      'answerQ2': answers[1],
-      'answerQ3': answers[2],
-      'answerQ4': answers[3],
-      'answerQ5': answers[4],
-      'answerQ6': answers[5],
-      'answerQ7': answers[6],
-    });
+      // Show a dialog to inform the user that their answer is saved
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('you are sign up successfully'),
+            content: const Text(
+                'Thank you for joining us , we know more about you can sign in to your account now '),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.pushNamed(context, SignInScreen.RouteScreen);
+                },
+              ),
+            ],
+          );
+        },
+      );
 
-    // Show a dialog to inform the user that their answer is saved
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title:const  Text('you are sign up successfully'),
-          content:const  Text('Thank you for joining us , we know more about you can sign in to your account now '),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.pushNamed(context, SignInScreen.RouteScreen);
-              },
-            ),
-          ],
-        );
-      },
-    );
-
-    setState(() {
-      showSpinner = false;
-    });
-  } catch (e) {
-    print('Error while submitting answers: $e');
-    setState(() {
-      showSpinner = false;
-    });
+      setState(() {
+        showSpinner = false;
+      });
+    } catch (e) {
+      print('Error while submitting answers: $e');
+      setState(() {
+        showSpinner = false;
+      });
+    }
   }
-}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.grey[300],
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF004AAD), Color(0xFF040E3B)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-            const SizedBox(height: 70),
-           const Text(
-               'More About You ',
-                style: TextStyle(fontSize: 20,
-                fontWeight: FontWeight.bold,
+              const SizedBox(height: 70),
+              const Text(
+                'More About You ',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 25),
-             Padding(
-               padding: const EdgeInsets.all(8.0),
-               child: Text(
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
                   questions[currentQuestionIndex],
-                  style:const TextStyle(fontSize: 18),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    color: Colors.white,
+                  ),
                 ),
-             ),
-             const  SizedBox(height: 20),
+              ),
+              const SizedBox(height: 20),
               Column(
                 children: options[currentQuestionIndex].map((option) {
                   return RadioListTile<String>(
-                    title: Text(option),
+                    title: DefaultTextStyle(
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      child: Text(option),
+                    ),
                     value: option,
-                    groupValue: answers[currentQuestionIndex] == option
-                        ? option
-                        : null,
+                    groupValue:
+                        answers[currentQuestionIndex] == option ? option : null,
                     onChanged: (dynamic value) {
                       _saveAnswer(value as String);
                     },
@@ -230,7 +251,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 }).toList(),
               ),
               if (showError)
-               const  Text(
+                const Text(
                   'Please select an answer.',
                   style: TextStyle(color: Colors.red),
                 ),
@@ -248,9 +269,10 @@ class _QuestionScreenState extends State<QuestionScreen> {
                         ? null
                         : _nextQuestion,
                   ),
-                  if (showError && options[currentQuestionIndex].contains('Other'))
+                  if (showError &&
+                      options[currentQuestionIndex].contains('Other'))
                     ElevatedButton(
-                      child:const Text('Cancel'),
+                      child: const Text('Cancel'),
                       onPressed: () {
                         setState(() {
                           answers[currentQuestionIndex] = '';

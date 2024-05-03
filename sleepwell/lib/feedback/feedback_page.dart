@@ -17,11 +17,11 @@ class _FeedbackPageState extends State<FeedbackPage> {
   bool _canProceed = false;
 
   List<String> questions = [
-    'How would you rate the overall quality of your sleep?',
-    'Which of the following factors most commonly disrupt your sleep?',
-    'How frequently do you engage in physical exercise or activity during the day?',
-    'Did you consume caffeine or other stimulants within a few hours before bedtime?',
-    //'Did the sleep enhancement application improve the quality of your sleep?',
+    'How would you rate the overall quality of your sleep last night?', //q1
+    'Did you experience high levels of stress or anxiety before bedtime?', //q2
+    'Did you use electronic devices before bed?', //q3
+    'Is your bedroom?', //q4
+    'Is the temperature in your bedroom?', //q4
     //'How user-friendly did you find the interface of the sleep enhancement application?',
     //'Would you recommend the sleep enhancement application to a friend or family member?',
     //'How satisfied are you with the variety of sleep enhancement features offered by the application?',
@@ -32,21 +32,23 @@ class _FeedbackPageState extends State<FeedbackPage> {
   List<List<String>> options = [
     ['Excellent', 'Good', 'Average', 'Poor'], //  Q1
     [
-      'Noise',
-      'Temperature',
-      'Stress or anxiety',
-      'Physical discomfort',
-      'None of the above'
+      'Yes',
+      'No',
     ], //Q2
-    ['Daily', 'Several times a week', 'Occasionally', 'Rarely or never'], //Q3
-    ['Yes', 'No'], //Q4
+    [
+      'Yes',
+      'Occasionally',
+      'No',
+    ], //Q3
+    ['quiet', 'moderately noisy', 'noisy'], //Q4
+    ['cool', 'moderately warm', 'warm'], //Q5
     //['I usually stop consuming coffee, tea, and smoking at least three hours before bedtime.', 'About 2 hours before bedtime, I avoid coffee, tea, and smoking to ensure better sleep.', 'I try to cut off coffee, tea, and smoking at least 4 hours before my bedtime.', 'Other'],
     // ['Reading a book or listening to calming music.', 'Meditation or deep breathing', ' stretching or yoga',' play a sport or engage in a physical activity ', 'Other'],
     //['Option 1', 'Option 2', 'Option 3', 'Other'],
     // ['Option 1', 'Option 2', 'Option 3', 'Other'],
   ];
 
-  List<String> answers = List.filled(4, ''); // Initialize with empty strings
+  List<String> answers = List.filled(5, ''); // Initialize with empty strings
   bool showError = false;
 
   void _saveAnswer(String answer) {
@@ -145,7 +147,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
   Widget build(BuildContext context) {
     Color myColor = const Color.fromARGB(255, 0, 74, 173);
     return Scaffold(
-      appBar: AppBar(
+      /*appBar: AppBar(
         backgroundColor: myColor,
         title: const Text('Sleep Feedback'),
         titleTextStyle: const TextStyle(
@@ -153,7 +155,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
           fontSize: 25,
           fontWeight: FontWeight.bold,
         ),
-      ),
+      ),*/
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -167,11 +169,20 @@ class _FeedbackPageState extends State<FeedbackPage> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
+              const SizedBox(height: 70),
+              const Text(
+                'Sleep Feedback',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
               SizedBox(height: 20),
               Text(
                 questions[_currentQuestionIndex],
                 style: TextStyle(
-                  fontSize: 25,
+                  fontSize: 20,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
