@@ -56,18 +56,23 @@ class _QuestionScreenState extends State<QuestionScreen> {
   List<String> questions = [
     'Q1:How consistent is your sleep schedule?',
     'Q2:Do you have a regular bedtime routine? ',
-    'Q3: Do you use your smartphone within 30 minutes before bedtime?',
-    'Q3:Do you have a regular bedtime routine? ',
-    'Q4:Do you consume caffeine close to bedtime?',
-    'Q5:When do you typically stop consuming coffee, tea, smoking, and other substances before bedtime?',
-    'Q6:What activities do you typically engage in during the two hours leading up to your bedtime?',
-    'Q7:Do you frequently consume food or snacks during the night?',
+    'Q3:How often do you wake up tired in the morning?',
+    'Q4:How much sleep do you usually get at night?',
+    'Q5:How long does it take to fall asleep after you get into bed?',
+    'Q6: Do you use your smartphone within 30 minutes before bedtime?',
+    'Q7:Do you consume caffeine close to bedtime?',
+    'Q8:When do you typically stop consuming coffee, tea, smoking, and other substances before bedtime?',
+    'Q9:What activities do you typically engage in during the two hours leading up to your bedtime?',
+    'Q10:Do you frequently consume food or snacks during the night?',
     //'Question 8',
   ];
 
   List<List<String>> options = [
-    ['Very consistent', 'Somewhat consistent', 'Inconsistent'],
-    ['Yes', 'Occasionally', 'No'],
+    ['Very consistent', 'Somewhat consistent', 'Inconsistent'],//q1
+    ['Yes', 'Occasionally', 'No'],//q2
+    ['Always','Usually','Sometimes','Rarely'],//q3
+    ['6 hours or less','6-8 hours','8-10hours','10 hours or more'],//q4
+    ['everal minutes','10-15 minutes','20-40 minutes','Hard to fall asleep'],//q5
     ['Yes', 'Occasionally', 'No'],
     ['Yes', 'Occasionally', 'No'],
     ['I usually stop consuming coffee, tea, and smoking at least three hours before bedtime.', 'About 2 hours before bedtime, I avoid coffee, tea, and smoking to ensure better sleep.', 'I try to cut off coffee, tea, and smoking at least 4 hours before my bedtime.', 'Other'],
@@ -76,7 +81,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
    // ['Option 1', 'Option 2', 'Option 3', 'Other'],
   ];
 
-  List<String> answers = List.filled(7, ''); // Initialize with empty strings
+  List<String> answers = List.filled(10, ''); // Initialize with empty strings
   bool showError = false;
 
   void _saveAnswer(String answer) {
@@ -234,7 +239,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 children: options[currentQuestionIndex].map((option) {
                   return RadioListTile<String>(
                     title: DefaultTextStyle(
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,

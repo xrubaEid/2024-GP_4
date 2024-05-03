@@ -1,6 +1,6 @@
 //import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:sleepwell/screens/profile_screen.dart';
 
 class FeedbackPage extends StatefulWidget {
@@ -19,36 +19,27 @@ class _FeedbackPageState extends State<FeedbackPage> {
   List<String> questions = [
     'How would you rate the overall quality of your sleep last night?', //q1
     'Did you experience high levels of stress or anxiety before bedtime?', //q2
-    'Did you use electronic devices before bed?', //q3
-    'Is your bedroom?', //q4
-    'Is the temperature in your bedroom?', //q4
-    //'How user-friendly did you find the interface of the sleep enhancement application?',
-    //'Would you recommend the sleep enhancement application to a friend or family member?',
-    //'How satisfied are you with the variety of sleep enhancement features offered by the application?',
-    //'Did you experience any technical issues or glitches while using the sleep enhancement application?',
-    //'How likely are you to continue using the sleep enhancement application in the future?',
+     'Did you use nicotine products close to bedtime?'//q3
+    'Did you use electronic devices before bedtime?', //q4
+    'Is your bedroom?', //q5
+    'Is the temperature in your bedroom?', //q6
+    'Did you consume any caffeinated beverages within 2 hours before bedtime?'//q7
+    'Did you consume food within 2 hours before bedtime?'//q8
   ];
 
   List<List<String>> options = [
     ['Excellent', 'Good', 'Average', 'Poor'], //  Q1
-    [
-      'Yes',
-      'No',
-    ], //Q2
-    [
-      'Yes',
-      'Occasionally',
-      'No',
-    ], //Q3
-    ['quiet', 'moderately noisy', 'noisy'], //Q4
-    ['cool', 'moderately warm', 'warm'], //Q5
-    //['I usually stop consuming coffee, tea, and smoking at least three hours before bedtime.', 'About 2 hours before bedtime, I avoid coffee, tea, and smoking to ensure better sleep.', 'I try to cut off coffee, tea, and smoking at least 4 hours before my bedtime.', 'Other'],
-    // ['Reading a book or listening to calming music.', 'Meditation or deep breathing', ' stretching or yoga',' play a sport or engage in a physical activity ', 'Other'],
-    //['Option 1', 'Option 2', 'Option 3', 'Other'],
-    // ['Option 1', 'Option 2', 'Option 3', 'Other'],
+    [ 'Yes', 'No', ], //Q2
+    ['Yes', 'No', ], //Q3
+    ['Yes', 'Occasionally', 'No', ], //Q4
+    ['quiet', 'moderately noisy', 'noisy'], //Q5
+    ['cool', 'moderately warm', 'warm'], //Q6
+    ['Yes', 'No', ], //Q7
+    ['Yes', 'No', ], //Q8
+   
   ];
 
-  List<String> answers = List.filled(5, ''); // Initialize with empty strings
+  List<String> answers = List.filled(8, ''); // Initialize with empty strings
   bool showError = false;
 
   void _saveAnswer(String answer) {
