@@ -195,7 +195,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
       bedtime.minute,
     );
 
-    DateTime endTime = startTime.add(Duration(hours: 1));
+    DateTime endTime = startTime.add(const Duration(hours: 1));
 
     int initialHeartRate = 120;
     int finalHeartRate = 75;
@@ -215,9 +215,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
       } else {
         // Decrease heart rate gradually from 95 bpm to finalHeartRate
         double progress = currentTime
-                .difference(startTime.add(Duration(minutes: 30)))
+                .difference(startTime.add(const Duration(minutes: 30)))
                 .inMinutes /
-            (endTime.difference(startTime.add(Duration(minutes: 30))))
+            (endTime.difference(startTime.add(const Duration(minutes: 30))))
                 .inMinutes;
 
         int decreaseAmount = (progress * (95 - finalHeartRate)).round();
@@ -248,7 +248,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
     //const color = Color.fromARGB(255, 255, 255, 255);
 
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 16, 95, 199),
+      backgroundColor: const Color.fromARGB(255, 16, 95, 199),
       body: Container(
         height: MediaQuery.of(context).size.height,
         padding: const EdgeInsets.all(30),
@@ -304,11 +304,11 @@ class _AlarmScreenState extends State<AlarmScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                SizedBox(width: 20),
+               const SizedBox(width: 20),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
+                    const Text(
                       "BEDTIME",
                       style: TextStyle(
                         color: Color(0xffff0863),
@@ -322,7 +322,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                       child: AbsorbPointer(
                         child: TextFormField(
                           controller: bedtimeController,
-                          decoration: InputDecoration(
+                          decoration:const InputDecoration(
                             hintText: "Select bedtime",
                             hintStyle: TextStyle(
                               color: Colors.white,
@@ -330,7 +330,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Color.fromARGB(255, 255, 255, 255),
                             fontSize: 30,
                             fontWeight: FontWeight.w700,
@@ -338,8 +338,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
-                    Text(
+                    const SizedBox(height: 20),
+                   const Text(
                       "WAKE UP TIME",
                       style: TextStyle(
                           color: Color(0xffff0863),
@@ -352,7 +352,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                       child: AbsorbPointer(
                         child: TextFormField(
                           controller: wakeUpTimeController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: "Select wake-up time",
                             hintStyle: TextStyle(
                               color: Colors.white,
@@ -360,7 +360,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Color.fromARGB(255, 255, 255, 255),
                             fontSize: 30,
                             fontWeight: FontWeight.w700,
@@ -372,7 +372,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Align(
                 alignment: Alignment.center,
                 child: Center(
@@ -384,9 +384,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
                     foregroundColor:
                         MaterialStateProperty.all<Color>(Colors.white),
                   ),
-                  child: Text('Save'),
+                  child: const Text('Save'),
                 ))),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             BottomAppBar(
               color: Colors.transparent,
               child: Column(
@@ -396,7 +396,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                     children: <Widget>[
                       Text(
                         'Actual sleep time is: $printedBedtime',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
@@ -410,7 +410,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                     children: <Widget>[
                       Text(
                         'Optimal wake-up time is: $printedWakeUpTime',
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
@@ -441,7 +441,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
               nowTime, "${nowTimehour}:${nowTime.minute + 1} PM");
           AppAlarm.getAlarms();
         },
-        child: Icon(Icons.alarm),
+        child:const  Icon(Icons.alarm),
       ),
     );
   }

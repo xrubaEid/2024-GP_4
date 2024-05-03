@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 import 'package:sleepwell/main.dart';
 
 class CounterWidget extends StatelessWidget {
-  const CounterWidget({super.key});
+   const CounterWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
