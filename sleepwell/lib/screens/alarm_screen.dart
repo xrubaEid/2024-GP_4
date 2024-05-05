@@ -112,6 +112,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
       String moreTime = calculateTimeFromMinutes(
           optimalWakeUpMinutes + 15, wakeUpTimeController.text);
+
       print(moreTime);
       print(selectedWakeUpTime);
 
