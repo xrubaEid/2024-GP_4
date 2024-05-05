@@ -1,6 +1,8 @@
 //import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:sleepwell/screens/alarm_screen.dart';
+import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/profile_screen.dart';
 
 class FeedbackPage extends StatefulWidget {
@@ -19,24 +21,39 @@ class _FeedbackPageState extends State<FeedbackPage> {
   List<String> questions = [
     'How would you rate the overall quality of your sleep last night?', //q1
     'Did you experience high levels of stress or anxiety before bedtime?', //q2
-     'Did you use nicotine products close to bedtime?'//q3
+    'Did you use nicotine products close to bedtime?', //q3
     'Did you use electronic devices before bedtime?', //q4
     'Is your bedroom?', //q5
     'Is the temperature in your bedroom?', //q6
-    'Did you consume any caffeinated beverages within 2 hours before bedtime?'//q7
-    'Did you consume food within 2 hours before bedtime?'//q8
+    'Did you consume any caffeinated beverages within 2 hours before bedtime?', //q7
+    'Did you consume food within 2 hours before bedtime?', //q8
   ];
 
   List<List<String>> options = [
     ['Excellent', 'Good', 'Average', 'Poor'], //  Q1
-    [ 'Yes', 'No', ], //Q2
-    ['Yes', 'No', ], //Q3
-    ['Yes', 'Occasionally', 'No', ], //Q4
+    [
+      'Yes',
+      'No',
+    ], //Q2
+    [
+      'Yes',
+      'No',
+    ], //Q3
+    [
+      'Yes',
+      'Occasionally',
+      'No',
+    ], //Q4
     ['quiet', 'moderately noisy', 'noisy'], //Q5
     ['cool', 'moderately warm', 'warm'], //Q6
-    ['Yes', 'No', ], //Q7
-    ['Yes', 'No', ], //Q8
-   
+    [
+      'Yes',
+      'No',
+    ], //Q7
+    [
+      'Yes',
+      'No',
+    ], //Q8
   ];
 
   List<String> answers = List.filled(8, ''); // Initialize with empty strings
@@ -123,9 +140,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
             ElevatedButton(
                 child: Text('OK'),
                 onPressed: () {
-                  Navigator.pop(
+                  Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ProfileScreen()),
+                    MaterialPageRoute(builder: (context) => MyHomePage()),
                   );
                 }),
           ],

@@ -135,6 +135,11 @@ class _AboutYouPageState extends State<AboutYouPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF004AAD),
         title: const Text('About You'),
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit, color: Colors.white),
@@ -187,7 +192,7 @@ class _AboutYouPageState extends State<AboutYouPage> {
                       ),
                     ),
                     TextField(
-                     controller: _lastNameController,
+                      controller: _lastNameController,
                       enabled: _isEditing,
                       style: const TextStyle(color: Colors.white),
                       decoration: const InputDecoration(
@@ -216,13 +221,13 @@ class _AboutYouPageState extends State<AboutYouPage> {
                         child: const Text('Save'),
                         onPressed: _updateUserInfo,
                       ),
-                       const SizedBox(height: 16.0),
-                     const Text(
+                    const SizedBox(height: 16.0),
+                    const Text(
                       'On this page, you can click on the edit icon to modify or update your information.',
                       style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(241, 230, 158, 3),
+                        fontSize: 15.0,
+                        //fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 232, 106, 152),
                       ),
                     ),
                   ],

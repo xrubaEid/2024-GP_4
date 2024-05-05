@@ -65,133 +65,138 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          shrinkWrap: true,
-          children: [
-            const SizedBox(height: 15),
-            const Text(
-              ' Alarm Sound',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 255, 255, 255),
-              ),
-            ),
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: soundsWidget),
-            // const Divider(),
-            const SizedBox(height: 20),
-
-            // choose the method of pause the alarm
-            const Text(
-              ' Mission Alarm',
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 255, 255, 255)),
-            ),
-            const SizedBox(height: 10),
-            getRadioListTile(
-              value: "Default",
-              groupValue: selectedMission,
-              onChanged: (value) =>
-                  setState(() => selectedMission = value ?? "Default"),
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              title: 'Default',
-              icon: Icons.alarm,
-            ),
-            const ListTile(
-              contentPadding: EdgeInsets.symmetric(horizontal: 68),
-              leading: Icon(
-                Icons.pause_circle_outline_sharp,
-                size: 20,
-                color: Color.fromARGB(255, 255, 255, 255),
-              ),
-              title: Text(
-                'Stop',
+        child: Padding(
+          padding: const EdgeInsets.all(25.0),
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            shrinkWrap: true,
+            children: [
+              const SizedBox(height: 15),
+              const Text(
+                ' Alarm Sound',
                 style: TextStyle(
-                  fontSize: 17,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 255, 255, 255),
                 ),
               ),
-            ),
-            const SizedBox(height: 5),
-            getRadioListTile(
-              value: "Math Problem",
-              groupValue: selectedMission,
-              onChanged: (value) =>
-                  setState(() => selectedMission = value ?? "Default"),
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              icon: Icons.calculate_rounded,
-              title: 'Math Problem',
-            ),
-            getRadioListTile(
-              value: "easy",
-              groupValue: selectedMission == "Math Problem" ? selectedMath : "",
-              onChanged: (value) =>
-                  setState(() => selectedMath = value ?? "easy"),
-              padding: const EdgeInsets.symmetric(horizontal: 58),
-              icon: Icons.sim_card,
-              title: 'easy',
-              fontSize: 17,
-            ),
-            getRadioListTile(
-              value: "difficult",
-              groupValue: selectedMission == "Math Problem" ? selectedMath : "",
-              onChanged: (value) =>
-                  setState(() => selectedMath = value ?? "easy"),
-              padding: const EdgeInsets.symmetric(horizontal: 58),
-              icon: Icons.difference,
-              title: 'difficult',
-              fontSize: 17,
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: FilledButton(
-                    onPressed: () async {
-                      await soundsWidget.audioPlayer.pause();
-                      Get.back();
-                    },
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 255, 255, 255),
-                        // backgroundColor: Color.fromARGB(0, 9, 42, 232),
+              Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: soundsWidget),
+              // const Divider(),
+              const SizedBox(height: 20),
+
+              // choose the method of pause the alarm
+              const Text(
+                ' Mission Alarm',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 255, 255, 255)),
+              ),
+              const SizedBox(height: 10),
+              getRadioListTile(
+                value: "Default",
+                groupValue: selectedMission,
+                onChanged: (value) =>
+                    setState(() => selectedMission = value ?? "Default"),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                title: 'Default',
+                icon: Icons.alarm,
+              ),
+              const ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 68),
+                leading: Icon(
+                  Icons.pause_circle_outline_sharp,
+                  size: 20,
+                  color: Color.fromARGB(255, 255, 255, 255),
+                ),
+                title: Text(
+                  'Stop',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 255, 255, 255),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 5),
+              getRadioListTile(
+                value: "Math Problem",
+                groupValue: selectedMission,
+                onChanged: (value) =>
+                    setState(() => selectedMission = value ?? "Default"),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                icon: Icons.calculate_rounded,
+                title: 'Math Problem',
+              ),
+              getRadioListTile(
+                value: "easy",
+                groupValue:
+                    selectedMission == "Math Problem" ? selectedMath : "",
+                onChanged: (value) =>
+                    setState(() => selectedMath = value ?? "easy"),
+                padding: const EdgeInsets.symmetric(horizontal: 58),
+                icon: Icons.sim_card,
+                title: 'easy',
+                fontSize: 17,
+              ),
+              getRadioListTile(
+                value: "difficult",
+                groupValue:
+                    selectedMission == "Math Problem" ? selectedMath : "",
+                onChanged: (value) =>
+                    setState(() => selectedMath = value ?? "easy"),
+                padding: const EdgeInsets.symmetric(horizontal: 58),
+                icon: Icons.difference,
+                title: 'difficult',
+                fontSize: 17,
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () async {
+                        await soundsWidget.audioPlayer.pause();
+                        Get.back();
+                      },
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          // backgroundColor: Color.fromARGB(0, 9, 42, 232),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: () async {
-                      await soundsWidget.audioPlayer.pause();
-                      saveSettings();
-                      await AppAlarm.initAlarms();
-                      await AppAlarm.updateStoredWakeUpAlarmSound();
-                      Get.back();
-                    },
-                    child: const Text(
-                      'Save',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        color: Color.fromARGB(255, 255, 255, 255),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () async {
+                        await soundsWidget.audioPlayer.pause();
+                        saveSettings();
+                        await AppAlarm.initAlarms();
+                        await AppAlarm.updateStoredWakeUpAlarmSound();
+                        Get.back();
+                      },
+                      child: const Text(
+                        'Save',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 255, 255, 255),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-          ],
+                ],
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
