@@ -68,17 +68,32 @@ class _QuestionScreenState extends State<QuestionScreen> {
   ];
 
   List<List<String>> options = [
-    ['Very consistent', 'Somewhat consistent', 'Inconsistent'],//q1
-    ['Yes', 'Occasionally', 'No'],//q2
-    ['Always','Usually','Sometimes','Rarely'],//q3
-    ['6 hours or less','6-8 hours','8-10hours','10 hours or more'],//q4
-    ['everal minutes','10-15 minutes','20-40 minutes','Hard to fall asleep'],//q5
+    ['Very consistent', 'Somewhat consistent', 'Inconsistent'], //q1
+    ['Yes', 'Occasionally', 'No'], //q2
+    ['Always', 'Usually', 'Sometimes', 'Rarely'], //q3
+    ['6 hours or less', '6-8 hours', '8-10hours', '10 hours or more'], //q4
+    [
+      'everal minutes',
+      '10-15 minutes',
+      '20-40 minutes',
+      'Hard to fall asleep'
+    ], //q5
     ['Yes', 'Occasionally', 'No'],
     ['Yes', 'Occasionally', 'No'],
-    ['I usually stop consuming coffee, tea, and smoking at least three hours before bedtime.', 'About 2 hours before bedtime, I avoid coffee, tea, and smoking to ensure better sleep.', 'I try to cut off coffee, tea, and smoking at least 4 hours before my bedtime.', 'Other'],
-    ['Engage in relaxation techniques', 'Engage in physical activity or exercise', ' Engage in activities that may increase stress ', 'Other'],
+    [
+      'I stop consuming at least 1-2 hours before bedtime',
+      'I stop consuming at least 3-4 hours before bedtime',
+      'I do not consume these substances at all',
+      'I use these substances right before bedtime'
+    ],
+    [
+      'Engage in relaxation techniques',
+      'Engage in physical activity or exercise',
+      ' Engage in activities that may increase stress ',
+      'Other'
+    ],
     ['Yes', 'Occasionally', 'No'],
-   // ['Option 1', 'Option 2', 'Option 3', 'Other'],
+    // ['Option 1', 'Option 2', 'Option 3', 'Other'],
   ];
 
   List<String> answers = List.filled(10, ''); // Initialize with empty strings
@@ -166,7 +181,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
         'answerQ5': answers[4],
         'answerQ6': answers[5],
         'answerQ7': answers[6],
-    });
+      });
 
       // Show a dialog to inform the user that their answer is saved
       showDialog(

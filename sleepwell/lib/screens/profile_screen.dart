@@ -5,6 +5,7 @@ import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:sleepwell/feedback/feedback_page.dart';
+import 'package:sleepwell/main.dart';
 import 'package:sleepwell/profile/about_you_screen.dart';
 import 'package:sleepwell/screens/account_screen.dart';
 import 'package:sleepwell/screens/edite_alarm_screen.dart';
@@ -171,7 +172,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Sleepgoal(),
                                 editeAlaram(),
                                 Snooze(),
-                                Feedback(),
+                                //Feedback(),
                               ],
                             ),
                           ),
@@ -237,8 +238,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: const Text('Sign Out'),
                     onPressed: () {
                       _auth.signOut();
-                      Navigator.pushReplacementNamed(
-                          context, SignInScreen.RouteScreen);
+                      prefs.setBool("isLogin", false);
+                      Navigator.pushNamed(context, SignInScreen.RouteScreen);
+                      //prefs.remove("isLogin");
+                      //Get.offAllNamed(SignInScreen.RouteScreen);
+                      //Navigator.pushReplacementNamed(
+                      //context, SignInScreen.RouteScreen);
                     },
                   ),
                 ],

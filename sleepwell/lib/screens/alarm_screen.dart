@@ -112,6 +112,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
       String moreTime = calculateTimeFromMinutes(
           optimalWakeUpMinutes + 15, wakeUpTimeController.text);
+
       print(moreTime);
       print(selectedWakeUpTime);
 
@@ -304,7 +305,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-               const SizedBox(width: 20),
+                const SizedBox(width: 20),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -322,7 +323,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                       child: AbsorbPointer(
                         child: TextFormField(
                           controller: bedtimeController,
-                          decoration:const InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: "Select bedtime",
                             hintStyle: TextStyle(
                               color: Colors.white,
@@ -339,7 +340,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                   const Text(
+                    const Text(
                       "WAKE UP TIME",
                       style: TextStyle(
                           color: Color(0xffff0863),
@@ -431,17 +432,34 @@ class _AlarmScreenState extends State<AlarmScreen> {
           ],
         ),
       ),
+      /*floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          DateTime now = DateTime.now();
+          final nowTime = TimeOfDay.fromDateTime(now);
+          await AppAlarm.saveAlarm(
+              nowTime, "${nowTime.hour}:${nowTime.minute + 1} AM");
+          AppAlarm.getAlarms();
+        },
+        child:const  Icon(Icons.alarm),
+      ),*/
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           DateTime now = DateTime.now();
           final nowTime = TimeOfDay.fromDateTime(now);
-          final nowTimehour =
-              (nowTime.hour > 12) ? nowTime.hour - 12 : nowTime.hour;
+          // Adding one minute to the current time
+          final newTime = nowTime.replacing(
+            hour: nowTime.hourOfPeriod,
+            minute: nowTime.minute + 1,
+          );
+          // Saving the alarm with the updated time
           await AppAlarm.saveAlarm(
-              nowTime, "${nowTimehour}:${nowTime.minute + 1} PM");
+            newTime,
+            "${newTime.hour}:${newTime.minute} ${newTime.period == DayPeriod.am ? 'AM' : 'PM'}",
+          );
+          // Getting all alarms
           AppAlarm.getAlarms();
         },
-        child:const  Icon(Icons.alarm),
+        child: const Icon(Icons.alarm),
       ),
     );
   }
