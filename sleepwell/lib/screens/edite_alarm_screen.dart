@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:sleepwell/alarm.dart';
+import 'package:sleepwell/main.dart';
 import 'package:sleepwell/models/list_of_music.dart';
 import 'package:sleepwell/widget/sounds_widget.dart';
-import 'package:sleepwell/main.dart';
 
 class EditAlarmScreen extends StatefulWidget {
   @override
@@ -219,7 +219,7 @@ Widget getRadioListTile({
         children: [
           Icon(
             icon,
-            color: Color.fromARGB(255, 188, 178, 178),
+            color:const Color.fromARGB(255, 188, 178, 178),
           ),
           const SizedBox(width: 10),
           Text(
@@ -227,7 +227,7 @@ Widget getRadioListTile({
             style: TextStyle(
               fontSize: fontSize,
               fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 255, 255, 255),
+              color: const Color.fromARGB(255, 255, 255, 255),
             ),
           ),
         ],
