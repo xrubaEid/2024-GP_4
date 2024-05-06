@@ -1,21 +1,24 @@
 import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
 import 'package:flutter/material.dart';
-import 'package:sleepwell/widget/equation_widget.dart';
 import 'package:sleepwell/main.dart';
+import 'package:sleepwell/widget/equation_widget.dart';
 
 class AlarmRingWithEquationScreen extends StatelessWidget {
   final AlarmSettings alarmSettings;
   final bool showEasyEquation;
-
+ 
+ 
   const AlarmRingWithEquationScreen({
     super.key,
     required this.alarmSettings,
     required this.showEasyEquation,
+   
   });
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       body: SafeArea(
         child: Column(
