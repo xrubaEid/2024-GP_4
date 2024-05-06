@@ -48,6 +48,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
     if (pickedTime != null) {
       setState(() {
+        print('this is the selected bedtime');
+        print(pickedTime);
         bedtimeController.text = pickedTime.format(context);
         selectedBedtime = pickedTime;
       });
@@ -64,6 +66,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
     if (pickedTime != null) {
       setState(() {
+        print('this is the selected wake up time');
+        print(pickedTime);
         selectedWakeUpTime = pickedTime;
         wakeUpTimeController.text = pickedTime.format(context);
       });
@@ -82,8 +86,18 @@ class _AlarmScreenState extends State<AlarmScreen> {
       int bedtimeMinutes = 0;
       int sleepCycleMinutes = 90; // Duration of each sleep cycle in minutes
 
+      int? fristRead = myHourList[0]['heartRate'];
+      int? Diff = (fristRead! * 0.2).toInt();
+      int? tocomp = fristRead - Diff;
+      //print('this is the first read');
+      print(fristRead);
+      //print('this is the diff');
+      print(Diff);
+      //print('this is to compare');
+      print(tocomp);
+
       for (int i = 0; i < myHourList.length; i++) {
-        if (myHourList[i]['heartRate']! < 90) {
+        if (myHourList[i]['heartRate']! < tocomp) {
           bedtimeIndex = i;
           break;
         }
@@ -199,7 +213,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
     DateTime endTime = startTime.add(const Duration(hours: 1));
 
     int initialHeartRate = 120;
-    int finalHeartRate = 75;
+    int finalHeartRate = 50;
 
     DateTime currentTime = startTime;
     Random random = Random();
@@ -237,6 +251,41 @@ class _AlarmScreenState extends State<AlarmScreen> {
     }
 
     return myHourList;
+  }
+
+  int timeDifferenceInMinutes(TimeOfDay start, TimeOfDay end) {
+    final startTime = start.hour * 60 + start.minute;
+    final endTime = end.hour * 60 + end.minute;
+    return (endTime - startTime).abs();
+  }
+
+  void _checkAndSaveTimes() {
+    if (timeDifferenceInMinutes(selectedBedtime, selectedWakeUpTime) < 120) {
+      // Show warning dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              "Warning",
+              style: TextStyle(color: Colors.red),
+            ),
+            content: const Text(
+                "please select the wake up time with at least 2 hours deffrence"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      _saveTimes(); // Proceed to save times if the difference is sufficient
+    }
   }
 
   @override
@@ -378,7 +427,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 alignment: Alignment.center,
                 child: Center(
                     child: TextButton(
-                  onPressed: _saveTimes,
+                  onPressed: _checkAndSaveTimes,
                   style: ButtonStyle(
                     backgroundColor:
                         MaterialStateProperty.all<Color>(Colors.pink),
