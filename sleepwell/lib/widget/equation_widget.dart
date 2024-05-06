@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
+import 'package:sleepwell/feedback/feedback_page.dart';
 import 'package:sleepwell/models/difficult_equation_model.dart';
 import 'package:sleepwell/models/easy_equation_model.dart';
 import 'package:sleepwell/models/equation_abstrat_model.dart';
-import 'package:sleepwell/feedback/feedback_page.dart';
 import 'package:sleepwell/screens/home_screen.dart';
 
 class EquationWidget extends StatefulWidget {

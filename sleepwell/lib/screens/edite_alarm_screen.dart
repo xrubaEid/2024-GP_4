@@ -55,7 +55,7 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
           'Edit Alarm',
           style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
         ),
-        backgroundColor: const Color.fromARGB(255, 16, 95, 199),
+        backgroundColor: Color(0xFF004AAD),
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -66,16 +66,16 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(25.0),
+          padding: const EdgeInsets.all(30.0),
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             shrinkWrap: true,
             children: [
               const SizedBox(height: 15),
               const Text(
-                ' Alarm Sound',
+                'Select Alarm Sound',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 25,
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 255, 255, 255),
                 ),
@@ -84,27 +84,27 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: soundsWidget),
               // const Divider(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
 
               // choose the method of pause the alarm
               const Text(
-                ' Mission Alarm',
+                'Alarm Type',
                 style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 25,
                     fontWeight: FontWeight.bold,
                     color: Color.fromARGB(255, 255, 255, 255)),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
               getRadioListTile(
                 value: "Default",
                 groupValue: selectedMission,
                 onChanged: (value) =>
                     setState(() => selectedMission = value ?? "Default"),
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                title: 'Default',
+                title: 'Sound only',
                 icon: Icons.alarm,
               ),
-              const ListTile(
+              /* const ListTile(
                 contentPadding: EdgeInsets.symmetric(horizontal: 68),
                 leading: Icon(
                   Icons.pause_circle_outline_sharp,
@@ -119,8 +119,8 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
                     color: Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
-              ),
-              const SizedBox(height: 5),
+              ),*/
+              const SizedBox(height: 20),
               getRadioListTile(
                 value: "Math Problem",
                 groupValue: selectedMission,
@@ -128,7 +128,7 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
                     setState(() => selectedMission = value ?? "Default"),
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 icon: Icons.calculate_rounded,
-                title: 'Math Problem',
+                title: 'Sound & Math Problem',
               ),
               getRadioListTile(
                 value: "easy",
@@ -224,7 +224,7 @@ Widget getRadioListTile({
         children: [
           Icon(
             icon,
-            color:const Color.fromARGB(255, 188, 178, 178),
+            color: Color.fromARGB(255, 188, 178, 178),
           ),
           const SizedBox(width: 10),
           Text(
@@ -232,7 +232,7 @@ Widget getRadioListTile({
             style: TextStyle(
               fontSize: fontSize,
               fontWeight: FontWeight.bold,
-              color: const Color.fromARGB(255, 255, 255, 255),
+              color: Color.fromARGB(255, 255, 255, 255),
             ),
           ),
         ],

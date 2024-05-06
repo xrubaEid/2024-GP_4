@@ -19,6 +19,7 @@ import 'package:sleepwell/signup/question.dart';
 late SharedPreferences prefs;
 Future<void> main() async {
 //
+  //final WidgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   // GetX local storege
   //await GetStorage.init();
@@ -27,7 +28,7 @@ Future<void> main() async {
   await Alarm.init(showDebugLogs: true);
 
 // GetX local storege
-// // await GetStorage.init();
+  // await GetStorage.init();
 //coenact to fire base
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
