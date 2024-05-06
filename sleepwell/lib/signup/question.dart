@@ -181,6 +181,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
         'answerQ5': answers[4],
         'answerQ6': answers[5],
         'answerQ7': answers[6],
+        'answerQ8': answers[7],
+        'answerQ9': answers[8],
+        'answerQ10': answers[9],
       });
 
       // Show a dialog to inform the user that their answer is saved
