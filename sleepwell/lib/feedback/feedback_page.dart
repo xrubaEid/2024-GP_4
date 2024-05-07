@@ -19,7 +19,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
   /////////Taif Edite this part ///////////////
   final _auth = FirebaseAuth.instance;
   bool showSpinner = false;
-   late String userId;
+  late String userId;
   late String email;
 
   @override
@@ -52,6 +52,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
       });
     }
   }
+
 //////end of the part Taif Edit/////////////
   List<String> questions = [
     'How would you rate the overall quality of your sleep last night?', //q1
@@ -163,9 +164,10 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
   void _submitFeedback() {
     _firestore.collection('feedback').add({
-      //Taif add user Id 
-      'UserId':userId,
+      //Taif add user Id
+      'UserId': userId,
       'answers': answers,
+      'timestamp': DateTime.now(),
     });
     showDialog(
       context: context,

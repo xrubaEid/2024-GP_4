@@ -23,6 +23,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
   String printedBedtime = '';
   String printedWakeUpTime = '';
   String printednumOfCycles = '';
+  int numOfCycles = 0;
 
   @override
   void initState() {
@@ -118,6 +119,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                   bedtimeMinutes) /
               sleepCycleMinutes)
           .floor();
+      numOfCycles = numberOfCycles;
 
       int optimalWakeUpMinutes =
           bedtimeMinutes + (numberOfCycles * sleepCycleMinutes);
@@ -436,41 +438,52 @@ class _AlarmScreenState extends State<AlarmScreen> {
                   ),
                   child: const Text('Save'),
                 ))),
-            const SizedBox(height: 8),
-            BottomAppBar(
-              color: Colors.transparent,
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'Actual sleep time is: $printedBedtime',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
+            const SizedBox(height: 20),
+            Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Actual sleep time is: $printedBedtime',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
-                  //SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'Optimal wake-up time is: $printedWakeUpTime',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    ),
+                  ],
+                ),
+                //SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Optimal wake-up time is: $printedWakeUpTime',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'You slept for $numOfCycles ${numOfCycles == 1 ? 'sleep cycle' : 'sleep cycles'}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
+            SizedBox(height: 20),
             Container(
               alignment: Alignment.bottomCenter,
               child: const Text(
