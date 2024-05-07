@@ -140,6 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               children: <Widget>[
                                 Account(),
                                 AboutYou(),
+                                MoreAboutYou(),
                               ],
                             ),
                           ),
@@ -260,6 +261,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => AccountScreen()),
+          );
+        },
+      );
+       Widget MoreAboutYou() => SimpleSettingsTile(
+        title: 'More About You',
+        leading: IconWidget(icon: Icons.person, color: const Color(0xFF040E3B)),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MoreAboutYou()),
           );
         },
       );

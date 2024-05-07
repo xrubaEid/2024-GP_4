@@ -6,6 +6,7 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleepwell/feedback/feedback_page.dart';
 import 'package:sleepwell/firebase_options.dart';
+import 'package:sleepwell/profile/more_about_you.dart';
 import 'package:sleepwell/screens/alarm_screen.dart';
 import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/onboarding_screen.dart';
@@ -50,7 +51,7 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       initialRoute:
-          loginStatus ? MyHomePage.RouteScreen : SplashScreen.RouteScreen,
+          loginStatus ? MyHomePage.RouteScreen : MoreAboutYou.RouteScreen,
       //initialRoute: SplashScreen.RouteScreen,
       //initialRoute: FeedbackPage.RouteScreen,
       routes: {
@@ -64,6 +65,7 @@ class MyApp extends StatelessWidget {
         OnboardingScreen.RouteScreen: (context) => const OnboardingScreen(),
         FeedbackPage.RouteScreen: (context) => FeedbackPage(),
         QuestionScreen.RouteScreen: (context) => const QuestionScreen(),
+        MoreAboutYou.RouteScreen: (context) =>  MoreAboutYou(),
       },
     );
   }
