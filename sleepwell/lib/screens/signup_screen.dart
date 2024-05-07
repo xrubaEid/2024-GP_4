@@ -234,6 +234,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           final userId = newUser.user
                               ?.uid; // Access the UID of the newly created user
                           await _firestore.collection('Users').doc(userId).set({
+                            'UserId':userId,
                             'Email': email,
                             'Fname': name,
                             'Lname': Lname,
