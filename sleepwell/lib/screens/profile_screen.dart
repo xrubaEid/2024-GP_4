@@ -7,6 +7,7 @@ import 'package:get/get_navigation/get_navigation.dart';
 import 'package:sleepwell/feedback/feedback_page.dart';
 import 'package:sleepwell/main.dart';
 import 'package:sleepwell/profile/about_you_screen.dart';
+import 'package:sleepwell/profile/more_about_you.dart';
 import 'package:sleepwell/screens/account_screen.dart';
 import 'package:sleepwell/screens/edite_alarm_screen.dart';
 import 'package:sleepwell/screens/signin_screen.dart';
@@ -140,7 +141,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               children: <Widget>[
                                 Account(),
                                 AboutYou(),
-                               MoreAboutYou(),
+                                MoreAboutYou(),
                               ],
                             ),
                           ),
@@ -248,7 +249,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           );
         },
       );
-      
 
   Widget AboutYou() => SimpleSettingsTile(
         title: 'About You',
@@ -281,16 +281,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ); // Handle alarm sound logic here
         },
       );
-Widget MoreAboutYou() => SimpleSettingsTile(
-  title: 'More About You',
-  leading: IconWidget(icon: Icons.more, color: const Color(0xFF040E3B)),
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MoreAboutYou()), // Make sure to pass the correct document ID
-    );
-  },
-);
+  Widget MoreAboutYou() => SimpleSettingsTile(
+        title: 'More About You',
+        leading: IconWidget(
+            icon: Icons.question_answer, color: const Color(0xFF040E3B)),
+        onTap: () {
+          Navigator.pushNamed(context, MoreAboutYouScreen.RouteScreen);
+        },
+      );
   Widget Snooze() => SimpleSettingsTile(
         title: 'Snooze',
         leading: const IconWidget(icon: Icons.snooze, color: Color(0xFF040E3B)),
@@ -305,8 +303,7 @@ Widget MoreAboutYou() => SimpleSettingsTile(
   Widget Sleepgoal() => SimpleSettingsTile(
         title: 'Sleep Goal',
         leading: const IconWidget(
-            icon: Icons.location_searching_sharp,
-            color: Color(0xFF040E3B)),
+            icon: Icons.location_searching_sharp, color: Color(0xFF040E3B)),
         onTap: () {
           // Handle sign out logic here
         },
