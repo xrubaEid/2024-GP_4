@@ -173,7 +173,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
         showSpinner = true;
       });
 
-      await _firestore.collection('Users').doc(userId).update({
+ await _firestore.collection('User behavior').doc(userId).set({ 
+         'UserId':userId,
         'answerQ1': answers[0],
         'answerQ2': answers[1],
         'answerQ3': answers[2],
@@ -184,6 +185,17 @@ class _QuestionScreenState extends State<QuestionScreen> {
         'answerQ8': answers[7],
         'answerQ9': answers[8],
         'answerQ10': answers[9],
+        'question1': questions[0],
+        'question2': questions[1],
+        'question3': questions[2],
+        'question4': questions[3],
+        'question5': questions[4],
+        'question6': questions[5],
+        'question7': questions[6],
+        'question8': questions[7],
+        'question9': questions[8],
+        'question10': questions[9],
+        
       });
 
       // Show a dialog to inform the user that their answer is saved
