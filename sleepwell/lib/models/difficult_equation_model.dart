@@ -14,9 +14,9 @@ class DifficultEquationModel extends EquationModel {
     Random random = Random();
 
     // توليد ثلاثة أعداد عشوائية
-    _operand1 = random.nextInt(20); // توليد رقم عشوائي بين 0 و 30
-    _operand2 = random.nextInt(20);
-    _operand3 = random.nextInt(20);
+    _operand1 = random.nextInt(10); // توليد رقم عشوائي بين 0 و 10
+    _operand2 = random.nextInt(10);
+    _operand3 = random.nextInt(10);
 
     // توليد عمليات رياضية عشوائية
     int operatorIndex1 = random.nextInt(3);

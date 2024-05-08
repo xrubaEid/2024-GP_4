@@ -12,8 +12,8 @@ class EasyEquationModel extends EquationModel {
     Random random = Random();
 
     // توليد أربعة أعداد عشوائية
-    _operand1 = random.nextInt(20); // توليد رقم عشوائي بين 0 و 99
-    _operand2 = random.nextInt(20);
+    _operand1 = random.nextInt(10); // توليد رقم عشوائي بين 0 و 10
+    _operand2 = random.nextInt(10);
 
     // توليد عمليات رياضية عشوائية
     int operatorIndex = random.nextInt(3);

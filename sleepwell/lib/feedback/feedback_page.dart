@@ -61,7 +61,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
     'Did you use electronic devices before bedtime?', //q4
     'Is your bedroom?', //q5
     'Is the temperature in your bedroom?', //q6
-    'Did you consume any caffeinated beverages within 2 hours before bedtime?', //q7
+    'Did you consume any caffeinated beverages within 4 hours before bedtime?', //q7
     'Did you consume food within 2 hours before bedtime?', //q8
   ];
 
@@ -77,11 +77,10 @@ class _FeedbackPageState extends State<FeedbackPage> {
     ], //Q3
     [
       'Yes',
-      'Occasionally',
       'No',
     ], //Q4
-    ['quiet', 'moderately noisy', 'noisy'], //Q5
-    ['cool', 'moderately warm', 'warm'], //Q6
+    ['Quiet', 'moderately noisy', 'noisy'], //Q5
+    ['Cool', 'Warm', 'Hot'], //Q6
     [
       'Yes',
       'No',
@@ -262,7 +261,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                   style: TextStyle(color: Colors.red),
                 ),
               const SizedBox(height: 20),
-              Row(
+              /* Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
@@ -287,6 +286,34 @@ class _FeedbackPageState extends State<FeedbackPage> {
                       },
                     ),
                   if (_canProceed)
+                    ElevatedButton(
+                      child: const Text('Submit Feedback'),
+                      onPressed: _submitFeedback,
+                    ),
+                ],
+              ), */
+              // تعديل ال next botton بس لسى ما اعتمدته
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  if (_currentQuestionIndex >
+                      0) // Only show back button if not the first question
+                    ElevatedButton(
+                      child: const Text('Back'),
+                      onPressed: _previousQuestion,
+                    ),
+                  if (_currentQuestionIndex <
+                      questions.length -
+                          1) // Show 'Next' button only if not the last question
+                    ElevatedButton(
+                      child: const Text('Next'),
+                      onPressed: answers[_currentQuestionIndex].isEmpty
+                          ? null
+                          : _nextQuestion,
+                    ),
+                  if (_currentQuestionIndex ==
+                      questions.length -
+                          1) // Show 'Submit' button only on the last question
                     ElevatedButton(
                       child: const Text('Submit Feedback'),
                       onPressed: _submitFeedback,

@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-//import 'package:flutter_alarm_clock/app/data/theme_data.dart';
 
 class ClockView extends StatefulWidget {
   @override
@@ -10,12 +8,32 @@ class ClockView extends StatefulWidget {
 }
 
 class _ClockViewState extends State<ClockView> {
+  Timer? _timer;
+
   @override
   void initState() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {});
-    });
     super.initState();
+    // Initialize a periodic timer
+    _timer = Timer.periodic(Duration(seconds: 1), (Timer t) {
+      // Debug to ensure this block is not called after dispose
+      //debugPrint("Timer Tick: ${mounted}");
+      if (mounted) {
+        setState(() {
+          // This will trigger a repaint every second only if the widget is still in the tree
+        });
+      } else {
+        // Log when we're updating an unmounted widget
+        debugPrint("Attempt to call setState when not mounted");
+        t.cancel(); // Ensure the timer is cancelled if somehow active when unmounted
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel the timer when the widget is disposed
+    debugPrint("ClockView disposed and timer cancelled");
+    super.dispose();
   }
 
   @override
@@ -119,6 +137,6 @@ class ClockPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) {
-    return true;
+    return true; // Always repaint to update the clock face
   }
 }

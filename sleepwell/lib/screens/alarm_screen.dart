@@ -114,11 +114,19 @@ class _AlarmScreenState extends State<AlarmScreen> {
             myHourList[myHourList.length - 1]['minute']!;
       }
 
-      int numberOfCycles = ((selectedWakeUpTime.hour * 60 +
-                  selectedWakeUpTime.minute -
-                  bedtimeMinutes) /
-              sleepCycleMinutes)
-          .floor();
+      // Calculate the total sleep time in minutes
+      int wakeUpTimeMinutes =
+          selectedWakeUpTime.hour * 60 + selectedWakeUpTime.minute;
+
+      // If the wake-up time is earlier than the bedtime, add 24 hours to the wake-up time
+      if (wakeUpTimeMinutes < bedtimeMinutes) {
+        wakeUpTimeMinutes += 24 * 60;
+      }
+
+      int totalSleepTimeMinutes = wakeUpTimeMinutes - bedtimeMinutes;
+
+      // Calculate the number of sleep cycles
+      int numberOfCycles = (totalSleepTimeMinutes / 90).floor();
       numOfCycles = numberOfCycles;
 
       int optimalWakeUpMinutes =
