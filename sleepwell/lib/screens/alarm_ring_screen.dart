@@ -3,10 +3,13 @@ import 'dart:async';
 import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:flutter/widgets.dart';
+=======
+import 'package:sleepwell/feedback/feedback_page.dart';
+>>>>>>> 8179d31e3a942c8b14e3c497cd7f96bf200bcbe8
 //import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleepwell/main.dart';
-import 'package:sleepwell/feedback/feedback_page.dart';
 
 class AlarmRingScreen extends StatelessWidget {
   final AlarmSettings alarmSettings;

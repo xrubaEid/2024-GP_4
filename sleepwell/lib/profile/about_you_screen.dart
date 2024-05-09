@@ -101,11 +101,11 @@ class _AboutYouPageState extends State<AboutYouPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Success'),
-            content: Text('Your information has been updated.'),
+            title: const Text('Success'),
+            content: const Text('Your information has been updated.'),
             actions: [
               ElevatedButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -133,11 +133,16 @@ class _AboutYouPageState extends State<AboutYouPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF004AAD),
-        title: Text('About You'),
+        backgroundColor: const Color(0xFF004AAD),
+        title: const Text('About You'),
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.edit, color: Colors.white),
+            icon: const Icon(Icons.edit, color: Colors.white),
             onPressed: () {
               setState(() {
                 _isEditing = true;
@@ -159,13 +164,13 @@ class _AboutYouPageState extends State<AboutYouPage> {
           ),
         ),
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: _isLoading
-              ? Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator())
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Your Information',
                       style: TextStyle(
                         fontSize: 20.0,
@@ -173,12 +178,12 @@ class _AboutYouPageState extends State<AboutYouPage> {
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     TextField(
                       controller: _firstNameController,
                       enabled: _isEditing,
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
                         labelText: 'First Name',
                         labelStyle: TextStyle(color: Colors.white),
                         enabledBorder: UnderlineInputBorder(
@@ -187,10 +192,10 @@ class _AboutYouPageState extends State<AboutYouPage> {
                       ),
                     ),
                     TextField(
-                     controller: _lastNameController,
+                      controller: _lastNameController,
                       enabled: _isEditing,
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
                         labelText: 'Last Name',
                         labelStyle: TextStyle(color: Colors.white),
                         enabledBorder: UnderlineInputBorder(
@@ -201,8 +206,8 @@ class _AboutYouPageState extends State<AboutYouPage> {
                     TextField(
                       controller: _ageController,
                       enabled: _isEditing,
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
                         labelText: 'Age',
                         labelStyle: TextStyle(color: Colors.white),
                         enabledBorder: UnderlineInputBorder(
@@ -210,12 +215,21 @@ class _AboutYouPageState extends State<AboutYouPage> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16.0),
+                    const SizedBox(height: 16.0),
                     if (_isEditing)
                       ElevatedButton(
-                        child: Text('Save'),
+                        child: const Text('Save'),
                         onPressed: _updateUserInfo,
                       ),
+                    const SizedBox(height: 16.0),
+                    const Text(
+                      'On this page, you can click on the edit icon to modify or update your information.',
+                      style: TextStyle(
+                        fontSize: 15.0,
+                        //fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 232, 106, 152),
+                      ),
+                    ),
                   ],
                 ),
         ),

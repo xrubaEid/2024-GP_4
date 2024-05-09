@@ -72,17 +72,28 @@ class _AccountScreenState extends State<AccountScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+<<<<<<< HEAD
                     SizedBox(height: 20),
                     Text(
                       'Email: $email',
                       style: TextStyle(
+=======
+                    const SizedBox(height: 20),
+                    Text(
+                      'Email: $email',
+                      style: const TextStyle(
+>>>>>>> 8179d31e3a942c8b14e3c497cd7f96bf200bcbe8
                         color: Colors.white,
                         fontSize: 20,
                       ),
                     ),
                     Text(
                       'Name: $firstName $lastName',
+<<<<<<< HEAD
                       style: TextStyle(
+=======
+                      style: const TextStyle(
+>>>>>>> 8179d31e3a942c8b14e3c497cd7f96bf200bcbe8
                         color: Colors.white,
                         fontSize: 20,
                       ),

@@ -1,6 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-
 import 'package:sleepwell/models/list_of_music.dart';
 
 class SoundsWidget extends StatefulWidget {

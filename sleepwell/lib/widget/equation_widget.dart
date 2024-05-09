@@ -2,10 +2,14 @@ import 'dart:async';
 
 import 'package:alarm/alarm.dart';
 import 'package:flutter/material.dart';
+import 'package:sleepwell/feedback/feedback_page.dart';
 import 'package:sleepwell/models/difficult_equation_model.dart';
 import 'package:sleepwell/models/easy_equation_model.dart';
 import 'package:sleepwell/models/equation_abstrat_model.dart';
+<<<<<<< HEAD
 import 'package:sleepwell/feedback/feedback_page.dart';
+=======
+>>>>>>> 8179d31e3a942c8b14e3c497cd7f96bf200bcbe8
 import 'package:sleepwell/screens/home_screen.dart';
 
 class EquationWidget extends StatefulWidget {
@@ -178,4 +182,8 @@ class _EquationWidgetState extends State<EquationWidget> {
       }
     });
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 8179d31e3a942c8b14e3c497cd7f96bf200bcbe8

@@ -1,7 +1,8 @@
 //import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sleepwell/screens/profile_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:sleepwell/screens/home_screen.dart';
 
 class FeedbackPage extends StatefulWidget {
   static String RouteScreen = 'feedback';
@@ -15,38 +16,82 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
   int _currentQuestionIndex = 0;
   bool _canProceed = false;
+  /////////Taif Edite this part ///////////////
+  final _auth = FirebaseAuth.instance;
+  bool showSpinner = false;
+  late String userId;
+  late String email;
 
+  @override
+  void initState() {
+    super.initState();
+    getCurrentUser();
+  }
+
+  void getCurrentUser() async {
+    try {
+      setState(() {
+        showSpinner = true; // Show spinner while fetching user
+      });
+
+      final user = await _auth.currentUser;
+      if (user != null) {
+        setState(() {
+          userId = user.uid;
+          email = user.email!;
+        });
+      }
+
+      setState(() {
+        showSpinner = false; // Hide spinner after fetching user
+      });
+    } catch (e) {
+      print(e);
+      setState(() {
+        showSpinner = false; // Hide spinner in case of an error
+      });
+    }
+  }
+
+//////end of the part Taif Edit/////////////
   List<String> questions = [
-    'How would you rate the overall quality of your sleep?',
-    'Which of the following factors most commonly disrupt your sleep?',
-    'How frequently do you engage in physical exercise or activity during the day?',
-    'Did you consume caffeine or other stimulants within a few hours before bedtime?',
-    //'Did the sleep enhancement application improve the quality of your sleep?',
-    //'How user-friendly did you find the interface of the sleep enhancement application?',
-    //'Would you recommend the sleep enhancement application to a friend or family member?',
-    //'How satisfied are you with the variety of sleep enhancement features offered by the application?',
-    //'Did you experience any technical issues or glitches while using the sleep enhancement application?',
-    //'How likely are you to continue using the sleep enhancement application in the future?',
+    'How would you rate the overall quality of your sleep last night?', //q1
+    'Did you experience high levels of stress or anxiety before bedtime?', //q2
+    'Did you use nicotine products close to bedtime?', //q3
+    'Did you use electronic devices before bedtime?', //q4
+    'Is your bedroom?', //q5
+    'Is the temperature in your bedroom?', //q6
+    'Did you consume any caffeinated beverages within 4 hours before bedtime?', //q7
+    'Did you consume food within 2 hours before bedtime?', //q8
   ];
 
   List<List<String>> options = [
     ['Excellent', 'Good', 'Average', 'Poor'], //  Q1
     [
-      'Noise',
-      'Temperature',
-      'Stress or anxiety',
-      'Physical discomfort',
-      'None of the above'
+      'Yes',
+      'No',
     ], //Q2
-    ['Daily', 'Several times a week', 'Occasionally', 'Rarely or never'], //Q3
-    ['Yes', 'No'], //Q4
-    //['I usually stop consuming coffee, tea, and smoking at least three hours before bedtime.', 'About 2 hours before bedtime, I avoid coffee, tea, and smoking to ensure better sleep.', 'I try to cut off coffee, tea, and smoking at least 4 hours before my bedtime.', 'Other'],
-    // ['Reading a book or listening to calming music.', 'Meditation or deep breathing', ' stretching or yoga',' play a sport or engage in a physical activity ', 'Other'],
-    //['Option 1', 'Option 2', 'Option 3', 'Other'],
-    // ['Option 1', 'Option 2', 'Option 3', 'Other'],
+    [
+      'Yes',
+      'No',
+    ], //Q3
+    [
+      'Yes',
+      'No',
+    ], //Q4
+    ['Quiet', 'moderately noisy', 'noisy'], //Q5
+    ['Cool', 'Warm', 'Hot'], //Q6
+    [
+      'Yes',
+      'No',
+    ], //Q7
+    [
+      'Yes',
+      'No',
+    ], //Q8
   ];
 
-  List<String> answers = List.filled(4, ''); // Initialize with empty strings
+  List<String> answers = List.filled(8, ''); // Initialize with empty strings
   bool showError = false;
 
   void _saveAnswer(String answer) {
@@ -59,13 +104,13 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 TextEditingController();
 
             return AlertDialog(
-              title: Text('Enter Your Answer'),
+              title: const Text('Enter Your Answer'),
               content: TextField(
                 controller: otherAnswerController,
               ),
               actions: [
                 ElevatedButton(
-                  child: Text('Save'),
+                  child: const Text('Save'),
                   onPressed: () {
                     String otherAnswer = otherAnswerController.text;
                     answers[_currentQuestionIndex] = otherAnswer;
@@ -76,7 +121,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 ),
                 if (options[_currentQuestionIndex].contains('Other'))
                   ElevatedButton(
-                    child: Text('Cancel'),
+                    child: const Text('Cancel'),
                     onPressed: () {
                       setState(() {
                         answers[_currentQuestionIndex] = '';
@@ -118,21 +163,24 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
   void _submitFeedback() {
     _firestore.collection('feedback').add({
+      //Taif add user Id
+      'UserId': userId,
       'answers': answers,
+      'timestamp': DateTime.now(),
     });
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Feedback Submitted'),
-          content: Text('Thank you for your feedback!'),
+          title: const Text('Feedback Submitted'),
+          content: const Text('Thank you for your feedback!'),
           actions: [
             ElevatedButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
-                  Navigator.pop(
+                  Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ProfileScreen()),
+                    MaterialPageRoute(builder: (context) => const MyHomePage()),
                   );
                 }),
           ],
@@ -145,7 +193,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
   Widget build(BuildContext context) {
     Color myColor = const Color.fromARGB(255, 0, 74, 173);
     return Scaffold(
-      appBar: AppBar(
+      /*appBar: AppBar(
         backgroundColor: myColor,
         title: const Text('Sleep Feedback'),
         titleTextStyle: const TextStyle(
@@ -153,7 +201,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
           fontSize: 25,
           fontWeight: FontWeight.bold,
         ),
-      ),
+      ),*/
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -167,21 +215,30 @@ class _FeedbackPageState extends State<FeedbackPage> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              SizedBox(height: 20),
+              const SizedBox(height: 70),
+              const Text(
+                'Sleep Feedback',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 20),
               Text(
                 questions[_currentQuestionIndex],
-                style: TextStyle(
-                  fontSize: 25,
+                style: const TextStyle(
+                  fontSize: 20,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Column(
                 children: options[_currentQuestionIndex].map((option) {
                   return RadioListTile<String>(
                     title: DefaultTextStyle(
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -199,20 +256,20 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 }).toList(),
               ),
               if (showError)
-                Text(
+                const Text(
                   'Please select an answer.',
                   style: TextStyle(color: Colors.red),
                 ),
-              SizedBox(height: 20),
-              Row(
+              const SizedBox(height: 20),
+              /* Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    child: Text('Back'),
+                    child: const Text('Back'),
                     onPressed: _previousQuestion,
                   ),
                   ElevatedButton(
-                    child: Text('Next'),
+                    child: const Text('Next'),
                     onPressed: answers[_currentQuestionIndex].isEmpty
                         ? null
                         : _nextQuestion,
@@ -220,7 +277,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
                   if (showError &&
                       options[_currentQuestionIndex].contains('Other'))
                     ElevatedButton(
-                      child: Text('Cancel'),
+                      child: const Text('Cancel'),
                       onPressed: () {
                         setState(() {
                           answers[_currentQuestionIndex] = '';
@@ -230,7 +287,35 @@ class _FeedbackPageState extends State<FeedbackPage> {
                     ),
                   if (_canProceed)
                     ElevatedButton(
-                      child: Text('Submit Feedback'),
+                      child: const Text('Submit Feedback'),
+                      onPressed: _submitFeedback,
+                    ),
+                ],
+              ), */
+              // تعديل ال next botton بس لسى ما اعتمدته
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  if (_currentQuestionIndex >
+                      0) // Only show back button if not the first question
+                    ElevatedButton(
+                      child: const Text('Back'),
+                      onPressed: _previousQuestion,
+                    ),
+                  if (_currentQuestionIndex <
+                      questions.length -
+                          1) // Show 'Next' button only if not the last question
+                    ElevatedButton(
+                      child: const Text('Next'),
+                      onPressed: answers[_currentQuestionIndex].isEmpty
+                          ? null
+                          : _nextQuestion,
+                    ),
+                  if (_currentQuestionIndex ==
+                      questions.length -
+                          1) // Show 'Submit' button only on the last question
+                    ElevatedButton(
+                      child: const Text('Submit Feedback'),
                       onPressed: _submitFeedback,
                     ),
                 ],

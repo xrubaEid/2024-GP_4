@@ -23,6 +23,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
   String printedBedtime = '';
   String printedWakeUpTime = '';
   String printednumOfCycles = '';
+  int numOfCycles = 0;
 
   @override
   void initState() {
@@ -48,6 +49,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
     if (pickedTime != null) {
       setState(() {
+        print('this is the selected bedtime');
+        print(pickedTime);
         bedtimeController.text = pickedTime.format(context);
         selectedBedtime = pickedTime;
       });
@@ -64,6 +67,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
     if (pickedTime != null) {
       setState(() {
+        print('this is the selected wake up time');
+        print(pickedTime);
         selectedWakeUpTime = pickedTime;
         wakeUpTimeController.text = pickedTime.format(context);
       });
@@ -82,8 +87,18 @@ class _AlarmScreenState extends State<AlarmScreen> {
       int bedtimeMinutes = 0;
       int sleepCycleMinutes = 90; // Duration of each sleep cycle in minutes
 
+      int? fristRead = myHourList[0]['heartRate'];
+      int? Diff = (fristRead! * 0.2).toInt();
+      int? tocomp = fristRead - Diff;
+      //print('this is the first read');
+      print(fristRead);
+      //print('this is the diff');
+      print(Diff);
+      //print('this is to compare');
+      print(tocomp);
+
       for (int i = 0; i < myHourList.length; i++) {
-        if (myHourList[i]['heartRate']! < 90) {
+        if (myHourList[i]['heartRate']! < tocomp) {
           bedtimeIndex = i;
           break;
         }
@@ -99,11 +114,20 @@ class _AlarmScreenState extends State<AlarmScreen> {
             myHourList[myHourList.length - 1]['minute']!;
       }
 
-      int numberOfCycles = ((selectedWakeUpTime.hour * 60 +
-                  selectedWakeUpTime.minute -
-                  bedtimeMinutes) /
-              sleepCycleMinutes)
-          .floor();
+      // Calculate the total sleep time in minutes
+      int wakeUpTimeMinutes =
+          selectedWakeUpTime.hour * 60 + selectedWakeUpTime.minute;
+
+      // If the wake-up time is earlier than the bedtime, add 24 hours to the wake-up time
+      if (wakeUpTimeMinutes < bedtimeMinutes) {
+        wakeUpTimeMinutes += 24 * 60;
+      }
+
+      int totalSleepTimeMinutes = wakeUpTimeMinutes - bedtimeMinutes;
+
+      // Calculate the number of sleep cycles
+      int numberOfCycles = (totalSleepTimeMinutes / 90).floor();
+      numOfCycles = numberOfCycles;
 
       int optimalWakeUpMinutes =
           bedtimeMinutes + (numberOfCycles * sleepCycleMinutes);
@@ -112,6 +136,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
       String moreTime = calculateTimeFromMinutes(
           optimalWakeUpMinutes + 15, wakeUpTimeController.text);
+
       print(moreTime);
       print(selectedWakeUpTime);
 
@@ -195,10 +220,10 @@ class _AlarmScreenState extends State<AlarmScreen> {
       bedtime.minute,
     );
 
-    DateTime endTime = startTime.add(Duration(hours: 1));
+    DateTime endTime = startTime.add(const Duration(hours: 1));
 
     int initialHeartRate = 120;
-    int finalHeartRate = 75;
+    int finalHeartRate = 50;
 
     DateTime currentTime = startTime;
     Random random = Random();
@@ -215,9 +240,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
       } else {
         // Decrease heart rate gradually from 95 bpm to finalHeartRate
         double progress = currentTime
-                .difference(startTime.add(Duration(minutes: 30)))
+                .difference(startTime.add(const Duration(minutes: 30)))
                 .inMinutes /
-            (endTime.difference(startTime.add(Duration(minutes: 30))))
+            (endTime.difference(startTime.add(const Duration(minutes: 30))))
                 .inMinutes;
 
         int decreaseAmount = (progress * (95 - finalHeartRate)).round();
@@ -238,6 +263,41 @@ class _AlarmScreenState extends State<AlarmScreen> {
     return myHourList;
   }
 
+  int timeDifferenceInMinutes(TimeOfDay start, TimeOfDay end) {
+    final startTime = start.hour * 60 + start.minute;
+    final endTime = end.hour * 60 + end.minute;
+    return (endTime - startTime).abs();
+  }
+
+  void _checkAndSaveTimes() {
+    if (timeDifferenceInMinutes(selectedBedtime, selectedWakeUpTime) < 120) {
+      // Show warning dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              "Warning",
+              style: TextStyle(color: Colors.red),
+            ),
+            content: const Text(
+                "please select the wake up time with at least 2 hours deffrence"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      _saveTimes(); // Proceed to save times if the difference is sufficient
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var now = DateTime.now();
@@ -248,7 +308,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
     //const color = Color.fromARGB(255, 255, 255, 255);
 
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 16, 95, 199),
+      backgroundColor: const Color.fromARGB(255, 16, 95, 199),
       body: Container(
         height: MediaQuery.of(context).size.height,
         padding: const EdgeInsets.all(30),
@@ -304,11 +364,11 @@ class _AlarmScreenState extends State<AlarmScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
+                    const Text(
                       "BEDTIME",
                       style: TextStyle(
                         color: Color(0xffff0863),
@@ -322,7 +382,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                       child: AbsorbPointer(
                         child: TextFormField(
                           controller: bedtimeController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: "Select bedtime",
                             hintStyle: TextStyle(
                               color: Colors.white,
@@ -330,7 +390,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Color.fromARGB(255, 255, 255, 255),
                             fontSize: 30,
                             fontWeight: FontWeight.w700,
@@ -338,8 +398,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
-                    Text(
+                    const SizedBox(height: 20),
+                    const Text(
                       "WAKE UP TIME",
                       style: TextStyle(
                           color: Color(0xffff0863),
@@ -352,7 +412,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                       child: AbsorbPointer(
                         child: TextFormField(
                           controller: wakeUpTimeController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: "Select wake-up time",
                             hintStyle: TextStyle(
                               color: Colors.white,
@@ -360,7 +420,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Color.fromARGB(255, 255, 255, 255),
                             fontSize: 30,
                             fontWeight: FontWeight.w700,
@@ -372,55 +432,66 @@ class _AlarmScreenState extends State<AlarmScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Align(
                 alignment: Alignment.center,
                 child: Center(
                     child: TextButton(
-                  onPressed: _saveTimes,
+                  onPressed: _checkAndSaveTimes,
                   style: ButtonStyle(
                     backgroundColor:
                         MaterialStateProperty.all<Color>(Colors.pink),
                     foregroundColor:
                         MaterialStateProperty.all<Color>(Colors.white),
                   ),
-                  child: Text('Save'),
+                  child: const Text('Save'),
                 ))),
-            SizedBox(height: 8),
-            BottomAppBar(
-              color: Colors.transparent,
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'Actual sleep time is: $printedBedtime',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
+            const SizedBox(height: 20),
+            Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Actual sleep time is: $printedBedtime',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
-                  //SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'Optimal wake-up time is: $printedWakeUpTime',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    ),
+                  ],
+                ),
+                //SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Optimal wake-up time is: $printedWakeUpTime',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'You slept for $numOfCycles ${numOfCycles == 1 ? 'sleep cycle' : 'sleep cycles'}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
+            SizedBox(height: 20),
             Container(
               alignment: Alignment.bottomCenter,
               child: const Text(
@@ -431,7 +502,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      /*floatingActionButton: FloatingActionButton(
         onPressed: () async {
           DateTime now = DateTime.now();
           final nowTime = TimeOfDay.fromDateTime(now);
@@ -439,7 +510,26 @@ class _AlarmScreenState extends State<AlarmScreen> {
               nowTime, "${nowTime.hour}:${nowTime.minute + 1} AM");
           AppAlarm.getAlarms();
         },
-        child: Icon(Icons.alarm),
+        child:const  Icon(Icons.alarm),
+      ),*/
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          DateTime now = DateTime.now();
+          final nowTime = TimeOfDay.fromDateTime(now);
+          // Adding one minute to the current time
+          final newTime = nowTime.replacing(
+            hour: nowTime.hourOfPeriod,
+            minute: nowTime.minute + 1,
+          );
+          // Saving the alarm with the updated time
+          await AppAlarm.saveAlarm(
+            newTime,
+            "${newTime.hour}:${newTime.minute} ${newTime.period == DayPeriod.am ? 'AM' : 'PM'}",
+          );
+          // Getting all alarms
+          AppAlarm.getAlarms();
+        },
+        child: const Icon(Icons.alarm),
       ),
     );
   }

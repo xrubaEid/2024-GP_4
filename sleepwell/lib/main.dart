@@ -1,9 +1,12 @@
 //import 'dart:html';
+import 'package:alarm/alarm.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleepwell/feedback/feedback_page.dart';
 import 'package:sleepwell/firebase_options.dart';
+import 'package:sleepwell/profile/more_about_you.dart';
 import 'package:sleepwell/screens/alarm_screen.dart';
 import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/onboarding_screen.dart';
@@ -13,11 +16,14 @@ import 'package:sleepwell/screens/signup_screen.dart';
 import 'package:sleepwell/screens/splash_screen.dart';
 import 'package:sleepwell/screens/welcoming_screen.dart';
 import 'package:sleepwell/signup/question.dart';
+<<<<<<< HEAD
 import 'package:sleepwell/widget/counter_widget.dart';
 import 'package:sleepwell/screens/edite_alarm_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:alarm/alarm.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+=======
+>>>>>>> 8179d31e3a942c8b14e3c497cd7f96bf200bcbe8
 
 late SharedPreferences prefs;
 Future<void> main() async {
@@ -54,19 +60,21 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute:
           loginStatus ? MyHomePage.RouteScreen : SplashScreen.RouteScreen,
+          
       //initialRoute: SplashScreen.RouteScreen,
       //initialRoute: FeedbackPage.RouteScreen,
       routes: {
-        SignInScreen.RouteScreen: (context) => SignInScreen(),
-        MyHomePage.RouteScreen: (context) => MyHomePage(),
-        SignUpScreen.RouteScreen: (context) => SignUpScreen(),
-        SplashScreen.RouteScreen: (context) => SplashScreen(),
-        AlarmScreen.RouteScreen: (context) => AlarmScreen(),
-        ProfileScreen.RouteScreen: (context) => ProfileScreen(),
-        welcome.RouteScreen: (context) => welcome(),
+        SignInScreen.RouteScreen: (context) => const SignInScreen(),
+        MyHomePage.RouteScreen: (context) => const MyHomePage(),
+        SignUpScreen.RouteScreen: (context) => const SignUpScreen(),
+        SplashScreen.RouteScreen: (context) => const SplashScreen(),
+        AlarmScreen.RouteScreen: (context) => const AlarmScreen(),
+        ProfileScreen.RouteScreen: (context) => const ProfileScreen(),
+        welcome.RouteScreen: (context) => const welcome(),
         OnboardingScreen.RouteScreen: (context) => const OnboardingScreen(),
         FeedbackPage.RouteScreen: (context) => FeedbackPage(),
-        QuestionScreen.RouteScreen: (context) => QuestionScreen(),
+        QuestionScreen.RouteScreen: (context) => const QuestionScreen(),
+        MoreAboutYouScreen.RouteScreen: (context) => MoreAboutYouScreen(),
       },
     );
   }
