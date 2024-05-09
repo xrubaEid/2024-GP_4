@@ -52,6 +52,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute:
           loginStatus ? MyHomePage.RouteScreen : SplashScreen.RouteScreen,
+          
       //initialRoute: SplashScreen.RouteScreen,
       //initialRoute: FeedbackPage.RouteScreen,
       routes: {
