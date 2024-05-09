@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -25,6 +26,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
   String printednumOfCycles = '';
   int numOfCycles = 0;
 
+  late DateTime _now;
+  late Timer _timer;
+
   @override
   void initState() {
     super.initState();
@@ -32,12 +36,19 @@ class _AlarmScreenState extends State<AlarmScreen> {
     wakeUpTimeController = TextEditingController();
     selectedBedtime = TimeOfDay.now();
     selectedWakeUpTime = TimeOfDay.now();
+    _now = DateTime.now();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _now = DateTime.now();
+      });
+    });
   }
 
   @override
   void dispose() {
     bedtimeController.dispose();
     wakeUpTimeController.dispose();
+    _timer.cancel();
     super.dispose();
   }
 
@@ -294,15 +305,35 @@ class _AlarmScreenState extends State<AlarmScreen> {
         },
       );
     } else {
+      /*showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              "Alarm scheduled",
+              style: TextStyle(color: Colors.green),
+            ),
+            content: const Text(""),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );*/
       _saveTimes(); // Proceed to save times if the difference is sufficient
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var now = DateTime.now();
-    var formattedDate = DateFormat('EEE, d MMM').format(now);
-    var formattedTime = DateFormat('hh:mm').format(now);
+    //var now = DateTime.now();
+    var formattedDate = DateFormat('EEE, d MMM').format(_now);
+    var formattedTime = DateFormat('hh:mm').format(_now);
 
     //var white = Colors.white;
     //const color = Color.fromARGB(255, 255, 255, 255);
