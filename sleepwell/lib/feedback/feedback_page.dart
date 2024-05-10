@@ -191,7 +191,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
   @override
   Widget build(BuildContext context) {
-    Color myColor = const Color.fromARGB(255, 0, 74, 173);
+    //Color myColor = const Color.fromARGB(255, 0, 74, 173);
     return Scaffold(
       /*appBar: AppBar(
         backgroundColor: myColor,
@@ -302,9 +302,8 @@ class _FeedbackPageState extends State<FeedbackPage> {
                       child: const Text('Back'),
                       onPressed: _previousQuestion,
                     ),
-                  if (_currentQuestionIndex <
-                      questions.length -
-                          1) // Show 'Next' button only if not the last question
+                  if (_currentQuestionIndex < questions.length - 1 &&
+                      _canProceed) // Show 'Next' button only if not the last question
                     ElevatedButton(
                       child: const Text('Next'),
                       onPressed: answers[_currentQuestionIndex].isEmpty

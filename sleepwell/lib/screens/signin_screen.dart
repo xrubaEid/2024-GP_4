@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:sleepwell/main.dart';
 import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/signup_screen.dart';
 //import 'package:sleepwell/services/auth_service.dart';
@@ -135,6 +136,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         setState(() {
                           showSpinner = false;
                         });
+                        prefs.setBool("isLogin", true);
                       }
                     } catch (e) {
                       setState(() {
