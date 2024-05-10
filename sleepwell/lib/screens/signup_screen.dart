@@ -7,7 +7,9 @@ import 'package:sleepwell/widget/regsterbutton.dart';
 
 class SignUpScreen extends StatefulWidget {
   static String RouteScreen = 'signup_screen';
-  const SignUpScreen({super.key,});
+  const SignUpScreen({
+    super.key,
+  });
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -30,7 +32,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor:const Color.fromARGB(255, 0, 74, 173),
+        backgroundColor: const Color.fromARGB(255, 0, 74, 173),
         title: const Text(''),
       ),
       body: ModalProgressHUD(
@@ -64,14 +66,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(
                   height: 15,
                 ),
-                 const Text(
-                   '  Names should be in English ',
-                   style: TextStyle(
-                       color: Color.fromARGB(241, 230, 158, 3),
-                       fontSize: 15,
-                       fontWeight: FontWeight.bold),
-                 ),
-                 const SizedBox(
+                const Text(
+                  '  Names should be in English ',
+                  style: TextStyle(
+                      color: Color.fromARGB(241, 230, 158, 3),
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(
                   height: 10,
                 ),
                 TextField(
@@ -112,7 +114,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(
                   height: 15,
                 ),
-                 TextField(
+                TextField(
                   keyboardType: TextInputType.name,
                   onChanged: (value) {
                     // here i save the  value of age from user
@@ -128,7 +130,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                 ),
-                 const SizedBox(
+                const SizedBox(
                   height: 15,
                 ),
                 TextField(
@@ -140,7 +142,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   decoration: InputDecoration(
                     fillColor: Colors.white,
                     filled: true,
-                    suffixIcon:const Icon(Icons.email),
+                    suffixIcon: const Icon(Icons.email),
                     hintText: 'Email Address',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -150,7 +152,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(
                   height: 15,
                 ),
-                
                 TextField(
                   keyboardType: TextInputType.visiblePassword,
                   onChanged: (value) {
@@ -192,64 +193,63 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   height: 10,
                 ),
                 const Text(
-                   '- Password should be Identical.',
-                   style: TextStyle(
-                       color: Color.fromARGB(241, 230, 158, 3),
-                       fontSize: 15,
-                       fontWeight: FontWeight.bold),
-                 ),
-                 const Text(
-                   '- At least 8 characters long.',
-                   style: TextStyle(
-                       color: Color.fromARGB(241, 230, 158, 3),
-                       fontSize: 15,
-                       fontWeight: FontWeight.bold),
-                 ),
-                 const Text(
-                   '- Password should contain numbers & characters.',
-                   style: TextStyle(
-                       color: Color.fromARGB(241, 230, 158, 3),
-                       fontSize: 15,
-                       fontWeight: FontWeight.bold),
-                 ),
+                  '- Password should be Identical.',
+                  style: TextStyle(
+                      color: Color.fromARGB(241, 230, 158, 3),
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold),
+                ),
+                const Text(
+                  '- At least 8 characters long.',
+                  style: TextStyle(
+                      color: Color.fromARGB(241, 230, 158, 3),
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold),
+                ),
+                const Text(
+                  '- Password should contain numbers & characters.',
+                  style: TextStyle(
+                      color: Color.fromARGB(241, 230, 158, 3),
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(
                   height: 10,
                 ),
                 regsterbutton(
-                  color:const  Color(0xffd5defe),
+                  color: const Color(0xffd5defe),
                   title: 'Create Account',
                   onPressed: () async {
-                      if (password.length >= 8 &&
-                      password.contains(RegExp(r'[a-zA-Z]')) &&
-                       password.contains(RegExp(r'[0-9]')) &&
-                       password==cpassword) {
+                    if (password.length >= 8 &&
+                        password.contains(RegExp(r'[a-zA-Z]')) &&
+                        password.contains(RegExp(r'[0-9]')) &&
+                        password == cpassword) {
                       try {
                         setState(() {
                           showSpinner = true;
                         });
-                       final newUser =
+                        final newUser =
                             await _auth.createUserWithEmailAndPassword(
                                 email: email, password: password);
-                       if (newUser != null) {
+                        if (newUser != null) {
                           final userId = newUser.user
                               ?.uid; // Access the UID of the newly created user
                           await _firestore.collection('Users').doc(userId).set({
-                            'UserId':userId,
+                            'UserId': userId,
                             'Email': email,
                             'Fname': name,
                             'Lname': Lname,
-                            'Age':age,
+                            'Age': age,
                             'Password': password,
-                            
                           });
 
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title:const Text('Great job!'),
+                                title: const Text('Great job!'),
                                 titleTextStyle: const TextStyle(
-                                  color:Colors.green,
+                                  color: Colors.green,
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -259,7 +259,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   TextButton(
                                     onPressed: () {
                                       Navigator.of(context).pop();
-                                       Navigator.pushNamed(context,QuestionScreen.RouteScreen,);
+                                      Navigator.pushNamed(
+                                        context,
+                                        QuestionScreen.RouteScreen,
+                                      );
                                     },
                                     child: const Text('OK'),
                                   ),
@@ -282,8 +285,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           } else if (e.code == 'email-already-in-use') {
                             errorMessage = ' Email is already in use.';
                           } else {
-                            errorMessage =
-                                ' Emil format not correct';
+                            errorMessage = ' Emil format not correct';
                           }
                         } else {
                           errorMessage =
