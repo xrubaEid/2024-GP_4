@@ -18,7 +18,6 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
   bool isMissionStopVisible = false;
   bool isMathMissionSelected = false;
   String mathMissionDifficulty = 'Easy';
-  // final audioPlayer = AudioPlayer();
 
   void saveSettings() {
     prefs.setString("selectedMission", selectedMission);
@@ -48,12 +47,13 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
         selectedSoundPath = soundPath ?? musicList[0].musicName;
       },
     );
+    double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'Edit Alarm',
-          style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+          style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Color(0xFF004AAD),
       ),
@@ -66,67 +66,45 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(30.0),
+          padding: EdgeInsets.all(screenWidth * 0.08), // Responsive padding
           child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: EdgeInsets.symmetric(
+                horizontal:
+                    screenWidth * 0.04), // Responsive horizontal padding
             shrinkWrap: true,
             children: [
               const SizedBox(height: 15),
-              const Text(
-                'Select Alarm Sound',
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 255, 255, 255),
-                ),
+              ResponsiveText(
+                text: 'Select Alarm Sound',
+                baseFontSize: 25,
               ),
               Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: soundsWidget),
-              // const Divider(),
-              const SizedBox(height: 30),
-
-              // choose the method of pause the alarm
-              const Text(
-                'Alarm Type',
-                style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 255, 255, 255)),
+                padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.01), // Responsive padding
+                child: soundsWidget,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
+              ResponsiveText(
+                text: 'Alarm Type',
+                baseFontSize: 25,
+              ),
+              const SizedBox(height: 10),
               getRadioListTile(
                 value: "Default",
                 groupValue: selectedMission,
                 onChanged: (value) =>
                     setState(() => selectedMission = value ?? "Default"),
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
                 title: 'Sound only',
                 icon: Icons.alarm,
               ),
-              /* const ListTile(
-                contentPadding: EdgeInsets.symmetric(horizontal: 68),
-                leading: Icon(
-                  Icons.pause_circle_outline_sharp,
-                  size: 20,
-                  color: Color.fromARGB(255, 255, 255, 255),
-                ),
-                title: Text(
-                  'Stop',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 255, 255, 255),
-                  ),
-                ),
-              ),*/
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               getRadioListTile(
                 value: "Math Problem",
                 groupValue: selectedMission,
                 onChanged: (value) =>
                     setState(() => selectedMission = value ?? "Default"),
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
                 icon: Icons.calculate_rounded,
                 title: 'Sound & Math Problem',
               ),
@@ -136,7 +114,8 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
                     selectedMission == "Math Problem" ? selectedMath : "",
                 onChanged: (value) =>
                     setState(() => selectedMath = value ?? "easy"),
-                padding: const EdgeInsets.symmetric(horizontal: 58),
+                padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.058), // Adjusted padding
                 icon: Icons.sim_card,
                 title: 'easy',
                 fontSize: 17,
@@ -147,7 +126,8 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
                     selectedMission == "Math Problem" ? selectedMath : "",
                 onChanged: (value) =>
                     setState(() => selectedMath = value ?? "easy"),
-                padding: const EdgeInsets.symmetric(horizontal: 58),
+                padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth * 0.058), // Adjusted padding
                 icon: Icons.difference,
                 title: 'difficult',
                 fontSize: 17,
@@ -166,8 +146,7 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          // backgroundColor: Color.fromARGB(0, 9, 42, 232),
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -187,7 +166,7 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 255, 255, 255),
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -198,6 +177,31 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class ResponsiveText extends StatelessWidget {
+  final String text;
+  final double
+      baseFontSize; // Base font size for a reference screen width like 375 pixels
+
+  const ResponsiveText({
+    Key? key,
+    required this.text,
+    this.baseFontSize = 16,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    double scaleFactor = MediaQuery.of(context).size.width / 375;
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: baseFontSize * scaleFactor,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
       ),
     );
   }
