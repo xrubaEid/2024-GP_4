@@ -161,6 +161,15 @@ class _FeedbackPageState extends State<FeedbackPage> {
     });
   }
 
+  bool _isSubmitButtonEnabled() {
+    for (int i = 0; i < answers.length; i++) {
+      if (answers[i].isEmpty) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   void _submitFeedback() {
     _firestore.collection('feedback').add({
       //Taif add user Id
@@ -302,8 +311,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
                       child: const Text('Back'),
                       onPressed: _previousQuestion,
                     ),
-                  if (_currentQuestionIndex < questions.length - 1 &&
-                      _canProceed) // Show 'Next' button only if not the last question
+                  if (_currentQuestionIndex <
+                      questions.length -
+                          1) // Show 'Next' button only if not the last question
                     ElevatedButton(
                       child: const Text('Next'),
                       onPressed: answers[_currentQuestionIndex].isEmpty
@@ -315,7 +325,8 @@ class _FeedbackPageState extends State<FeedbackPage> {
                           1) // Show 'Submit' button only on the last question
                     ElevatedButton(
                       child: const Text('Submit Feedback'),
-                      onPressed: _submitFeedback,
+                      onPressed:
+                          _isSubmitButtonEnabled() ? _submitFeedback : null,
                     ),
                 ],
               ),
