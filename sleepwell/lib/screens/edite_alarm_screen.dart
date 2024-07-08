@@ -126,7 +126,7 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
                 groupValue: selectedMission,
                 onChanged: (value) =>
                     setState(() => selectedMission = value ?? "Default"),
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 0),
                 icon: Icons.calculate_rounded,
                 title: 'Sound & Math Problem',
               ),
