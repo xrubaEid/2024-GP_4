@@ -1,7 +1,8 @@
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
-import 'package:sleepwell/push_notification_service.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import '../widget/custom_bottom_bar.dart';
+import 'statistic/statistic_screen.dart';
 
 class DashboardScreen extends StatelessWidget {
   @override
@@ -14,7 +15,7 @@ class DashboardScreen extends StatelessWidget {
         ),
         backgroundColor: const Color(0xFF004AAD),
       ),
-      bottomNavigationBar: CustomBottomBar(),
+      // bottomNavigationBar: CustomBottomBar(),
       body: Container(
         height: MediaQuery.of(context).size.height,
         // padding: const EdgeInsets.all(30),
@@ -26,13 +27,20 @@ class DashboardScreen extends StatelessWidget {
           ),
         ),
         child: const Center(
-          child: Text(
-            'Dashboard Screen',
-            style: TextStyle(
-              color: Colors.white,
+            // child: Text(
+            //   'Dashboard Screen',
+            //   style: TextStyle(
+            //     color: Colors.white,
+            //   ),
+
+            // ),
+            //   child: ElevatedButton(
+            //       onPressed: () {
+            //         Get.offAll(const StatisticScreen());
+            //       },
+            //       child: const Text("StatisticScreen")),
+            // ),
             ),
-          ),
-        ),
       ),
     );
   }

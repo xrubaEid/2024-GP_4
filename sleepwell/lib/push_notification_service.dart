@@ -3,6 +3,9 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleepwell/main.dart';
+import 'package:sleepwell/screens/alarm/alarm_ring_screen.dart';
+import 'package:sleepwell/screens/alarm/alarm_setup_screen.dart';
+import 'package:sleepwell/screens/dashboard_screen.dart';
 import 'package:sleepwell/screens/feedback/feedback_page.dart';
 
 class PushNotificationService {
@@ -40,6 +43,7 @@ class PushNotificationService {
         }
       },
     );
+
     await AwesomeNotifications().setListeners(
       onActionReceivedMethod: onActionReceivedMethod,
       onDismissActionReceivedMethod: onDismissActionReceivedMethod,
@@ -53,13 +57,13 @@ class PushNotificationService {
     // debugPrint('onActionReceivedMethod');
     final payload = receivedAction.payload ?? {};
     if (payload["navigate"] == true) {
-      Get.to(const MainAppScreen());
+      Get.to(AlarmSetupScreen());
     }
-    if (receivedAction.buttonKeyPressed == '') {
-      // Navigate or perform some action
-      Get.to(const MainAppScreen()); // Example of navigation
-    } else if (receivedAction.buttonKeyPressed == 'FeedBak') {
+    if (receivedAction.buttonKeyPressed == 'FeedBak') {
       Get.offAll(const FeedbackPage());
+    } else {
+      // Navigate or perform some action
+      Get.to(DashboardScreen()); // Example of navigation
     }
   }
 
@@ -191,13 +195,13 @@ class PushNotificationService {
         interval: interval > 0
             ? interval
             : interval + 86400, // 86400 seconds in a day
-        actionButtons: [
-          NotificationActionButton(
-            key: 'MARK_DONE',
-            label: 'Mark as Done',
-            // Add other properties if needed, like autoDismissible
-          ),
-        ],
+        // actionButtons: [
+        //   NotificationActionButton(
+        //     key: 'MARK_DONE',
+        //     label: 'Mark as Done',
+        //     // Add other properties if needed, like autoDismissible
+        //   ),
+        // ],
       );
     }
   }

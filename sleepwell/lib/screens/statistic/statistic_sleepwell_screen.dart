@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleepwell/widget/info_card.dart';
 import '../../widget/custom_bottom_bar.dart';
 import '../../widget/indicator.dart';
@@ -48,26 +49,34 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
     const Color.fromRGBO(223, 30, 233, 1), // WK 2
 
     const Color.fromARGB(255, 10, 227, 147), // Wk 3
-    const Color(0xFF53C3E9), // WK 4
+    const Color(0xFFB3FD12), // WK 4
   ];
   final AlarmModel _model = AlarmModel();
 
 // end week
 // day
-  String sleepHoursDurationLastDay = '0h';
-  String sleepTimeActualLastDay = '0h';
-  String sleepCyclesLastDay = '0';
-  String wakeUpTimeLastDay = '0h';
+  String sleepHoursDurationLastDay = '0:0 h';
+  String sleepTimeActualLastDay = '0:0 h';
+  String sleepCyclesLastDay = '0 C';
+  String wakeUpTimeLastDay = '0:0 h';
 
   List<FlSpot> sleepCycleDataLastDay = [];
 // END Var DAY
-
+  String? userid;
   @override
   void initState() {
     super.initState();
     loadDataForMonth();
     loadDataWeek();
     loadDayData();
+    getUserId();
+  }
+
+  Future<void> getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userid = prefs.getString('userid'); // استرجاع الـ userid
+    });
   }
 
 // Day
@@ -75,10 +84,11 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
     try {
       final now = DateTime.now();
       final startOfDay = DateTime(now.year, now.month, now.day);
-      final endOfDay = startOfDay.add(Duration(days: 1));
+      final endOfDay = startOfDay.add(const Duration(days: 1));
 
       final snapshot = await FirebaseFirestore.instance
           .collection('alarms')
+          .where('uid', isEqualTo: userid)
           .where('timestamp', isGreaterThanOrEqualTo: startOfDay)
           .where('timestamp', isLessThan: endOfDay)
           .get();
@@ -137,15 +147,58 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
   }
 
 // End
+  // Future<void> loadDataWeek() async {
+  //   // final now = DateTime.now();
+  //   // final weekStart = now.subtract(Duration(days: now.weekday));
+  //   // final weekEnd = now.subtract(const Duration(days: 0));
+  //   final now = DateTime.now();
+  //   final weekEnd = now.subtract(
+  //       const Duration(days: 1)); // Today is the end of the 7-day period
+  //   final weekStart = now.subtract(
+  //       const Duration(days: 7)); // 6 days ago is the start of the 7-day period
+
+  //   // Format the week range for display
+  //   weekRange =
+  //       '${DateFormat('d MMM').format(weekStart)} - ${DateFormat('d MMM').format(weekEnd)}';
+
+  //   final data = await _model.fetchAlarmData(weekStart, weekEnd);
+
+  //   setState(() {
+  //     sleepHours = data['sleepHours'] ?? [];
+  //     sleepCycles = data['sleepCycles'] ?? [];
+  //     averageSleepHours = data['averageSleepHours'] ?? 0.0;
+
+  //     barGroups = List.generate(
+  //       sleepHours.length,
+  //       (index) => BarChartGroupData(
+  //         x: index,
+  //         barRods: [
+  //           BarChartRodData(
+  //             toY: sleepHours[index],
+  //             color: Colors.blue,
+  //             width: 16,
+  //           ),
+  //         ],
+  //       ),
+  //     );
+
+  //     pieSections = List.generate(
+  //       sleepCycles.length,
+  //       (index) => PieChartSectionData(
+  //         value: sleepCycles[index],
+  //         color: weekColors[index % weekColors.length],
+  //         title: '${sleepCycles[index]}',
+  //         radius: 60,
+  //       ),
+  //     );
+  //   });
+  // }
   Future<void> loadDataWeek() async {
-    // final now = DateTime.now();
-    // final weekStart = now.subtract(Duration(days: now.weekday));
-    // final weekEnd = now.subtract(const Duration(days: 0));
     final now = DateTime.now();
     final weekEnd = now.subtract(
         const Duration(days: 1)); // Today is the end of the 7-day period
     final weekStart = now.subtract(
-        Duration(days: 7)); // 6 days ago is the start of the 7-day period
+        const Duration(days: 7)); // 6 days ago is the start of the 7-day period
 
     // Format the week range for display
     weekRange =
@@ -158,29 +211,53 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
       sleepCycles = data['sleepCycles'] ?? [];
       averageSleepHours = data['averageSleepHours'] ?? 0.0;
 
-      barGroups = List.generate(
-        sleepHours.length,
-        (index) => BarChartGroupData(
+      // barGroups = List.generate(
+      //   sleepHours.length,
+      //   (index) => BarChartGroupData(
+      //     x: index,
+      //     barRods: [
+      //       BarChartRodData(
+      //         toY: sleepHours[index],
+      //         color: Colors.blue,
+      //         width: 16,
+      //       ),
+      //     ],
+      //   ),
+      // );
+
+      // pieSections = List.generate(
+      //   sleepCycles.length,
+      //   (index) => PieChartSectionData(
+      //     value: sleepCycles[index],
+      //     color: weekColors[
+      //         index % weekColors.length], // Cycle colors if list is shorter
+      //     title: '${sleepCycles[index]}',
+      //     radius: 60,
+      //   ),
+      // );
+      barGroups = List.generate(7, (index) {
+        double value = (index < sleepHours.length) ? sleepHours[index] : 0.0;
+        return BarChartGroupData(
           x: index,
           barRods: [
             BarChartRodData(
-              toY: sleepHours[index],
+              toY: value,
               color: Colors.blue,
               width: 16,
             ),
           ],
-        ),
-      );
+        );
+      });
 
-      pieSections = List.generate(
-        sleepCycles.length,
-        (index) => PieChartSectionData(
-          value: sleepCycles[index],
-          color: weekColors[index],
-          title: '${sleepCycles[index]}',
+      pieSections = List.generate(7, (index) {
+        double value = (index < sleepCycles.length) ? sleepCycles[index] : 0.0;
+        return PieChartSectionData(
+          value: value,
+          color: weekColors[index % weekColors.length],
+          title: '$value',
           radius: 60,
-        ),
-      );
+        );
+      });
     });
   }
 
@@ -310,6 +387,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
       //     .get();
       final snapshot = await _firestore
           .collection('alarms')
+          .where('uid', isEqualTo: userid)
           .where('timestamp', isGreaterThanOrEqualTo: firstDayOfMonth)
           .where('timestamp', isLessThanOrEqualTo: lastDayOfMonth)
           .get();
@@ -409,6 +487,11 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
 // Set the maxY to a value slightly higher than the maximum sleep hours
     double chartMaxY = maxSleepHours + 9; // Adjust +2 as needed for padding
 
+    double maxweekSleepHours = sleepHours.isNotEmpty
+        ? sleepHours.reduce((a, b) => a > b ? a : b)
+        : 10.0;
+    double chartMaxYweek =
+        maxweekSleepHours + 2; // Adjust +2 as needed for padding
     // End Month info
 
     // final List<SleepData> sleepDataList;
@@ -417,7 +500,6 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          // title: const Text('Hi firstNames!'),
           backgroundColor: const Color(0xFF004AAD),
           bottom: PreferredSize(
             preferredSize:
@@ -455,7 +537,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
             ),
           ),
         ),
-        bottomNavigationBar: CustomBottomBar(),
+        // bottomNavigationBar: CustomBottomBar(),
         body: IndexedStack(
           index: _selectedIndex,
           children: [
@@ -472,25 +554,25 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
               ),
               child: Column(
                 children: [
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 5),
                   Row(
                     children: [
                       Expanded(
                         child: InfoCard(
-                          title: 'Sleep hours duration',
+                          title: 'Sleep hours',
                           value: sleepHoursDurationLastDay,
                         ),
                       ),
                       SizedBox(width: 16),
                       Expanded(
                         child: InfoCard(
-                          title: 'Sleep time (actual)',
+                          title: ' Actual sleep time',
                           value: sleepTimeActualLastDay,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   Row(
                     children: [
                       Expanded(
@@ -532,7 +614,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                               color: Colors.white,
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 10),
                           Expanded(
                               child: LineChart(
                             LineChartData(
@@ -678,7 +760,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                     child: BarChart(
                       BarChartData(
                         alignment: BarChartAlignment.spaceAround,
-                        maxY: 10,
+                        maxY: chartMaxYweek,
                         backgroundColor: const Color.fromRGBO(187, 222, 251, 1),
                         barTouchData: BarTouchData(enabled: false),
                         titlesData: FlTitlesData(
@@ -689,8 +771,20 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                               getTitlesWidget: (double value, TitleMeta meta) {
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 5.0),
+                                  // child: Text(
+                                  //   formattedDates[value.toInt()],
+                                  //   style: const TextStyle(
+                                  //     fontWeight: FontWeight.bold,
+                                  //     color: Colors.white,
+                                  //     backgroundColor:
+                                  //         Color.fromARGB(0, 49, 202, 192),
+                                  //     fontSize: 14,
+                                  //   ),
+                                  // ),
                                   child: Text(
-                                    formattedDates[value.toInt()],
+                                    value.toInt() < formattedDates.length
+                                        ? formattedDates[value.toInt()]
+                                        : 'Invalid Date', // Fallback for out-of-range values
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
@@ -740,12 +834,12 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   Expanded(
                     // flex: 1,
                     child: Container(
                       width: double.infinity,
-                      color: Color(0xFFBBDEFB),
+                      color: const Color(0xFFBBDEFB),
                       child: Center(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -819,8 +913,8 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                   Text(
                       'Sleep average: ${averageSleepHoursMonth.toStringAsFixed(1)}h',
                       style:
-                          const TextStyle(fontSize: 18, color: Colors.white)),
-                  const SizedBox(height: 10),
+                          const TextStyle(fontSize: 16, color: Colors.white)),
+                  const SizedBox(height: 5),
                   Expanded(
                     flex: 2,
                     child:
@@ -887,7 +981,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   Expanded(
                     flex: 1,
                     child: Container(
