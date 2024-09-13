@@ -171,7 +171,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       );
                       if (user != null) {
                         // الانتقال إلى الشاشة التالية بعد تسجيل الدخول بنجاح
-                        Get.to(const HomeScreen());
+                        Get.offAll(const HomeScreen());
                         prefs.setBool("isLogin", true);
                       }
                     } catch (e) {

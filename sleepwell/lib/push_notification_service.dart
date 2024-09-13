@@ -7,6 +7,7 @@ import 'package:sleepwell/screens/alarm/alarm_ring_screen.dart';
 import 'package:sleepwell/screens/alarm/alarm_setup_screen.dart';
 import 'package:sleepwell/screens/dashboard_screen.dart';
 import 'package:sleepwell/screens/feedback/feedback_page.dart';
+import 'package:sleepwell/screens/home_screen.dart';
 
 class PushNotificationService {
   static Future<void> initializeNotifications() async {
@@ -63,7 +64,7 @@ class PushNotificationService {
       Get.offAll(const FeedbackPage());
     } else {
       // Navigate or perform some action
-      Get.to(DashboardScreen()); // Example of navigation
+      Get.to(const HomeScreen()); // Example of navigation
     }
   }
 

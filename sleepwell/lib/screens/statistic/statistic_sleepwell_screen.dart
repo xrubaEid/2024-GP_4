@@ -590,7 +590,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 25),
                   Container(
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
@@ -724,7 +724,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                               ],
                             ),
                           )),
-                          const SizedBox(height: 16),
+                          // const SizedBox(height: 16),
                         ],
                       ),
                     ),
