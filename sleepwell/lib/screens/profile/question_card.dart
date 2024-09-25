@@ -7,7 +7,7 @@ class QuestionCard extends StatefulWidget {
   final String answer;
   final ValueChanged<String> onChanged;
 
-  QuestionCard({
+  const QuestionCard({super.key, 
     required this.question,
     required this.options,
     required this.answer,

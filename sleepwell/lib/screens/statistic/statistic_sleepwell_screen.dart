@@ -2,11 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleepwell/widget/info_card.dart';
-import '../../widget/custom_bottom_bar.dart';
 import '../../widget/indicator.dart';
+import '../settings_screen.dart';
 import 'my_chart_model.dart';
 
 class StatisticSleepWellScreen extends StatefulWidget {
@@ -56,9 +57,9 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
 // end week
 // day
   String sleepHoursDurationLastDay = '0:0 h';
-  String sleepTimeActualLastDay = '0:0 h';
+  String sleepTimeActualLastDay = '0:0';
   String sleepCyclesLastDay = '0 C';
-  String wakeUpTimeLastDay = '0:0 h';
+  String wakeUpTimeLastDay = '0:0';
 
   List<FlSpot> sleepCycleDataLastDay = [];
 // END Var DAY
@@ -104,7 +105,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
         DateTime wakeupTime = DateFormat('HH:mm').parse(wakeupTimeString);
 
         if (wakeupTime.isBefore(bedtime)) {
-          wakeupTime = wakeupTime.add(Duration(days: 1));
+          wakeupTime = wakeupTime.add(const Duration(days: 1));
         }
 
         double sleepDuration =
@@ -116,7 +117,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
         // تحديث القيم لواجهة المستخدم
         setState(() {
           sleepHoursDurationLastDay = '${sleepDuration.toStringAsFixed(1)}h';
-          sleepTimeActualLastDay = '${actualSleepTime.toStringAsFixed(1)}h';
+          sleepTimeActualLastDay = actualSleepTime.toStringAsFixed(1);
           sleepCyclesLastDay = '$cycles';
           wakeUpTimeLastDay = DateFormat('HH:mm').format(wakeupTime);
 
@@ -146,53 +147,6 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
     return spots;
   }
 
-// End
-  // Future<void> loadDataWeek() async {
-  //   // final now = DateTime.now();
-  //   // final weekStart = now.subtract(Duration(days: now.weekday));
-  //   // final weekEnd = now.subtract(const Duration(days: 0));
-  //   final now = DateTime.now();
-  //   final weekEnd = now.subtract(
-  //       const Duration(days: 1)); // Today is the end of the 7-day period
-  //   final weekStart = now.subtract(
-  //       const Duration(days: 7)); // 6 days ago is the start of the 7-day period
-
-  //   // Format the week range for display
-  //   weekRange =
-  //       '${DateFormat('d MMM').format(weekStart)} - ${DateFormat('d MMM').format(weekEnd)}';
-
-  //   final data = await _model.fetchAlarmData(weekStart, weekEnd);
-
-  //   setState(() {
-  //     sleepHours = data['sleepHours'] ?? [];
-  //     sleepCycles = data['sleepCycles'] ?? [];
-  //     averageSleepHours = data['averageSleepHours'] ?? 0.0;
-
-  //     barGroups = List.generate(
-  //       sleepHours.length,
-  //       (index) => BarChartGroupData(
-  //         x: index,
-  //         barRods: [
-  //           BarChartRodData(
-  //             toY: sleepHours[index],
-  //             color: Colors.blue,
-  //             width: 16,
-  //           ),
-  //         ],
-  //       ),
-  //     );
-
-  //     pieSections = List.generate(
-  //       sleepCycles.length,
-  //       (index) => PieChartSectionData(
-  //         value: sleepCycles[index],
-  //         color: weekColors[index % weekColors.length],
-  //         title: '${sleepCycles[index]}',
-  //         radius: 60,
-  //       ),
-  //     );
-  //   });
-  // }
   Future<void> loadDataWeek() async {
     final now = DateTime.now();
     final weekEnd = now.subtract(
@@ -211,30 +165,6 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
       sleepCycles = data['sleepCycles'] ?? [];
       averageSleepHours = data['averageSleepHours'] ?? 0.0;
 
-      // barGroups = List.generate(
-      //   sleepHours.length,
-      //   (index) => BarChartGroupData(
-      //     x: index,
-      //     barRods: [
-      //       BarChartRodData(
-      //         toY: sleepHours[index],
-      //         color: Colors.blue,
-      //         width: 16,
-      //       ),
-      //     ],
-      //   ),
-      // );
-
-      // pieSections = List.generate(
-      //   sleepCycles.length,
-      //   (index) => PieChartSectionData(
-      //     value: sleepCycles[index],
-      //     color: weekColors[
-      //         index % weekColors.length], // Cycle colors if list is shorter
-      //     title: '${sleepCycles[index]}',
-      //     radius: 60,
-      //   ),
-      // );
       barGroups = List.generate(7, (index) {
         double value = (index < sleepHours.length) ? sleepHours[index] : 0.0;
         return BarChartGroupData(
@@ -264,7 +194,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
   List<String> getFormattedDatesForWeek() {
     final now = DateTime.now();
     // final weekStart = now.subtract(Duration(days: now.weekday));
-    final weekStart = now.subtract(Duration(days: 7));
+    final weekStart = now.subtract(const Duration(days: 7));
     final weekEnd = now.subtract(
         const Duration(days: 1)); // Today is the end of the 7-day period
 
@@ -276,89 +206,6 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
     }
     return formattedDates;
   }
-
-  // Future<void> loadDataForMonth() async {
-  //   final now = DateTime.now(); // Get the current date
-  //   final firstDayOfMonth =
-  //       DateTime(now.year, now.month, 1); // Start of the month
-  //   final lastDayOfMonth =
-  //       DateTime(now.year, now.month + 1, 0); // End of the month
-  //   // final firstDayOfMonth =
-  //   //     DateTime(now.year, now.month - 1, 1); // Start of the month
-  //   // final lastDayOfMonth = DateTime(now.year, now.month, 0); // End of the month
-  //   monthName = DateFormat('MMMM yyyy').format(firstDayOfMonth);
-
-  //   final snapshot = await _firestore
-  //       .collection('alarms')
-  //       .where('timestamp', isGreaterThanOrEqualTo: firstDayOfMonth)
-  //       .where('timestamp', isLessThanOrEqualTo: lastDayOfMonth)
-  //       .get();
-
-  //   List<double> weeklySleepCycles = [
-  //     0,
-  //     0,
-  //     0,
-  //     0
-  //   ]; // Sum of sleep cycles for each week
-
-  //   for (var alarm in snapshot.docs) {
-  //     String bedtimeString = alarm['bedtime'];
-  //     String wakeupTimeString = alarm['wakeup_time'];
-  //     String cyclesString = alarm['num_of_cycles'];
-
-  //     // Parse times with AM/PM format
-  //     DateTime bedtime = DateFormat('hh:mm a').parse(bedtimeString);
-  //     DateTime wakeupTime = DateFormat('hh:mm a').parse(wakeupTimeString);
-
-  //     if (wakeupTime.isBefore(bedtime)) {
-  //       wakeupTime = wakeupTime.add(Duration(days: 1));
-  //     }
-
-  //     double sleepDuration = wakeupTime.difference(bedtime).inHours.toDouble();
-  //     int cycles = int.tryParse(cyclesString) ?? 0;
-
-  //     sleepHoursMonth.add(sleepDuration);
-  //     sleepCyclesMonth.add(cycles.toDouble());
-
-  //     // Calculate weekly data
-  //     int weekIndex = ((alarm['timestamp'].toDate().day - 1) / 7).floor();
-  //     if (weekIndex < 4) {
-  //       weeklySleepCycles[weekIndex] += cycles.toDouble();
-  //     }
-  //   }
-
-  //   double totalSleepHours = sleepHoursMonth.fold(0.0, (a, b) => a + b);
-  //   averageSleepHoursMonth = sleepHoursMonth.isNotEmpty
-  //       ? totalSleepHours / sleepHoursMonth.length
-  //       : 0.0;
-
-  //   setState(() {
-  //     barGroupsMontt = List.generate(
-  //       weeklySleepCycles
-  //           .length, // Generate only for the length of weeklySleepCycles
-  //       (index) => BarChartGroupData(
-  //         x: index,
-  //         barRods: [
-  //           BarChartRodData(
-  //             toY: weeklySleepCycles[index],
-  //             color: Colors.blue,
-  //             width: 16,
-  //           ),
-  //         ],
-  //       ),
-  //     );
-
-  //     pieSectionsMonth = List.generate(
-  //       4,
-  //       (index) => PieChartSectionData(
-  //         value: weeklySleepCycles[index], // Total sleep cycles for the week
-  //         color: montColors[index],
-  //         title: 'Wk ${index + 1}:${weeklySleepCycles[index]}C',
-  //         radius: 60,
-  //       ),
-  //     );
-  //   });
-  // }
 
   Future<void> loadDataForMonth() async {
     final now = DateTime.now(); // Get the current date
@@ -377,14 +224,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
       }
       CollectionReference alarmsref =
           FirebaseFirestore.instance.collection('alarms');
-      // .where('timestamp', isGreaterThanOrEqualTo: firstDayOfMonth)
-      //         .where('timestamp', isLessThanOrEqualTo: lastDayOfMonth);
-      //         .get();
-      // alarmsref
-      //     .snapshots()
-      //     .where('timestamp', isGreaterThanOrEqualTo: firstDayOfMonth)
-      //     .where('timestamp', isLessThanOrEqualTo: lastDayOfMonth)
-      //     .get();
+
       final snapshot = await _firestore
           .collection('alarms')
           .where('uid', isEqualTo: userid)
@@ -409,7 +249,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
         DateTime wakeupTime = DateFormat('hh:mm a').parse(wakeupTimeString);
 
         if (wakeupTime.isBefore(bedtime)) {
-          wakeupTime = wakeupTime.add(Duration(days: 1));
+          wakeupTime = wakeupTime.add(const Duration(days: 1));
         }
 
         double sleepDuration =
@@ -452,7 +292,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
           (index) => PieChartSectionData(
             value: weeklySleepCycles[index], // Total sleep cycles for the week
             color: montColors[index],
-            title: 'Wk ${index + 1}:${weeklySleepCycles[index]}C',
+            title: 'W${index + 1}:${weeklySleepCycles[index]}C',
             radius: 60,
           ),
         );
@@ -465,6 +305,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
 
   int _selectedIndex = 0;
 
+  @override
   Widget build(BuildContext context) {
     // week
     final List<String> formattedDates = getFormattedDatesForWeek();
@@ -563,7 +404,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                           value: sleepHoursDurationLastDay,
                         ),
                       ),
-                      SizedBox(width: 16),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: InfoCard(
                           title: ' Actual sleep time',
@@ -581,7 +422,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                           value: sleepCyclesLastDay,
                         ),
                       ),
-                      SizedBox(width: 16),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: InfoCard(
                           title: "Wake up time",
@@ -698,7 +539,8 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                               borderData: FlBorderData(
                                 show: true,
                                 border: Border.all(
-                                    color: Color.fromRGBO(13, 238, 219, 1),
+                                    color:
+                                        const Color.fromRGBO(13, 238, 219, 1),
                                     width: 1),
                               ),
                               lineBarsData: [
@@ -751,10 +593,10 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                           const TextStyle(fontSize: 16, color: Colors.white)),
                   // const SizedBox(height: 10),
                   Text(
-                      'Sleep average: ${averageSleepHours.toStringAsFixed(1)}h',
+                      'Sleep average hours: ${averageSleepHours.toStringAsFixed(1)}h',
                       style:
                           const TextStyle(fontSize: 16, color: Colors.white)),
-                  const SizedBox(width: 10),
+                  // const SizedBox(width: 10),
                   Expanded(
                     flex: 2,
                     child: BarChart(
@@ -834,55 +676,90 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
                   Expanded(
-                    // flex: 1,
                     child: Container(
                       width: double.infinity,
                       color: const Color(0xFFBBDEFB),
                       child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: Column(
                           children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  width: 250,
-                                  height: 150,
-                                  child: PieChart(
-                                    PieChartData(
-                                      sections: pieSections,
-                                      centerSpaceRadius: 23,
-                                      sectionsSpace: 2,
-                                      borderData: FlBorderData(show: false),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: List.generate(
-                                7,
-                                (index) => Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 3, vertical: 1),
-                                  child: Indicator(
-                                    color: weekColors[index],
-                                    text: [
-                                      'Sun',
-                                      'Mon',
-                                      'Tue',
-                                      'Wed',
-                                      'Thu',
-                                      'Fri',
-                                      'Sat'
-                                    ][index],
-                                  ),
+                            const Padding(
+                              padding: EdgeInsets.only(
+                                  bottom: 10), // مسافة بين العنوان والمخطط
+                              child: Text(
+                                'Number Of Sleep Cycle:', // النص الذي يمثل العنوان
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
                                 ),
                               ),
+                            ),
+                            const SizedBox(height: 10.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  // mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 200,
+                                      height: 80,
+                                      child: PieChart(
+                                        PieChartData(
+                                          sections: pieSections,
+                                          centerSpaceRadius: 8,
+                                          sectionsSpace: 2,
+                                          borderData: FlBorderData(show: false),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: List.generate(
+                                        4, // أول 4 عناصر (Sun, Mon, Tue, Wed)
+                                        (index) => Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 3, vertical: 1),
+                                          child: Indicator(
+                                            color: weekColors[index],
+                                            text: [
+                                              'Sun',
+                                              'Mon',
+                                              'Tue',
+                                              'Wed'
+                                            ][index],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                        width: 20), // مسافة بين العمودين
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: List.generate(
+                                        3, // العناصر الثلاثة الباقية (Thu, Fri, Sat)
+                                        (index) => Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 3, vertical: 1),
+                                          child: Indicator(
+                                            color: weekColors[
+                                                index + 4], // نبدأ من Thu
+                                            text: ['Thu', 'Fri', 'Sat'][index],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
                             ),
                           ],
                         ),
@@ -911,10 +788,10 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                           const TextStyle(fontSize: 18, color: Colors.white)),
                   // const SizedBox(height: 10),
                   Text(
-                      'Sleep average: ${averageSleepHoursMonth.toStringAsFixed(1)}h',
+                      'Sleep average hours: ${averageSleepHoursMonth.toStringAsFixed(1)}h',
                       style:
                           const TextStyle(fontSize: 16, color: Colors.white)),
-                  const SizedBox(height: 5),
+                  // const SizedBox(height: 5),
                   Expanded(
                     flex: 2,
                     child:
@@ -923,7 +800,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                       BarChartData(
                         alignment: BarChartAlignment.spaceAround,
                         maxY: chartMaxY, // Use the adjusted maxY
-                        backgroundColor: Color(0xFFBBDEFB),
+                        backgroundColor: const Color(0xFFBBDEFB),
                         barTouchData: BarTouchData(enabled: false),
                         titlesData: FlTitlesData(
                           show: true,
@@ -981,47 +858,66 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  // const SizedBox(height: 10),
+
                   Expanded(
                     flex: 1,
                     child: Container(
                       width: double.infinity,
                       color: const Color(0xFFBBDEFB),
                       child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: Column(
+                          // mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            // إضافة عنوان هنا
+                            const Padding(
+                              padding: EdgeInsets.only(
+                                  bottom: 10), // مسافة بين العنوان والمخطط
+                              child: Text(
+                                'Average Number Of  Sleep Cycle:', // النص الذي يمثل العنوان
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                SizedBox(
-                                  width: 250,
-                                  height: 150,
-                                  child: PieChart(
-                                    PieChartData(
-                                      sections: pieSectionsMonth,
-                                      centerSpaceRadius: 20,
-                                      sectionsSpace: 2,
-                                      borderData: FlBorderData(show: false),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 200,
+                                      height: 80,
+                                      child: PieChart(
+                                        PieChartData(
+                                          sections: pieSectionsMonth,
+                                          centerSpaceRadius: 5,
+                                          sectionsSpace: 2,
+                                          borderData: FlBorderData(show: false),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: List.generate(
+                                    4,
+                                    (index) => Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 3),
+                                      child: Indicator(
+                                        color: montColors[index],
+                                        text: 'Avg Week ${index + 1}',
+                                      ),
                                     ),
                                   ),
                                 ),
                               ],
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: List.generate(
-                                4,
-                                (index) => Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 3),
-                                  child: Indicator(
-                                    color: montColors[index],
-                                    text: 'Avg Week ${index + 1}',
-                                  ),
-                                ),
-                              ),
                             ),
                           ],
                         ),
