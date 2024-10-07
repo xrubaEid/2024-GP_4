@@ -126,7 +126,7 @@ class _AddBeneficiaryScreenState extends State<AddBeneficiaryScreen> {
         _watchController.clear();
 
         // الانتقال إلى شاشة التابعين
-        Get.to(  HomeScreen());
+        Get.to(const HomeScreen());
         print('::::::::::::::::::::::::::::::::::::::;');
         print(userId);
         print('::::::::::::::::::::::::::::::::::::::;');

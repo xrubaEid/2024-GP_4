@@ -1,4 +1,3 @@
-// import 'dart:convert';
 import 'package:alarm/alarm.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -9,16 +8,10 @@ import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/splash_screen.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:sleepwell/push_notification_service.dart';
-
 import 'locale/app_translation.dart';
 import 'locale/local_controller.dart';
 
-// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-//   print("Handling a background message: ${message.messageId}");
-
-//   //call awesomenotification to how theا push notification.
-//   AwesomeNotifications().createNotificationFromJsonData(message.data);
-// }
+// fcm_token
 // too1423too@gmail.com
 late SharedPreferences prefs;
 

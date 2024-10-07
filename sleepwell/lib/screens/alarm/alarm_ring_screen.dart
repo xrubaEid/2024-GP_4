@@ -67,6 +67,7 @@ class AlarmRingScreen extends StatelessWidget {
                               onPressed: () async {
                                 Alarm.stop(alarmSettings.id)
                                     .then((_) => Navigator.pop(context, false));
+
                                 await PushNotificationService.showNotification(
                                     title: 'Daily Feedback',
                                     body: 'You must  given your feedback now',

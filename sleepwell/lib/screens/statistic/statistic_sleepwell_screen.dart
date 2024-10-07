@@ -65,6 +65,9 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
   @override
   void initState() {
     super.initState();
+    print('::::::::::::::::::::::::::uid:::::::::::::::::::');
+    print(userId);
+    print('::::::::::::::::::::::::::uid:::::::::::::::::::');
     loadDataForMonth();
     loadDataWeek();
     loadDayData();
@@ -81,6 +84,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
       final snapshot = await FirebaseFirestore.instance
           .collection('alarms')
           .where('uid', isEqualTo: userId)
+          .where('isForBeneficiary', isEqualTo: true)
           .where('timestamp', isGreaterThanOrEqualTo: startOfDay)
           .where('timestamp', isLessThan: endOfDay)
           .get();
@@ -138,6 +142,8 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
     return spots;
   }
 
+////////////////
+  ///
   Future<void> loadDataWeek() async {
     final now = DateTime.now();
     final weekEnd = now.subtract(
@@ -219,6 +225,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
       final snapshot = await _firestore
           .collection('alarms')
           .where('uid', isEqualTo: userId)
+          .where('isForBeneficiary', isEqualTo: true)
           .where('timestamp', isGreaterThanOrEqualTo: firstDayOfMonth)
           .where('timestamp', isLessThanOrEqualTo: lastDayOfMonth)
           .get();
@@ -374,6 +381,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
           index: _selectedIndex,
           children: [
             // Day view
+
             Container(
               height: MediaQuery.of(context).size.height,
               // padding: const EdgeInsets.all(30),
@@ -439,7 +447,7 @@ class _StatisticSleepWellScreenState extends State<StatisticSleepWellScreen> {
                       child: Column(
                         children: [
                           const Text(
-                            'Light and Deep Sleep Cycles',
+                            'Time spent in each stage of Light and Deep Sleep Cycles',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,

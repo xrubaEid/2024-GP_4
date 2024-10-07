@@ -1,8 +1,10 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:sleepwell/screens/beneficiaries%20screen/add_eneficiary_screen.dart';
+import 'package:sleepwell/screens/beneficiaries%20screen/DependentScreen.dart';
+import 'package:sleepwell/screens/beneficiaries%20screen/benficiary_alarm_screen.dart';
 
 import 'beneficiaries screen/beneficiaries_details_screen.dart';
 
@@ -16,15 +18,15 @@ class BeneficiariesScreen extends StatefulWidget {
 class _BeneficiariesScreenState extends State<BeneficiariesScreen> {
   List<DocumentSnapshot> beneficiaries = []; // لتخزين بيانات التابعين
   bool isLoading = true; // لتتبع حالة التحميل
-  String? userId;
+  String? userId = FirebaseAuth.instance.currentUser?.uid;
 
   @override
   void initState() {
     super.initState();
-    fetchBeneficiaries();
+    fetchBeneficiaries(userId!);
     userId = FirebaseAuth.instance.currentUser?.uid; // الحصول على userId
     if (userId != null) {
-      fetchBeneficiaries();
+      fetchBeneficiaries(userId!);
     } else {
       // في حالة عدم وجود معرف المستخدم، يمكنك عرض رسالة أو توجيه المستخدم لتسجيل الدخول
       setState(() {
@@ -33,8 +35,11 @@ class _BeneficiariesScreenState extends State<BeneficiariesScreen> {
     }
   }
 
-  // دالة لجلب التابعين من Firestore
-  Future<void> fetchBeneficiaries() async {
+  Future<void> fetchBeneficiaries(String userId) async {
+    setState(() {
+      isLoading = true; // بدء حالة التحميل
+    });
+
     try {
       // جلب بيانات التابعين من Firestore
       QuerySnapshot snapshot = await FirebaseFirestore.instance
@@ -42,15 +47,24 @@ class _BeneficiariesScreenState extends State<BeneficiariesScreen> {
           .where('userid', isEqualTo: userId)
           .get();
 
-      setState(() {
-        beneficiaries = snapshot.docs; // تخزين البيانات في القائمة
-        isLoading = false; // تغيير حالة التحميل
-      });
+      // التأكد من أن البيانات تم جلبها بنجاح
+      if (snapshot.docs.isNotEmpty) {
+        setState(() {
+          beneficiaries = snapshot.docs; // تخزين البيانات في القائمة
+          isLoading = false; // تغيير حالة التحميل
+        });
 
-      // طباعة البيانات في وحدة التحكم
-      print('Beneficiaries fetched:');
-      for (var beneficiary in beneficiaries) {
-        print('Name: ${beneficiary['name']}, ID: ${beneficiary.id}');
+        // طباعة البيانات في وحدة التحكم
+        print('Beneficiaries fetched:');
+        for (var beneficiary in beneficiaries) {
+          print('Name: ${beneficiary['name']}, ID: ${beneficiary.id}');
+        }
+      } else {
+        setState(() {
+          beneficiaries = []; // إذا لم يوجد تابعين، تعيين القائمة إلى فارغة
+          isLoading = false; // تغيير حالة التحميل
+        });
+        print('No beneficiaries found for userId: $userId');
       }
     } catch (e) {
       // التعامل مع الأخطاء عند جلب البيانات
@@ -146,6 +160,8 @@ class _BeneficiariesScreenState extends State<BeneficiariesScreen> {
           'name': name,
           'watch': watch,
         });
+        Get.snackbar('SuccessFully', 'Your Flowers Added Successfully');
+        fetchBeneficiaries(userId!); // إعادة جلب المستفيدين
 
         // يمكنك إضافة أي معالجة أخرى بعد الإضافة الناجحة، مثل تحديث الشاشة
         print('Beneficiary added: Name: $name, Watch: $watch');
@@ -184,7 +200,11 @@ class _BeneficiariesScreenState extends State<BeneficiariesScreen> {
                 if (newName.isNotEmpty) {
                   await updateBeneficiaryName(
                       beneficiaryId, newName); // تحديث الاسم
-                  Navigator.of(context).pop(); // إغلاق الحوار
+                  // Navigator.of(context).pop(); // إغلاق الحوار
+                  // Get.back();
+                  // Get.back();
+                  // ignore: use_build_context_synchronously
+                  Navigator.of(context).pop();
                 } else {
                   Get.snackbar('Warning', 'Name cannot be empty');
                 }
@@ -205,7 +225,7 @@ class _BeneficiariesScreenState extends State<BeneficiariesScreen> {
           .collection('beneficiaries')
           .doc(beneficiaryId)
           .update({'name': newName}); // تحديث الاسم
-      fetchBeneficiaries(); // إعادة جلب المستفيدين
+      fetchBeneficiaries(userId!); // إعادة جلب المستفيدين
       Get.snackbar('Success', 'Beneficiary name updated successfully');
     } catch (e) {
       Get.snackbar('Error', 'Failed to update beneficiary name: $e');
@@ -231,9 +251,10 @@ class _BeneficiariesScreenState extends State<BeneficiariesScreen> {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: isLoading // عرض شاشة التحميل إذا كانت البيانات قيد الجلب
+        child: isLoading
             ? const Center(child: CircularProgressIndicator())
-            : beneficiaries.isEmpty // إذا كانت القائمة فارغة
+            : beneficiaries.isEmpty
+                // الحالة الأولى: إذا كانت القائمة فارغة
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -252,129 +273,138 @@ class _BeneficiariesScreenState extends State<BeneficiariesScreen> {
                         const SizedBox(height: 20),
                         ElevatedButton(
                           onPressed: () {
-                            Get.to(const AddBeneficiaryScreen());
+                            showAddBeneficiaryDialog();
                           },
                           child: const Icon(Icons.add),
                         ),
                       ],
                     ),
                   )
-                : Stack(
+                : Column(
                     children: [
-                      ListView.builder(
-                        itemCount: beneficiaries.length,
-                        itemBuilder: (context, index) {
-                          final beneficiary = beneficiaries[index];
-                          return Column(
-                            children: [
-                              ListTile(
-                                title: Text(
-                                  beneficiary['name'],
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ), // اسم التابع
-                                onTap: () => Get.to(
-                                  BeneficiaryDetailsScreen(
-                                    beneficiaryName: beneficiary['name'],
-                                    
+                      // عرض القائمة حتى منتصف الشاشة
+                      Flexible(
+                        flex:
+                            2, // يحدد المساحة التي تأخذها القائمة بالنسبة للنصف العلوي
+                        child: ListView.builder(
+                          itemCount: beneficiaries.length,
+                          itemBuilder: (context, index) {
+                            final beneficiary = beneficiaries[index];
+                            return Column(
+                              children: [
+                                ListTile(
+                                  title: Text(
+                                    beneficiary['name'],
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  onTap: () => Get.to(
+                                    BeneficiaryDetailsScreen(
+                                      beneficiaryId: beneficiary.id,
+                                    ),
+                                  ),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          color: Colors.white,
+                                        ),
+                                        onPressed: () {
+                                          showEditDialog(beneficiary.id,
+                                              beneficiary['name']);
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          color: Colors.white,
+                                        ),
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                title: const Text(
+                                                    'Delete Beneficiary'),
+                                                content: const Text(
+                                                    'Are you sure you want to delete this beneficiary?'),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: const Text('Cancel'),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      deleteBeneficiary(
+                                                          beneficiary.id);
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: const Text('Delete'),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.edit,
-                                        color: Colors.white,
-                                      ),
-                                      onPressed: () {
-                                        // يمكنك إضافة دالة لتعديل الاسم
-                                        // على سبيل المثال، عرض حوار لتعديل الاسم
-                                        showEditDialog(beneficiary.id,
-                                            beneficiary['name']);
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.delete,
-                                        color: Colors.white,
-                                      ),
-                                      onPressed: () {
-                                        // تأكيد الحذف قبل القيام بذلك
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              title: const Text(
-                                                  'Delete Beneficiary'),
-                                              content: const Text(
-                                                  'Are you sure you want to delete this beneficiary?'),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context)
-                                                        .pop(); // إغلاق الحوار
-                                                  },
-                                                  child: const Text('Cancel'),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    deleteBeneficiary(
-                                                        beneficiary
-                                                            .id); // حذف التابع
-                                                    Navigator.of(context)
-                                                        .pop(); // إغلاق الحوار
-                                                  },
-                                                  child: const Text('Delete'),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      },
-                                    ),
-                                  ],
+                                const Divider(
+                                  color: Color(0xFF21D4F3),
                                 ),
-                              ),
-                              const Divider(
-                                color: Color(0xFF21D4F3),
-                              ),
-                            ],
-                          );
-                        },
+                              ],
+                            );
+                          },
+                        ),
                       ),
+                      // زر إضافة مستفيد جديد يظهر في النصف السفلي
+                      const SizedBox(height: 20),
                       Center(
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment
-                              .center, // لتوسيط العناصر عموديًا
-                          crossAxisAlignment: CrossAxisAlignment
-                              .center, // لتوسيط العناصر أفقيًا
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const SizedBox(
-                              height: 30.0,
-                            ),
-                            // const Divider(
-                            //     color: Color.fromRGBO(16, 235, 92, 0.903)),
-
                             const Text(
                               'Add New Beneficiary',
                               style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold),
                             ),
-                            const SizedBox(
-                                height: 16), // إضافة مسافة بين النص والزر
+                            const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: () {
-                                // إضافة مستفيد جديد
                                 showAddBeneficiaryDialog();
                               },
                               child: const Icon(Icons.add),
                             ),
+                            // ElevatedButton(
+                            //   onPressed: () {
+                            //     //  String? userId = FirebaseAuth.instance.currentUser?.uid;
+                            //     Get.to(DependentScreen());
+                            //   },
+                            //   child: const Text('DependentScreen'),
+                            // ),
+                            // ElevatedButton(
+                            //   onPressed: () {
+                            //     //  String? userId = FirebaseAuth.instance.currentUser?.uid;
+                            //     Get.to(BeneficiaryAlarmScreen(
+                            //       beneficiaryId: 'qAfFABhsUG9zj26EtKxJ',
+                            //     ));
+                            //   },
+                            //   child: const Text('BeneficiaryAlarmScreen'),
+                            // ),
                           ],
                         ),
                       ),
+                      const SizedBox(height: 30),
                     ],
                   ),
       ),

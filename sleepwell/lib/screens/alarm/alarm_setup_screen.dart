@@ -12,7 +12,13 @@ import '../../push_notification_service.dart';
 import '../home_screen.dart';
 
 class AlarmSetupScreen extends StatefulWidget {
-  const AlarmSetupScreen({super.key});
+  final String?
+      beneficiaryId; // يمكن أن يكون فارغًا إذا كان المنبه للمستفيد نفسه
+
+  const AlarmSetupScreen({
+    Key? key,
+    this.beneficiaryId, // استقبال معرف التابع إن وجد
+  }) : super(key: key);
 
   @override
   State<AlarmSetupScreen> createState() => _AlarmSetupScreenState();
@@ -37,14 +43,9 @@ class _AlarmSetupScreenState extends State<AlarmSetupScreen> {
   // final _auth = FirebaseAuth.instance;
   // late User signInUser;
   // late String email;
-  Future<void> getUserId() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userId = prefs.getString('userid'); // استرجاع الـ userid
-    });
-  }
 
   String? userId = FirebaseAuth.instance.currentUser?.uid;
+  String? selectedBeneficiaryId;
   // void getCurrentUser() async {
   //   try {
   //     final user = _auth.currentUser;
@@ -66,12 +67,42 @@ class _AlarmSetupScreenState extends State<AlarmSetupScreen> {
     await prefs.setString('userId', userId);
   }
 
+  String? beneficiaryName;
+  Future<void> getBeneficiariesName() async {
+    final docSnapshot = await FirebaseFirestore.instance
+        .collection('beneficiaries')
+        .doc(selectedBeneficiaryId)
+        .get();
+
+    if (docSnapshot.exists) {
+      setState(() {
+        beneficiaryName = docSnapshot['name'] ?? 'No Name';
+      });
+      print('-------------beneficiaryName-----------');
+      print(beneficiaryName);
+      print('-------------beneficiaryName-----------');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    getUserId();
-    // getCurrentUser();
+
+    print('::::::::::::::::::::::::::uid:::::::::::::::::::');
     print(userId);
+    print('::::::::::::::::::::::::::uid:::::::::::::::::::');
+    // getCurrentUser();
+    print('::::::::::::::::::::::::::uid:::::::::::::::::::');
+    print(widget.beneficiaryId);
+    print('::::::::::::::::::::::::::uid:::::::::::::::::::');
+    print('-----------------------------------------');
+    print(widget.beneficiaryId != null);
+    print('-----------------------------------------');
+    selectedBeneficiaryId = widget.beneficiaryId;
+    getBeneficiariesName();
+    print('---------------selectedBeneficiaryId--------------------------');
+    print(selectedBeneficiaryId);
+    print('-----------selectedBeneficiaryId------------------------------');
     bedtimeController = TextEditingController();
     wakeUpTimeController = TextEditingController();
     selectedBedtime = TimeOfDay.now();
@@ -198,7 +229,43 @@ class _AlarmSetupScreenState extends State<AlarmSetupScreen> {
     AppAlarm.getAlarms();
     calculateSleepDuration(printedBedtime, printedWakeUpTime);
     int currentDay = DateTime.now().day;
+    print('-----------------------------------------');
+    print(widget.beneficiaryId != null);
+    print('-----------------------------------------');
+    bool isForBeneficiary = (selectedBeneficiaryId == null);
+    // if (widget.beneficiaryId != null) {
+    //   await FirebaseFirestore.instance.collection('alarms').add({
+    //     'bedtime': printedBedtime,
+    //     'wakeup_time': printedWakeUpTime,
+    //     'num_of_cycles': printednumOfCycles,
+    //     'added_day': DateTime.now().day,
+    //     'added_month': DateTime.now().month,
+    //     'added_year': DateTime.now().year,
+    //     'timestamp': FieldValue.serverTimestamp(),
+    //     'uid': userId,
+    //     'beneficiaryId': widget.beneficiaryId,
+    //     'isForBeneficiary': isForBeneficiary,
+    //   });
+    //   print('-----------------------------------------');
+    //   print('Alarm Selected Success fully for Your beneficiary');
+    //   print(widget.beneficiaryId != null);
+    //   print('-----------------------------------------');
+    // } else {
+    //   await FirebaseFirestore.instance.collection('alarms').add({
+    //     'bedtime': printedBedtime,
+    //     'wakeup_time': printedWakeUpTime,
+    //     'num_of_cycles': printednumOfCycles,
+    //     'added_day': DateTime.now().day,
+    //     'added_month': DateTime.now().month,
+    //     'added_year': DateTime.now().year,
+    //     'timestamp': FieldValue.serverTimestamp(),
+    //     'uid': userId,
+    //   });
+    //   print('-----------------------------------------');
+    //   print('Alarm Selected Success fully for Yourself');
 
+    //   print('-----------------------------------------');
+    // }
     await FirebaseFirestore.instance.collection('alarms').add({
       'bedtime': printedBedtime,
       'wakeup_time': printedWakeUpTime,
@@ -208,6 +275,8 @@ class _AlarmSetupScreenState extends State<AlarmSetupScreen> {
       'added_year': DateTime.now().year,
       'timestamp': FieldValue.serverTimestamp(),
       'uid': userId,
+      'beneficiaryId': widget.beneficiaryId,
+      'isForBeneficiary': isForBeneficiary,
     });
     var timestamp = FieldValue.serverTimestamp();
     print("=================================$timestamp");
@@ -534,6 +603,17 @@ class _AlarmSetupScreenState extends State<AlarmSetupScreen> {
           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            Text(
+              widget.beneficiaryId != null
+                  ? "Set Alarm for $beneficiaryName"
+                  : "Set Alarm for Yourself",
+              style: const TextStyle(
+                color: Color.fromARGB(255, 255, 255, 255),
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const Divider(color: Color.fromRGBO(255, 7, 247, 1)),
             SizedBox(height: MediaQuery.of(context).padding.top),
             Row(
               children: [
