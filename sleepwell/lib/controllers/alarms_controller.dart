@@ -1,27 +1,38 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
 import 'package:sleepwell/models/alarm_model.dart';
 
 class AlarmsController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? userId = FirebaseAuth.instance.currentUser?.uid;
   // جلب بيانات آخر يوم
-  Future<List<AlarmModelData>> fetchLastDayAlarms(
-    String userId,
-    // {required bool isForBeneficiary}
-  ) async {
+  Future<List<AlarmModelData>> fetchLastDayAlarms(String userId) async {
     final now = DateTime.now();
-    final startOfDay = DateTime(now.year, now.month, now.day);
-    final endOfDay = startOfDay.add(const Duration(days: 0));
-    DateTime lastDay = now.subtract(const Duration(days: 1));
+    final DateTime yesterdayStart = DateTime(now.year, now.month, now.day)
+        .subtract(const Duration(days: 1)); // بداية يوم أمس
+    final DateTime yesterdayEnd = DateTime(now.year, now.month, now.day)
+        .subtract(const Duration(seconds: 1)); // نهاية يوم أمس
+
     QuerySnapshot querySnapshot = await _firestore
         .collection('alarms')
         .where('uid', isEqualTo: userId)
         .where('isForBeneficiary', isEqualTo: true)
-        .where('timestamp', isGreaterThanOrEqualTo: lastDay)
-        .where('timestamp', isLessThan: startOfDay)
+        .where('timestamp', isGreaterThanOrEqualTo: yesterdayStart)
+        .where('timestamp', isLessThanOrEqualTo: yesterdayEnd)
         .get();
-
+    print('dddddddddddddddddddddddddddddddddddddddddddd');
+    querySnapshot.docs.forEach((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      final timestamp = data['timestamp']
+          ?.toDate(); // Assuming 'timestamp' is a Timestamp object from Firestore
+      if (timestamp != null) {
+        print('Document ID: ${doc.id}');
+        print('Data: $data');
+        print('dddddddddddddddddddddddddddddddddddddddddddd');
+        print('Timestamp: $timestamp\n');
+      }
+    });
     return querySnapshot.docs
         .map((doc) =>
             AlarmModelData.fromFirestore(doc.data() as Map<String, dynamic>))
@@ -100,14 +111,16 @@ class AlarmsController {
   Future<List<AlarmModelData>> fetchBeneficiaryAlarms(
       String beneficiaryId) async {
     final now = DateTime.now();
-    final startOfDay = DateTime(now.year, now.month, now.day);
-    final endOfDay = startOfDay.add(const Duration(days: 1));
+    final DateTime yesterdayStart = DateTime(now.year, now.month, now.day)
+        .subtract(const Duration(days: 1)); // بداية يوم أمس
+    final DateTime yesterdayEnd = DateTime(now.year, now.month, now.day)
+        .subtract(const Duration(seconds: 1)); // نهاية يوم أمس
     QuerySnapshot querySnapshot = await _firestore
         .collection('alarms')
         .where('beneficiaryId', isEqualTo: beneficiaryId)
         .where('isForBeneficiary', isEqualTo: false)
-        .where('timestamp', isGreaterThanOrEqualTo: startOfDay)
-        .where('timestamp', isLessThan: endOfDay)
+        .where('timestamp', isGreaterThanOrEqualTo: yesterdayStart)
+        .where('timestamp', isLessThan: yesterdayEnd)
         .get();
 
     return querySnapshot.docs

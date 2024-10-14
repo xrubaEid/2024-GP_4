@@ -9,7 +9,6 @@ import '../../models/alarm_model.dart';
 import '../../widget/indicator.dart';
 import '../../widget/info_card.dart';
 import '../alarm/alarm_setup_screen.dart';
-import '../statistic/my_chart_model.dart';
 
 class BeneficiaryDetailsScreen extends StatefulWidget {
   final String beneficiaryId;
@@ -144,7 +143,7 @@ class _BeneficiaryDetailsScreenState extends State<BeneficiaryDetailsScreen> {
     // alarmsController.fetchBeneficiaryLastWeekAlarms(beneficiaryId!);
   }
 
-  final AlarmModel _model = AlarmModel();
+  // final AlarmModel _model = AlarmModel();
 
   List<BarChartGroupData> barGroups = [];
   List<PieChartSectionData> pieSections = [];
@@ -386,9 +385,7 @@ class _BeneficiaryDetailsScreenState extends State<BeneficiaryDetailsScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => AlarmSetupScreen(
-                                        beneficiaryId: widget.beneficiaryId,
-                                      ),
+                                      builder: (context) => const AlarmSetupScreen(),
                                     ),
                                   );
                                 },
@@ -434,9 +431,8 @@ class _BeneficiaryDetailsScreenState extends State<BeneficiaryDetailsScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => AlarmSetupScreen(
-                                    beneficiaryId: widget.beneficiaryId,
-                                  ),
+                                  builder: (context) =>
+                                      const AlarmSetupScreen(),
                                 ),
                               );
                             },

@@ -6,6 +6,8 @@ import 'package:sleepwell/controllers/alarms_controller.dart';
 import 'package:sleepwell/models/alarm_model.dart';
 
 class DependentScreen extends StatefulWidget {
+  // const DependentScreen({super.key});
+
   // final String userId;
 
   // DependentScreen({required this.userId});
@@ -21,7 +23,7 @@ class _DependentScreenState extends State<DependentScreen> {
   @override
   void initState() {
     super.initState();
-    _dependentAlarms = _alarmsController.fetchLastDayAlarms(
+    _dependentAlarms = _alarmsController.fetchLastWeekAlarms(
       userId!,
     );
   }
