@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
@@ -7,7 +9,6 @@ import '../../../controllers/beneficiary_controller.dart';
 import '../../../controllers/sensor_settings_controller.dart';
 import '../../../controllers/alarm_setup_controller.dart';
 import '../../../widget/clockview.dart';
- 
 
 class SleepWellCycleScreen extends StatelessWidget {
   final SleepCycleController _controller = Get.put(SleepCycleController());
@@ -15,7 +16,7 @@ class SleepWellCycleScreen extends StatelessWidget {
       Get.put(SensorSettingsController());
   final BeneficiaryController beneficiaryController =
       Get.put(BeneficiaryController());
-
+  String? userId = FirebaseAuth.instance.currentUser?.uid;
   @override
   Widget build(BuildContext context) {
     deviceController
@@ -87,35 +88,80 @@ class SleepWellCycleScreen extends StatelessWidget {
   }
 
   Widget _buildHeader() {
-  
     return Obx(() {
       if (beneficiaryController.isLoading.value) {
-        return CircularProgressIndicator();   }
-
-     
-      if (beneficiaryController.beneficiaries.isEmpty) {
-        return Text("No beneficiaries found.");
+        return const CircularProgressIndicator();
       }
 
-      // DropdownButton لإظهار المستفيدين
-      return DropdownButton<String>(
-        value: beneficiaryController.selectedBeneficiaryId.value.isNotEmpty
-            ? beneficiaryController.selectedBeneficiaryId.value
-            : null, // قيمة المستفيد المختار
-        hint: const Text(
-            'Select a beneficiary'), // النص الظاهر عند عدم اختيار مستفيد
-        items: beneficiaryController.beneficiaries.map((beneficiary) {
+      if (beneficiaryController.beneficiaries.isEmpty) {
+        return const Text("No beneficiaries found.");
+      }
+
+      // قائمة العناصر مع إضافة "Yourself" كأول عنصر
+      List<DropdownMenuItem<String>> dropdownItems = [
+        const DropdownMenuItem<String>(
+          value: 'yourself', // قيمة مخصصة للخيار الأول
+          child: Text('Yourself'),
+        ),
+        ...beneficiaryController.beneficiaries.map((beneficiary) {
           return DropdownMenuItem<String>(
             value: beneficiary.id,
-            child: Text(beneficiary.name), // عرض اسم المستفيد
+            child: Text(
+              beneficiary.name,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
           );
         }).toList(),
-        onChanged: (String? newValue) {
-          if (newValue != null) {
-            // تعيين المستفيد المختار عند تغييره
-            beneficiaryController.setBeneficiaryId(newValue);
-          }
-        },
+      ];
+
+      return Row(
+        mainAxisAlignment:
+            MainAxisAlignment.center, // محاذاة المحتويات في المنتصف
+        children: [
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start, // محاذاة النص لليسار
+            children: [
+              Text(
+                'Select Alarm For',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 10), // إضافة مسافة بين النص والقائمة
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DropdownButton<String>(
+                value:
+                    beneficiaryController.selectedBeneficiaryId.value.isNotEmpty
+                        ? beneficiaryController.selectedBeneficiaryId.value
+                        : null,
+                hint: const Text(
+                  'Select a beneficiary',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromRGBO(6, 248, 26, 1),
+                  ),
+                ),
+                items: dropdownItems,
+                onChanged: (String? newValue) {
+                  if (newValue != null) {
+                    beneficiaryController.setBeneficiaryId(newValue);
+                  }
+                },
+              ),
+            ],
+          ),
+        ],
       );
     });
   }
@@ -265,8 +311,11 @@ class SleepWellCycleScreen extends StatelessWidget {
       // deviceController.getSensorById(deviceController.selectedSensor.value);
       // print(deviceController.selectedSensor.value);
       // print('-----------------------------------------------');
-      _controller
-          .saveTimes(); // Proceed to save times if the difference is sufficient
+
+      List<Map<String, int>> myHourList = [];
+
+      _controller.saveTimes(myHourList, userId!);
+      //  _controller          .saveTimes();
     }
   }
 

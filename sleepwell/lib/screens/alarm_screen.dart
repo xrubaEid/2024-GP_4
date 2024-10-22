@@ -2,11 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
- import 'package:sleepwell/screens/alarm/alarm_setup_screen.dart';
+import 'package:sleepwell/screens/alarm/alarm_setup_screen.dart';
 
 import 'dart:core';
 
- 
 class AlarmScreen extends StatefulWidget {
   const AlarmScreen({super.key});
 
@@ -268,20 +267,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                     // const SizedBox(
                     //   height: 10,
                     // ),
-                    // TextButton(
-                    //   onPressed: () {
-                    //     // Get.to(() => SensorScreen(userId: userId!));
-                    //     Get.to(SensorScreen());
-                    //   },
-                    //   child: const Text(
-                    //     'SensorScreensetall ',
-                    //     style: TextStyle(
-                    //       fontSize: 20,
-                    //       fontWeight: FontWeight.bold,
-                    //       color: Colors.white,
-                    //     ),
-                    //   ),
-                    // ),
+
                     // ElevatedButton(
                     //   onPressed: () {
                     //     // Navigator.push(

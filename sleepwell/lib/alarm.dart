@@ -13,7 +13,7 @@ import 'package:sleepwell/screens/alarm/alarm_ring_screen.dart';
 import 'package:sleepwell/screens/alarm/alarm_ring_with_equation_screen.dart';
 
 import 'controllers/beneficiary_controller.dart';
-import 'main.dart';
+ 
 
 class AppAlarm {
   static StreamSubscription<AlarmSettings>? subscription;

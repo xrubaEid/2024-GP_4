@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sleepwell/controllers/alarm_setup_controller.dart';
+import 'package:sleepwell/controllers/sensor_settings_controller.dart';
 import 'package:sleepwell/main.dart';
 import 'package:sleepwell/screens/account_screen.dart';
 
@@ -12,6 +14,7 @@ import 'package:sleepwell/screens/feedback/feedbacke_notification_screen.dart';
 import 'package:sleepwell/screens/settings/language_screen.dart';
 
 import 'package:sleepwell/widget/counter_widget.dart';
+import '../controllers/beneficiary_controller.dart';
 import '../widget/bed_time_reminder.dart';
 import 'edite_alarm_screen.dart';
 import 'profile/about_you_screen.dart';
@@ -192,6 +195,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     // isDarkMode.value = controller.themeMode.value == ThemeMode.dark;
+    final SensorSettingsController alarmcontroller =
+        Get.put(SensorSettingsController());
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF004AAD),
@@ -361,6 +366,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   // showDeviceBottomSheet(
                                   //     context);
                                   // Get.to(const SensorScreen());
+                                  alarmcontroller.checkUserSensors(context);
                                 }
 
                                 // => Get.to(() => NotificationScreen()),

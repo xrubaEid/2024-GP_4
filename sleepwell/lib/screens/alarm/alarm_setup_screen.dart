@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 import 'package:sleepwell/alarm.dart';
 
 import 'package:sleepwell/models/user_sensor.dart';
- 
 
 import 'package:sleepwell/widget/clockview.dart';
 import '../../controllers/sensor_settings_controller.dart';
@@ -48,8 +47,7 @@ class _AlarmSetupScreenState extends State<AlarmSetupScreen> {
   late RxString beneficiaryId = ''.obs;
   String? selectedBeneficiaryId;
   bool? isForBeneficiary = true;
-  final SensorSettingsController _controller =
-      Get.put(SensorSettingsController());
+
   @override
   void initState() {
     super.initState();
@@ -91,54 +89,6 @@ class _AlarmSetupScreenState extends State<AlarmSetupScreen> {
 
   List<UserSensor> _userSensors = [];
   String? _selectedSensorId;
-  // Future<void> checkUserSensors() async {
-  //   if (userId == null) {
-  //     print("Error: User ID is null");
-  //     return;
-  //   }
-
-  //   print("Fetching user sensors for user ID: $userId");
-  //   _userSensors = await _controller.getUserSensors(userId);
-
-  //   if (_userSensors.isEmpty) {
-  //     print("No sensors found. Prompting user to add a sensor.");
-  //     _controller.showAddSensorDialog(context);
-  //   } else if (_userSensors.length == 1) {
-  //     _selectedSensorId = _userSensors[0].sensorId;
-  //     print('Executing operation with the only device: $_selectedSensorId');
-  //   } else {
-  //     showSensorSelectionDialog(
-  //       context: context,
-  //       userSensors: _controller.sensorsCurrentUser
-  //           .map((sensorId) => UserSensor(
-  //                 sensorId: sensorId,
-  //                 userId: _controller.userId ?? '', // userId
-  //                 enable: true, // assuming default enabled
-  //               ))
-  //           .toList(),
-  //       selectedSensorId: _controller.selectedSensor.value,
-  //       onSensorSelected: (sensorId) {
-  //         _controller.selectSensor(sensorId);
-  //       },
-  //       onDeleteSensor: (sensorId) {
-  //         _controller.deleteSensor(sensorId);
-  //       },
-  //     );
-
-  //     // مسح الحساسات السابقة لضمان عدم تكرار المعرفات
-  //     _controller.sensorsCurrentUser.clear();
-
-  //     // إضافة جميع معرفات الحساسات المرتبطة بالمستخدم الحالي إلى القائمة
-  //     _controller.sensorsCurrentUser
-  //         .addAll(_userSensors.map((sensor) => sensor.sensorId).toList());
-
-  //     print('Sensors for current user: ${_controller.sensorsCurrentUser}');
-  //   }
-
-  //   setState(() {
-  //     _controller.loading = false.obs;
-  //   });
-  // }
 
   Future<TimeOfDay?> _showBedtimePicker() async {
     final TimeOfDay? pickedTime = await showTimePicker(
@@ -270,7 +220,7 @@ class _AlarmSetupScreenState extends State<AlarmSetupScreen> {
       // استدعاء دالة للحصول على جميع التنبيهات بعد حفظ المنبه الجديد
       await AppAlarm.getAlarms();
     }
-    // قد ترغب في عرض رسالة أو تحديث الواجهة بعد الحفظ
+
     print("Alarm has been saved successfully.");
     calculateSleepDuration(printedBedtime, printedWakeUpTime);
     int currentDay = DateTime.now().day;
@@ -316,7 +266,7 @@ class _AlarmSetupScreenState extends State<AlarmSetupScreen> {
     printTimeDifference(printednumOfCycles);
     print("==========================End==========================");
     Get.offAll(() => const HomeScreen());
-    resetBeneficiaryInfo();
+    // resetBeneficiaryInfo();
   }
 
   Future<void> calculateSleepDuration(
@@ -553,15 +503,15 @@ class _AlarmSetupScreenState extends State<AlarmSetupScreen> {
     }
   }
 
-  void resetBeneficiaryInfo() {
-    setState(() {
-      beneficiaryName = 'Unknown';
-      beneficiaryId.value = '';
-      selectedBeneficiaryId = null;
-      isForBeneficiary = true; // إعادة تعيين حالة المستفيد
-    });
-    print('Beneficiary info has been reset');
-  }
+  // void resetBeneficiaryInfo() {
+  //   setState(() {
+  //     beneficiaryName = 'Unknown';
+  //     beneficiaryId.value = '';
+  //     selectedBeneficiaryId = null;
+  //     isForBeneficiary = true; // إعادة تعيين حالة المستفيد
+  //   });
+  //   print('Beneficiary info has been reset');
+  // }
 
   @override
   Widget build(BuildContext context) {

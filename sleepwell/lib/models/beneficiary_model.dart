@@ -12,6 +12,13 @@ class BeneficiaryModel {
   });
 
   factory BeneficiaryModel.fromFirestore(Map<String, dynamic> data, String id) {
+    // التحقق من أن البيانات تحتوي على الحقول المطلوبة
+    if (data['name'] == null ||
+        data['watch'] == null ||
+        data['userid'] == null) {
+      throw Exception('Missing required fields in Firestore data');
+    }
+
     return BeneficiaryModel(
       id: id,
       name: data['name'],

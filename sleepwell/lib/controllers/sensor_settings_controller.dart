@@ -1,11 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
- 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleepwell/models/sensor_model.dart';
- 
 import '../models/user_sensor.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -143,7 +140,7 @@ class SensorSettingsController extends GetxController {
         print("Sensor ID: ${sensor.sensorId}");
         print("Heart Rate: ${sensor.heartRate}");
         print("SpO2: ${sensor.spO2}");
-        print("Temperature: ${sensor.temperature}");
+        print("Temperature: ${sensor.temperatura}");
         print("----------- End ---- Sensors Data --------------");
       });
 
@@ -174,7 +171,7 @@ class SensorSettingsController extends GetxController {
           print(
               '---------------------Selected User Sensor Data--------------------------');
           print(sensor.sensorId);
-          print(sensor.temperature);
+          print(sensor.temperatura);
           print(sensor.heartRate);
           print(sensor.spO2);
           print(
@@ -196,7 +193,12 @@ class SensorSettingsController extends GetxController {
         if (data != null && data is Map<dynamic, dynamic>) {
           List<Sensor> sensorReadings = [];
           for (var value in data.values) {
-            sensorReadings.add(Sensor.fromMap(value as Map<dynamic, dynamic>));
+            // التحقق من أن القيم من النوع المطلوب
+            if (value is Map<dynamic, dynamic>) {
+              sensorReadings.add(Sensor.fromMap(value));
+            } else {
+              print("Unexpected value type: ${value.runtimeType}");
+            }
           }
 
           if (sensorReadings.isNotEmpty) {
@@ -229,18 +231,10 @@ class SensorSettingsController extends GetxController {
     for (var reading in sensorReadings.skip(1)) {
       if (reading.sensorId == targetSensorId) {
         // حساب نسبة التغير في معدل نبضات القلب ودرجة الحرارة
-        double heartRateChange =
-            ((previousReading.heartRate - reading.heartRate).abs() /
-                    previousReading.heartRate) *
-                100;
-        double temperatureChange =
-            ((previousReading.temperature - reading.temperature).abs() /
-                    previousReading.temperature) *
-                100;
 
         // التحقق من انخفاض معدل ضربات القلب بنسبة 20%
         if (previousReading.heartRate != 0 &&
-            reading.heartRate < previousReading.heartRate * 0.80) {
+            reading.heartRate < previousReading.heartRate * 0.20) {
           sleepStartTime = DateTime.now().toString(); // تسجيل وقت التنبيه
           print("::::::::::::::::::::::::::::::::::::::::::::::::;");
           print("Heart rate dropped: ${reading.heartRate} at $sleepStartTime");
@@ -248,12 +242,12 @@ class SensorSettingsController extends GetxController {
         }
 
         // التحقق من انخفاض درجة الحرارة بأكثر من 0.5 درجة
-        if (previousReading.temperature != 0 &&
-            reading.temperature < previousReading.temperature - 0.5) {
+        if (previousReading.temperatura != 0 &&
+            reading.temperatura < previousReading.temperatura - 0.5) {
           sleepStartTime = DateTime.now().toString(); // تسجيل وقت التنبيه
           print("::::::::::::::::::::::::::::::::::::::::::::::::;");
           print(
-              "Temperature dropped: ${reading.temperature} at $sleepStartTime");
+              "Temperature dropped: ${reading.temperatura} at $sleepStartTime");
           print("::::::::::::::::::::::::::::::::::::::::::::::::;");
         }
 
@@ -267,71 +261,11 @@ class SensorSettingsController extends GetxController {
       print(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
       print("Sensor ID: ${previousReading.sensorId}");
       print("Heart Rate: ${previousReading.heartRate}");
-      print("Temperature: ${previousReading.temperature}");
+      print("Temperature: ${previousReading.temperatura}");
       print("SpO2: ${previousReading.spO2}");
       print("Heart rate dropped at $sleepStartTime");
       print("::::::::::::::::::::::::::::::::::::::::::::::::;");
     }
-
-    print(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
-    print('Finished checking sensor readings for sensor ID: $targetSensorId');
-  }
-
-  void calculateSleepStartTimeFromReadings111(
-      List<Sensor> sensorReadings, String targetSensorId) {
-    Sensor previousReading = sensorReadings.firstWhere(
-        (sensor) => sensor.sensorId == targetSensorId,
-        orElse: () => null!);
-
-    if (previousReading == null) {
-      print("No readings found for the specified sensor ID: $targetSensorId");
-      return;
-    }
-
-    // المرور على جميع القراءات بعد القراءة الأولى لنفس المستشعر المحدد
-    for (var reading in sensorReadings.skip(1)) {
-      if (reading.sensorId == targetSensorId) {
-        // حساب نسبة التغير في معدل نبضات القلب ودرجة الحرارة
-        double heartRateChange =
-            ((previousReading.heartRate - reading.heartRate).abs() /
-                    previousReading.heartRate) *
-                100;
-        double temperatureChange =
-            ((previousReading.temperature - reading.temperature).abs() /
-                    previousReading.temperature) *
-                100;
-
-        // التحقق من انخفاض معدل ضربات القلب بنسبة 20% على الأقل
-        if (previousReading.heartRate != 0 &&
-            reading.heartRate < previousReading.heartRate * 0.80) {
-          sleepStartTime = DateTime.now().toString(); // تسجيل وقت التنبيه
-          print("::::::::::::::::::::::::::::::::::::::::::::::::;");
-          print("Heart rate dropped: ${reading.heartRate} at $sleepStartTime");
-          print("::::::::::::::::::::::::::::::::::::::::::::::::;");
-        }
-
-        // التحقق من انخفاض درجة الحرارة بأكثر من 0.5 درجة
-        if (previousReading.temperature != 0 &&
-            reading.temperature < previousReading.temperature - 0.5) {
-          sleepStartTime = DateTime.now().toString(); // تسجيل وقت التنبيه
-          print("::::::::::::::::::::::::::::::::::::::::::::::::;");
-          print(
-              "Temperature dropped: ${reading.temperature} at $sleepStartTime");
-          print("::::::::::::::::::::::::::::::::::::::::::::::::;");
-        }
-
-        // تعيين القراءة الحالية كقراءة سابقة للجولة القادمة
-        previousReading = reading;
-      }
-    }
-
-    print(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
-    print("Sensor ID: ${previousReading.sensorId}");
-    print("Heart Rate: ${previousReading.heartRate}");
-    print("Temperature: ${previousReading.temperature}");
-    print("SpO2: ${previousReading.spO2}");
-    print("Heart rate dropped: at $sleepStartTime");
-    print("::::::::::::::::::::::::::::::::::::::::::::::::;");
 
     print(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
     print('Finished checking sensor readings for sensor ID: $targetSensorId');

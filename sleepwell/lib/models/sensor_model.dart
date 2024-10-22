@@ -1,22 +1,23 @@
 class Sensor {
   String sensorId;
-  double temperature;
-  double spO2;
-  double heartRate;
+  int temperatura;
+  int spO2;
+  int heartRate;
 
   Sensor({
     required this.sensorId,
-    required this.temperature,
+    required this.temperatura,
     required this.spO2,
     required this.heartRate,
   });
 
   factory Sensor.fromMap(Map<dynamic, dynamic> data) {
     return Sensor(
-      sensorId: data['sensorId'] ?? '',
-      temperature: (data['Temperatura'] ?? 0).toDouble(),
-      spO2: (data['SpO2'] ?? 0).toDouble(),
-      heartRate: (data['HeartRate'] ?? 0).toDouble(),
+      // تحويل sensorId إلى String
+      sensorId: data['sensorId'].toString(),
+      temperatura: data['Temperatura'] ?? 0,
+      spO2: data['SpO2'] ?? 0,
+      heartRate: data['HeartRate'] ?? 0,
     );
   }
 }
