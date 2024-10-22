@@ -9,6 +9,7 @@ import '../../../controllers/beneficiary_controller.dart';
 import '../../../controllers/sensor_settings_controller.dart';
 import '../../../controllers/alarm_setup_controller.dart';
 import '../../../widget/clockview.dart';
+import '../../../widget/confirmation_dialog_widget.dart';
 
 class SleepWellCycleScreen extends StatelessWidget {
   final SleepCycleController _controller = Get.put(SleepCycleController());
@@ -279,6 +280,46 @@ class SleepWellCycleScreen extends StatelessWidget {
     return (endTime - startTime).abs();
   }
 
+  // void _checkAndSaveTimes(BuildContext context) {
+  //   if (timeDifferenceInMinutes(
+  //           _controller.bedtime.value, _controller.wakeUpTime.value) <
+  //       120) {
+  //     // Show warning dialog
+  //     showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return AlertDialog(
+  //           title: const Text(
+  //             "Warning",
+  //             style: TextStyle(color: Colors.red),
+  //           ),
+  //           content: const Text(
+  //               "please select the wake up time with at least 2 hours deffrence"),
+  //           actions: <Widget>[
+  //             TextButton(
+  //               onPressed: () {
+  //                 // Navigator.of(context).pop(); // Close the dialog
+  //                 Get.back();
+  //               },
+  //               child: const Text("OK"),
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     );
+  //   } else {
+  //     // print('-----------------------------------------------');
+  //     // deviceController.getSensorById(deviceController.selectedSensor.value);
+  //     // print(deviceController.selectedSensor.value);
+  //     // print('-----------------------------------------------');
+
+  //     List<Map<String, int>> myHourList = [];
+
+  //     _controller.saveTimes();
+
+  //     //  _controller          .saveTimes();
+  //   }
+  // }
   void _checkAndSaveTimes(BuildContext context) {
     if (timeDifferenceInMinutes(
             _controller.bedtime.value, _controller.wakeUpTime.value) <
@@ -293,11 +334,10 @@ class SleepWellCycleScreen extends StatelessWidget {
               style: TextStyle(color: Colors.red),
             ),
             content: const Text(
-                "please select the wake up time with at least 2 hours deffrence"),
+                "please select the wake up time with at least 2 hours difference"),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
-                  // Navigator.of(context).pop(); // Close the dialog
                   Get.back();
                 },
                 child: const Text("OK"),
@@ -307,15 +347,20 @@ class SleepWellCycleScreen extends StatelessWidget {
         },
       );
     } else {
-      // print('-----------------------------------------------');
-      // deviceController.getSensorById(deviceController.selectedSensor.value);
-      // print(deviceController.selectedSensor.value);
-      // print('-----------------------------------------------');
-
-      List<Map<String, int>> myHourList = [];
-
-      _controller.saveTimes(myHourList, userId!);
-      //  _controller          .saveTimes();
+      // Show Confirmation Dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ConfirmationDialog(
+            alarmFor: beneficiaryController.selectedBeneficiaryId.value,
+            selectedDevice: deviceController.selectedSensor.value,
+            wakeUpTime:
+                DateFormat('hh:mm a').format(_controller.wakeUpTime.value),
+            bedTime: DateFormat('hh:mm a').format(_controller.bedtime.value),
+            sleepCycle: _controller.numOfCycles.value,
+          );
+        },
+      );
     }
   }
 
@@ -324,6 +369,7 @@ class SleepWellCycleScreen extends StatelessWidget {
       alignment: Alignment.center,
       child: TextButton(
         onPressed: () => _checkAndSaveTimes(context),
+        // onPressed: () => ConfirmationDialog(),
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all<Color>(Colors.pink),
           foregroundColor: MaterialStateProperty.all<Color>(Colors.white),

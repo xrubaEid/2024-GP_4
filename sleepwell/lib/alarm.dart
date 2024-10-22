@@ -13,7 +13,6 @@ import 'package:sleepwell/screens/alarm/alarm_ring_screen.dart';
 import 'package:sleepwell/screens/alarm/alarm_ring_with_equation_screen.dart';
 
 import 'controllers/beneficiary_controller.dart';
- 
 
 class AppAlarm {
   static StreamSubscription<AlarmSettings>? subscription;
@@ -102,16 +101,29 @@ class AppAlarm {
     String beneficiaryId, // نقبل null إذا كان المنبه للمستخدم نفسه
   ) async {
     // تحديد تاريخ ووقت النوم
-    DateTime bedtimeDate = DateFormat("yyyy-MM-dd hh:mm a").parse(
-      "${DateTime.now().toString().split(' ')[0]} ${bedtime.format(Get.context!)}",
-    );
+    // DateTime bedtimeDate = DateFormat("yyyy-MM-dd hh:mm a").parse(
+    //   "${DateTime.now().toString().split(' ')[0]} ${bedtime.format(Get.context!)}",
+    // );
 
-    // تحديد تاريخ ووقت الاستيقاظ المثالي
+    // // تحديد تاريخ ووقت الاستيقاظ المثالي
+    // DateTime optimalWakeUpDate = DateFormat("yyyy-MM-dd hh:mm a").parse(
+    //   "${DateTime.now().toString().split(' ')[0]} $optimalWakeTime",
+    // );
+
+    // // تعديل تاريخ الاستيقاظ ليكون في اليوم التالي إذا كان وقت الاستيقاظ قبل وقت النوم
+    // if (optimalWakeUpDate.isBefore(bedtimeDate)) {
+    //   optimalWakeUpDate = optimalWakeUpDate.add(const Duration(days: 1));
+    // }
+    DateTime now = DateTime.now();
+    DateTime bedtimeDate =
+        DateTime(now.year, now.month, now.day, bedtime.hour, bedtime.minute);
+
+// تحويل وقت الاستيقاظ المثالي
     DateTime optimalWakeUpDate = DateFormat("yyyy-MM-dd hh:mm a").parse(
       "${DateTime.now().toString().split(' ')[0]} $optimalWakeTime",
     );
 
-    // تعديل تاريخ الاستيقاظ ليكون في اليوم التالي إذا كان وقت الاستيقاظ قبل وقت النوم
+// إذا كان وقت الاستيقاظ المثالي قبل وقت النوم، ضف يومًا إلى وقت الاستيقاظ المثالي
     if (optimalWakeUpDate.isBefore(bedtimeDate)) {
       optimalWakeUpDate = optimalWakeUpDate.add(const Duration(days: 1));
     }

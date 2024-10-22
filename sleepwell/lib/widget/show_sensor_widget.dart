@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleepwell/models/user_sensor.dart';
 
 class ReusableSensorDialog extends StatefulWidget {
@@ -22,10 +23,38 @@ class ReusableSensorDialog extends StatefulWidget {
 class _ReusableSensorDialogState extends State<ReusableSensorDialog> {
   String? _selectedSensorId;
   bool selectedForYou = true;
+
+// دالة لتخزين الحساس في SharedPreferences
+  Future<void> _storeSelectedSensorId(String sensorId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selectedSensorId', sensorId);
+  }
+
+// دالة لاسترجاع الحساس المختار من SharedPreferences
+  Future<void> _getSelectedSensorId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _selectedSensorId = prefs.getString('selectedSensorId');
+    });
+  }
+
+// دالة لتحديد الحساس المختار
+  void _sensorSelected(String sensorId) {
+    setState(() {
+      _selectedSensorId = sensorId;
+    });
+    widget.onSensorSelected(sensorId);
+    print('Selected Sensor: $sensorId');
+
+    // تخزين الحساس في SharedPreferences
+    _storeSelectedSensorId(sensorId);
+  }
+
   @override
   void initState() {
     super.initState();
     _selectedSensorId = widget.selectedSensorId;
+    _getSelectedSensorId(); // استرجاع الحساس المخزن عند بدء الـ dialog
   }
 
   // دالة لحذف الحساس من قاعدة البيانات
@@ -38,13 +67,6 @@ class _ReusableSensorDialogState extends State<ReusableSensorDialog> {
   }
 
   // دالة لتحديد الحساس المختار
-  void _sensorSelected(String sensorId) {
-    setState(() {
-      _selectedSensorId = sensorId;
-    });
-    widget.onSensorSelected(sensorId);
-    print('Selected Sensor: $sensorId');
-  }
 
   @override
   Widget build(BuildContext context) {
