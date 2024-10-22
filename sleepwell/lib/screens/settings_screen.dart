@@ -6,14 +6,17 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleepwell/main.dart';
 import 'package:sleepwell/screens/account_screen.dart';
+
 import 'package:sleepwell/screens/auth/signin_screen.dart';
 import 'package:sleepwell/screens/feedback/feedbacke_notification_screen.dart';
 import 'package:sleepwell/screens/settings/language_screen.dart';
+
 import 'package:sleepwell/widget/counter_widget.dart';
 import '../widget/bed_time_reminder.dart';
 import 'edite_alarm_screen.dart';
 import 'profile/about_you_screen.dart';
 import 'profile/more_about_you.dart';
+import 'statistic/real_time_data_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -89,11 +92,106 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  // final DeviceController controllerDevice = Get.put(DeviceController());
+  // void showDeviceBottomSheet(BuildContext context) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     shape: const RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  //     ),
+  //     builder: (context) {
+  //       return DraggableScrollableSheet(
+  //         expand: false,
+  //         maxChildSize: 0.7,
+  //         initialChildSize: 0.5,
+  //         minChildSize: 0.3,
+  //         builder: (BuildContext context, ScrollController scrollController) {
+  //           return Container(
+  //             padding: const EdgeInsets.all(16),
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.end,
+  //               children: [
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                   children: [
+  //                     const Text(
+  //                       'Available Devices',
+  //                       style: TextStyle(
+  //                         fontSize: 18,
+  //                         fontWeight: FontWeight.bold,
+  //                       ),
+  //                     ),
+  //                     IconButton(
+  //                       icon: const Icon(Icons.close),
+  //                       onPressed: () {
+  //                         Navigator.pop(context);
+  //                       },
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 Expanded(
+  //                   child: ListView(
+  //                     controller: scrollController,
+  //                     children: [
+  //                       Obx(
+  //                         () => ListTile(
+  //                           title: const Text('Sensor 1'),
+  //                           trailing: controllerDevice.selectedDevice.value ==
+  //                                   'Sensor 1'
+  //                               ? const Icon(Icons.check_circle,
+  //                                   color: Colors.green)
+  //                               : null,
+  //                           onTap: () {
+  //                             controllerDevice.saveDevice('Sensor 1');
+  //                             // Navigator.pop(context); // إغلاق النافذة
+  //                           },
+  //                         ),
+  //                       ),
+  //                       Obx(
+  //                         () => ListTile(
+  //                           title: const Text('Sensor 2'),
+  //                           trailing: controllerDevice.selectedDevice.value ==
+  //                                   'Sensor 2'
+  //                               ? const Icon(Icons.check_circle,
+  //                                   color: Colors.green)
+  //                               : null,
+  //                           onTap: () {
+  //                             controllerDevice.saveDevice('Sensor 2');
+  //                             // Navigator.pop(context); // إغلاق النافذة
+  //                           },
+  //                         ),
+  //                       ),
+  //                       Obx(
+  //                         () => ListTile(
+  //                           title: const Text('Sensor 3'),
+  //                           trailing: controllerDevice.selectedDevice.value ==
+  //                                   'Sensor 3'
+  //                               ? const Icon(Icons.check_circle,
+  //                                   color: Colors.green)
+  //                               : null,
+  //                           onTap: () {
+  //                             controllerDevice.saveDevice('Sensor 3');
+  //                             // Navigator.pop(context); // إغلاق النافذة
+  //                           },
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
+
   // LocaleThemeController controller = Get.find();
   @override
   Widget build(BuildContext context) {
     // isDarkMode.value = controller.themeMode.value == ThemeMode.dark;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF004AAD),
@@ -259,7 +357,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     const Icon(Icons.usb, color: Colors.white),
                                 trailing: const Icon(Icons.arrow_forward_ios,
                                     color: Colors.white, size: 18),
-                                onTap: () {}
+                                onTap: () async {
+                                  // showDeviceBottomSheet(
+                                  //     context);
+                                  // Get.to(const SensorScreen());
+                                }
+
                                 // => Get.to(() => NotificationScreen()),
                                 ),
                             ListTile(

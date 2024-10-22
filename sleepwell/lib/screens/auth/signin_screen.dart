@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +23,7 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
   bool showSpinner = false;
   late String email;
@@ -202,14 +204,41 @@ class _SignInScreenState extends State<SignInScreen> {
                     setState(() {
                       showSpinner = true;
                     });
+
                     try {
-                      final user = await _auth.signInWithEmailAndPassword(
+                      // تسجيل الدخول باستخدام البريد الإلكتروني وكلمة المرور
+                      final userCredential =
+                          await _auth.signInWithEmailAndPassword(
                         email: email,
                         password: password,
                       );
-                      // الانتقال إلى الشاشة التالية بعد تسجيل الدخول بنجاح
-                      Get.offAll(const HomeScreen());
-                      prefs.setBool("isLogin", true);
+
+                      // الحصول على معرّف المستخدم بعد تسجيل الدخول
+                      final userId = userCredential.user?.uid;
+
+                      if (userId != null) {
+                        // الانتقال إلى الشاشة الرئيسية بعد تسجيل الدخول بنجاح
+                        Get.offAll(const HomeScreen());
+
+                        // تعيين حالة تسجيل الدخول في SharedPreferences
+                        await prefs.setBool("isLogin", true);
+
+                        // الحصول على FCM Token
+                        final getAccessToken =
+                            await getToken(); // تأكد أن getToken() دالة تنتظر الإكمال
+
+                        // تحديث بيانات المستخدم في جدول المستخدمين في Firestore
+                        await _firestore
+                            .collection('Users')
+                            .doc(userId)
+                            .update({
+                          'FCM_Token': getAccessToken,
+                        });
+                      } else {
+                        throw FirebaseAuthException(
+                            code: 'user-not-found',
+                            message: 'User ID not found!');
+                      }
                     } catch (e) {
                       String errorMessage = 'An error occurred';
                       if (e is FirebaseAuthException) {
@@ -233,6 +262,8 @@ class _SignInScreenState extends State<SignInScreen> {
                       } else {
                         errorMessage = e.toString();
                       }
+
+                      // عرض رسالة الخطأ للمستخدم
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(errorMessage),
@@ -245,7 +276,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     }
                   },
                 ),
-                      const SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
                     Get.to(() => ResetPasswordScreen());
@@ -254,7 +285,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     'Forget Password?'.tr,
                     style: const TextStyle(
                       fontSize: 20,
-                                    fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),

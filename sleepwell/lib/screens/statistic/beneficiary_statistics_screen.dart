@@ -9,6 +9,7 @@ import 'package:sleepwell/widget/statistic_monthly_widget.dart';
 
 import '../../controllers/alarms_controller.dart';
 import '../../controllers/beneficiary_controller.dart';
+
 import '../../models/alarm_model.dart';
 import '../../widget/statistic_daily_widget.dart';
 import '../../widget/statistic_weekly_widget.dart';
@@ -187,6 +188,24 @@ class _BeneficiaryStatisticsScreenState
                                     builder: (context) => AlarmSetupScreen(),
                                   ),
                                 );
+                                // final DeviceController controllerDevice =
+                                //     Get.put(DeviceController());
+                                // if (!isForBeneficiary!) {
+                                //   BottomSheetWidget.showDeviceBottomSheet(
+                                //     context,
+                                //     controllerDevice,
+                                //     'Available Devices For $beneficiaryName ',
+                                //     isForBeneficiary: true,
+                                //     beneficiaryId:
+                                //         beneficiaryId.value, // معرف المستفيد
+                                //   );
+                                // } else {
+                                //   BottomSheetWidget.showDeviceBottomSheet(
+                                //     context,
+                                //     controllerDevice,
+                                //     'Available Devices For  Your Self',
+                                //   );
+                                // }
                               },
                               style: ElevatedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(

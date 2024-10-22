@@ -5,12 +5,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:sleepwell/alarm.dart';
+
+import 'package:sleepwell/models/user_sensor.dart';
+ 
+
 import 'package:sleepwell/widget/clockview.dart';
+import '../../controllers/sensor_settings_controller.dart';
 import '../../controllers/beneficiary_controller.dart';
 import '../../push_notification_service.dart';
 import '../home_screen.dart';
+import 'SleepWellCycleScreen/sleepwell_cycle_screen.dart';
 
 class AlarmSetupScreen extends StatefulWidget {
   const AlarmSetupScreen({super.key});
@@ -36,50 +42,18 @@ class _AlarmSetupScreenState extends State<AlarmSetupScreen> {
 
   String? userId = FirebaseAuth.instance.currentUser?.uid;
 
-  Future<void> saveUserIdToPrefs(String userId) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userId', userId);
-  }
-
   String? beneficiaryName;
-
-  Future<void> getBeneficiariesName() async {
-    if (beneficiaryId.value.isNotEmpty) {
-      try {
-        final docSnapshot = await FirebaseFirestore.instance
-            .collection('beneficiaries')
-            .doc(beneficiaryId
-                .value) // استخدم beneficiaryId.value للحصول على القيمة
-            .get();
-
-        if (docSnapshot.exists) {
-          setState(() {
-            beneficiaryName = docSnapshot['name'] ?? 'No Name';
-          });
-          print('-------------beneficiaryName-----------');
-          print(beneficiaryName);
-          print('-------------beneficiaryName-----------');
-        } else {
-          print('Document does not exist');
-        }
-      } catch (e) {
-        print('Error fetching beneficiary name: $e');
-      }
-    } else {
-      print('Beneficiary ID is empty');
-    }
-  }
 
   final BeneficiaryController controller = Get.find();
   late RxString beneficiaryId = ''.obs;
   String? selectedBeneficiaryId;
   bool? isForBeneficiary = true;
-
+  final SensorSettingsController _controller =
+      Get.put(SensorSettingsController());
   @override
   void initState() {
     super.initState();
-    selectedBeneficiaryId = controller.selectedBeneficiaryId
-        .value; // استخدم .value للحصول على القيمة من RxString
+    selectedBeneficiaryId = controller.selectedBeneficiaryId.value;
 
     if (selectedBeneficiaryId != null && selectedBeneficiaryId!.isNotEmpty) {
       isForBeneficiary = false;
@@ -88,7 +62,7 @@ class _AlarmSetupScreenState extends State<AlarmSetupScreen> {
       print('No beneficiary selected');
     }
 
-    getBeneficiariesName();
+    controller.fetchBeneficiaries(beneficiaryId.value);
 
     print('---------------selectedBeneficiaryId--------------------------');
     print(selectedBeneficiaryId);
@@ -114,6 +88,57 @@ class _AlarmSetupScreenState extends State<AlarmSetupScreen> {
     _timer.cancel();
     super.dispose();
   }
+
+  List<UserSensor> _userSensors = [];
+  String? _selectedSensorId;
+  // Future<void> checkUserSensors() async {
+  //   if (userId == null) {
+  //     print("Error: User ID is null");
+  //     return;
+  //   }
+
+  //   print("Fetching user sensors for user ID: $userId");
+  //   _userSensors = await _controller.getUserSensors(userId);
+
+  //   if (_userSensors.isEmpty) {
+  //     print("No sensors found. Prompting user to add a sensor.");
+  //     _controller.showAddSensorDialog(context);
+  //   } else if (_userSensors.length == 1) {
+  //     _selectedSensorId = _userSensors[0].sensorId;
+  //     print('Executing operation with the only device: $_selectedSensorId');
+  //   } else {
+  //     showSensorSelectionDialog(
+  //       context: context,
+  //       userSensors: _controller.sensorsCurrentUser
+  //           .map((sensorId) => UserSensor(
+  //                 sensorId: sensorId,
+  //                 userId: _controller.userId ?? '', // userId
+  //                 enable: true, // assuming default enabled
+  //               ))
+  //           .toList(),
+  //       selectedSensorId: _controller.selectedSensor.value,
+  //       onSensorSelected: (sensorId) {
+  //         _controller.selectSensor(sensorId);
+  //       },
+  //       onDeleteSensor: (sensorId) {
+  //         _controller.deleteSensor(sensorId);
+  //       },
+  //     );
+
+  //     // مسح الحساسات السابقة لضمان عدم تكرار المعرفات
+  //     _controller.sensorsCurrentUser.clear();
+
+  //     // إضافة جميع معرفات الحساسات المرتبطة بالمستخدم الحالي إلى القائمة
+  //     _controller.sensorsCurrentUser
+  //         .addAll(_userSensors.map((sensor) => sensor.sensorId).toList());
+
+  //     print('Sensors for current user: ${_controller.sensorsCurrentUser}');
+  //   }
+
+  //   setState(() {
+  //     _controller.loading = false.obs;
+  //   });
+  // }
 
   Future<TimeOfDay?> _showBedtimePicker() async {
     final TimeOfDay? pickedTime = await showTimePicker(
@@ -540,6 +565,8 @@ class _AlarmSetupScreenState extends State<AlarmSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final SensorSettingsController _controller =
+        Get.put(SensorSettingsController());
     //var now = DateTime.now();
     var formattedDate = DateFormat('EEE, d MMM').format(_now);
     var formattedTime = DateFormat('hh:mm').format(_now);
@@ -704,35 +731,60 @@ class _AlarmSetupScreenState extends State<AlarmSetupScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            FloatingActionButton(
-              onPressed: () async {
-                DateTime now = DateTime.now();
-                final nowTime = TimeOfDay.fromDateTime(now);
-                bool isForBeneficiary = (selectedBeneficiaryId == null);
-                if (selectedBeneficiaryId != null) {
-                  print(isForBeneficiary);
+            // FloatingActionButton(
+            //   onPressed: () async {
+            //     DateTime now = DateTime.now();
+            //     final nowTime = TimeOfDay.fromDateTime(now);
+            //     bool isForBeneficiary = (selectedBeneficiaryId == null);
+            //     if (selectedBeneficiaryId != null) {
+            //       print(isForBeneficiary);
 
-                  print(
-                      'isForBeneficiaryisForBeneficiaryisForBeneficiaryisForBeneficiary');
-                  await AppAlarm.saveAlarm(
-                    nowTime,
-                    "${nowTime.hour}:${nowTime.minute + 1} AM",
-                    beneficiaryId.toString(),
-                  );
+            //       print(
+            //           'isForBeneficiaryisForBeneficiaryisForBeneficiaryisForBeneficiary');
+            //       await AppAlarm.saveAlarm(
+            //         nowTime,
+            //         "${nowTime.hour}:${nowTime.minute + 1} AM",
+            //         beneficiaryId.toString(),
+            //       );
 
-                  AppAlarm.getAlarms();
-                  print(
-                      '$isForBeneficiary::::::::::::::::::::::$selectedBeneficiaryId');
-                  print(
-                      '$isForBeneficiary::::::::::::::::::::::$selectedBeneficiaryId');
-                } else {
-                  print('::::::: selectedBeneficiaryId=null:::::::::::::::');
-                }
+            //       AppAlarm.getAlarms();
+            //       print(
+            //           '$isForBeneficiary::::::::::::::::::::::$selectedBeneficiaryId');
+            //       print(
+            //           '$isForBeneficiary::::::::::::::::::::::$selectedBeneficiaryId');
+            //     } else {
+            //       print('::::::: selectedBeneficiaryId=null:::::::::::::::');
+            //     }
 
-                Get.offAll(() => const HomeScreen());
-                resetBeneficiaryInfo();
+            //     Get.offAll(() => const HomeScreen());
+            //     resetBeneficiaryInfo();
+            //   },
+            //   child: const Icon(Icons.alarm),
+            // ),
+
+            ElevatedButton(
+              onPressed: () {
+                // final DeviceController controllerDevice =
+                //     Get.put(DeviceController());
+                // if (!isForBeneficiary!) {
+                //   BottomSheetWidget.showDeviceBottomSheet(
+                //     context,
+                //     controllerDevice,
+                //     'Choose Available Devices For $beneficiaryName ',
+                //     isForBeneficiary: true,
+                //     beneficiaryId: beneficiaryId.value,
+                //   );
+                // } else {
+                //   BottomSheetWidget.showDeviceBottomSheet(
+                //     context,
+                //     controllerDevice,
+                //     'Choose Available Devices For  YourSelf',
+                //   );
+                // }
+                // _controller.checkUserSensors(context);
+                Get.to(SleepWellCycleScreen());
               },
-              child: const Icon(Icons.alarm),
+              child: const Text('Select Device'),
             ),
           ],
         ),

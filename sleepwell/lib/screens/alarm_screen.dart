@@ -2,9 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sleepwell/screens/alarm/alarm_setup_screen.dart';
+ import 'package:sleepwell/screens/alarm/alarm_setup_screen.dart';
+
 import 'dart:core';
 
+ 
 class AlarmScreen extends StatefulWidget {
   const AlarmScreen({super.key});
 
@@ -31,14 +33,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
     // getUserId();
     print(userId);
   }
-
-  // Future<void> getUserId() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     userId = prefs.getString('userid'); // استرجاع الـ userid
-  //     print(userId);
-  //   });
-  // }
 
   void checkIfAlarmAddedToday() async {
     try {
@@ -257,11 +251,36 @@ class _AlarmScreenState extends State<AlarmScreen> {
                       },
                       child: const Icon(Icons.add),
                     ),
-                    // FloatingActionButton(
+                    // TextButton(
                     //   onPressed: () {
-                    //     Get.to(const StatisticScreen());
+                    //     // Get.to(() => SensorScreen(userId: userId!));
+                    //     Get.to(SensorSettingScreen());
                     //   },
-                    //   child: const Text('Statistic'),
+                    //   child: const Text(
+                    //     'Sensor Setting Screen',
+                    //     style: TextStyle(
+                    //       fontSize: 20,
+                    //       fontWeight: FontWeight.bold,
+                    //       color: Colors.white,
+                    //     ),
+                    //   ),
+                    // ),
+                    // const SizedBox(
+                    //   height: 10,
+                    // ),
+                    // TextButton(
+                    //   onPressed: () {
+                    //     // Get.to(() => SensorScreen(userId: userId!));
+                    //     Get.to(SensorScreen());
+                    //   },
+                    //   child: const Text(
+                    //     'SensorScreensetall ',
+                    //     style: TextStyle(
+                    //       fontSize: 20,
+                    //       fontWeight: FontWeight.bold,
+                    //       color: Colors.white,
+                    //     ),
+                    //   ),
                     // ),
                     // ElevatedButton(
                     //   onPressed: () {
@@ -270,7 +289,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                     //     //     MaterialPageRoute(
                     //     //         builder: (context) => AddBeneficiaryScreen()));
                     //     // Get.to(const SensorDataScreen());
-                    //     deleteCollection('alarms').then((_) {
+                    //     deleteCollection('weeklyNotifications').then((_) {
                     //       print('Collection deleted successfully');
                     //     }).catchError((error) {
                     //       print('Error deleting collection: $error');

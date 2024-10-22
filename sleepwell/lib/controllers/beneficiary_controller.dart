@@ -1,8 +1,7 @@
- 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/beneficiary_model.dart';
 
 class BeneficiaryController extends GetxController {
@@ -34,8 +33,12 @@ class BeneficiaryController extends GetxController {
     }
   }
 
+  var selectedBeneficiaryDevice = ''.obs;
+
+  // تعيين المستفيد النشط
   void setBeneficiaryId(String id) {
     selectedBeneficiaryId.value = id;
+    // loadSavedDevice(id); // تحميل الجهاز المحفوظ عند تغيير المستفيد
   }
 
   Future<void> addBeneficiary(String name, String watch) async {

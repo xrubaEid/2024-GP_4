@@ -1,0 +1,298 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
+
+import '../../../controllers/beneficiary_controller.dart';
+import '../../../controllers/sensor_settings_controller.dart';
+import '../../../controllers/alarm_setup_controller.dart';
+import '../../../widget/clockview.dart';
+ 
+
+class SleepWellCycleScreen extends StatelessWidget {
+  final SleepCycleController _controller = Get.put(SleepCycleController());
+  final SensorSettingsController deviceController =
+      Get.put(SensorSettingsController());
+  final BeneficiaryController beneficiaryController =
+      Get.put(BeneficiaryController());
+
+  @override
+  Widget build(BuildContext context) {
+    deviceController
+        .listenToSensorChanges(deviceController.selectedSensor.value);
+
+    print(
+        '----------------${deviceController.sleepStartTime.toString()}-------------------------------');
+
+    return Scaffold(
+      appBar: _buildAppBar(),
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        padding: const EdgeInsets.only(left: 30, bottom: 30, right: 30),
+        decoration: _buildGradientBackground(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            _buildHeader(),
+            const Divider(color: Color.fromRGBO(255, 7, 247, 1)),
+            SizedBox(height: MediaQuery.of(context).padding.top),
+            _buildDateTimeRow(),
+            const SizedBox(height: 40),
+            _buildTimeSelectors(context),
+            const SizedBox(height: 10),
+            _buildSaveButton(context),
+            const SizedBox(height: 20),
+            _buildSelectDeviceButton(context),
+            Obx(
+              () => deviceController.isCheckingReadings.value
+                  ? const CircularProgressIndicator() // عرض مؤشر تحميل أثناء التحقق من القراءات
+                  : Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Text(
+                        'Finished checking sensor\n readings:${deviceController.sleepStartTime.toString()}',
+                        style:
+                            const TextStyle(fontSize: 20, color: Colors.white),
+                      ),
+                    ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: const Text(
+        'SleepWell Cycle',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 24,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      iconTheme: const IconThemeData(color: Colors.white),
+      backgroundColor: const Color(0xFF004AAD),
+    );
+  }
+
+  BoxDecoration _buildGradientBackground() {
+    return const BoxDecoration(
+      gradient: LinearGradient(
+        colors: [Color(0xFF004AAD), Color(0xFF040E3B)],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+  
+    return Obx(() {
+      if (beneficiaryController.isLoading.value) {
+        return CircularProgressIndicator();   }
+
+     
+      if (beneficiaryController.beneficiaries.isEmpty) {
+        return Text("No beneficiaries found.");
+      }
+
+      // DropdownButton لإظهار المستفيدين
+      return DropdownButton<String>(
+        value: beneficiaryController.selectedBeneficiaryId.value.isNotEmpty
+            ? beneficiaryController.selectedBeneficiaryId.value
+            : null, // قيمة المستفيد المختار
+        hint: const Text(
+            'Select a beneficiary'), // النص الظاهر عند عدم اختيار مستفيد
+        items: beneficiaryController.beneficiaries.map((beneficiary) {
+          return DropdownMenuItem<String>(
+            value: beneficiary.id,
+            child: Text(beneficiary.name), // عرض اسم المستفيد
+          );
+        }).toList(),
+        onChanged: (String? newValue) {
+          if (newValue != null) {
+            // تعيين المستفيد المختار عند تغييره
+            beneficiaryController.setBeneficiaryId(newValue);
+          }
+        },
+      );
+    });
+  }
+
+  Widget _buildDateTimeRow() {
+    var formattedDate = DateFormat('EEE, d MMM').format(DateTime.now());
+    var formattedTime = DateFormat('hh:mm').format(DateTime.now());
+
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                formattedTime,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 40,
+                ),
+              ),
+              Text(
+                formattedDate,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Align(
+          alignment: Alignment.centerRight,
+          child: ClockView(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTimeSelectors(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const Text(
+          "BEDTIME",
+          style: TextStyle(
+            color: Color(0xffff0863),
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 1.3,
+          ),
+        ),
+        GestureDetector(
+          onTap: () => _showTimePicker(context, true),
+          child: Obx(() => Text(
+                // 'Select BedTime:${DateFormat('hh:mm a').format(_controller.bedtime.value)}',
+                DateFormat('hh:mm a').format(_controller.bedtime.value),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+              )),
+        ),
+        const Divider(color: Color.fromRGBO(7, 255, 181, 1)),
+        const SizedBox(height: 20),
+        const Text(
+          "WAKE UP TIME",
+          style: TextStyle(
+            color: Color(0xffff0863),
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 1.3,
+          ),
+        ),
+        GestureDetector(
+          onTap: () => _showTimePicker(context, false),
+          child: Obx(() => Text(
+                // 'Select Wake Up Time:${DateFormat('hh:mm a').format(_controller.wakeUpTime.value)}',
+                DateFormat('hh:mm a').format(_controller.wakeUpTime.value),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+              )),
+        ),
+        const Divider(color: Color.fromRGBO(7, 255, 181, 1)),
+      ],
+    );
+  }
+
+  void _showTimePicker(BuildContext context, bool isBedtime) {
+    showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(
+          isBedtime ? _controller.bedtime.value : _controller.wakeUpTime.value),
+    ).then((selectedTime) {
+      if (selectedTime != null) {
+        final now = DateTime.now();
+        final selectedDateTime = DateTime(now.year, now.month, now.day,
+            selectedTime.hour, selectedTime.minute);
+        if (isBedtime) {
+          _controller.setBedtime(selectedDateTime);
+        } else {
+          _controller.setWakeUpTime(selectedDateTime);
+        }
+      }
+    });
+  }
+
+  int timeDifferenceInMinutes(DateTime start, DateTime end) {
+    final startTime = start.hour * 60 + start.minute;
+    final endTime = end.hour * 60 + end.minute;
+    return (endTime - startTime).abs();
+  }
+
+  void _checkAndSaveTimes(BuildContext context) {
+    if (timeDifferenceInMinutes(
+            _controller.bedtime.value, _controller.wakeUpTime.value) <
+        120) {
+      // Show warning dialog
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              "Warning",
+              style: TextStyle(color: Colors.red),
+            ),
+            content: const Text(
+                "please select the wake up time with at least 2 hours deffrence"),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  // Navigator.of(context).pop(); // Close the dialog
+                  Get.back();
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // print('-----------------------------------------------');
+      // deviceController.getSensorById(deviceController.selectedSensor.value);
+      // print(deviceController.selectedSensor.value);
+      // print('-----------------------------------------------');
+      _controller
+          .saveTimes(); // Proceed to save times if the difference is sufficient
+    }
+  }
+
+  Widget _buildSaveButton(BuildContext context) {
+    return Align(
+      alignment: Alignment.center,
+      child: TextButton(
+        onPressed: () => _checkAndSaveTimes(context),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all<Color>(Colors.pink),
+          foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+        ),
+        child: const Text('Save'),
+      ),
+    );
+  }
+
+  Widget _buildSelectDeviceButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () => {
+        deviceController.checkUserSensors(context),
+        deviceController.getSensorById(deviceController.selectedSensor.value),
+        print(deviceController.selectedSensor.value),
+        print('-----------------------------------------------'),
+      },
+      child: const Text('Select Device'),
+    );
+  }
+}
