@@ -1,12 +1,15 @@
+import 'dart:async';
 import 'dart:convert';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sleepwell/controllers/get_new_alarm_to_running.dart';
 import 'package:sleepwell/models/sensor_model.dart';
-import '../models/user_sensor.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 
+import '../models/user_sensor.dart';
 import '../widget/show_sensor_widget.dart';
 
 class SensorSettingsController extends GetxController {
@@ -24,6 +27,9 @@ class SensorSettingsController extends GetxController {
   RxBool isSleeping = false.obs;
   var isCheckingReadings = false.obs;
   String sleepStartTime = '';
+
+  double? previousTemperature;
+
   @override
   void onInit() {
     super.onInit();
@@ -36,10 +42,7 @@ class SensorSettingsController extends GetxController {
     loading.value = true;
     userSensors = await getUserSensors(userId);
     sensorsCurrentUser.value = userSensors.map((e) => e.sensorId).toList();
-
-    // تحديث البيانات المخزنة محلياً
     await cacheUserSensors();
-
     loading.value = false;
   }
 
@@ -49,48 +52,29 @@ class SensorSettingsController extends GetxController {
       return;
     }
 
-    print("Fetching user sensors for user ID: $userId");
     userSensors = await getUserSensors(userId);
 
     if (userSensors.isEmpty) {
-      print("No sensors found. Prompting user to add a sensor.");
       showAddSensorDialog(context);
     } else if (userSensors.length == 1) {
       selectedSensor = userSensors[0].sensorId.obs;
-      print('Executing operation with the only device: $selectedSensor');
     } else {
       showSensorSelectionDialog(
         context: context,
         userSensors: sensorsCurrentUser
-            .map((sensorId) => UserSensor(
-                  sensorId: sensorId,
-                  userId: userId ?? '', // userId
-                  enable: true, // assuming default enabled
-                ))
+            .map((sensorId) =>
+                UserSensor(sensorId: sensorId, userId: userId!, enable: true))
             .toList(),
         selectedSensorId: selectedSensor.value,
-        onSensorSelected: (sensorId) {
-          selectSensor(sensorId);
-        },
-        onDeleteSensor: (sensorId) {
-          deleteSensor(sensorId);
-        },
+        onSensorSelected: selectSensor,
+        onDeleteSensor: deleteSensor,
       );
 
-      // مسح الحساسات السابقة لضمان عدم تكرار المعرفات
       sensorsCurrentUser.clear();
-
-      // إضافة جميع معرفات الحساسات المرتبطة بالمستخدم الحالي إلى القائمة
       sensorsCurrentUser
           .addAll(userSensors.map((sensor) => sensor.sensorId).toList());
-
-      print('Sensors for current user: $sensorsCurrentUser');
     }
     loading = false.obs;
-
-    //   setState(()  {
-    //  loading = false.obs;
-    //   });
   }
 
   Future<void> loadCachedSensors() async {
@@ -108,8 +92,6 @@ class SensorSettingsController extends GetxController {
       } catch (e) {
         print("Error decoding cached sensors: $e");
       }
-    } else {
-      print("No cached sensors found.");
     }
   }
 
@@ -121,159 +103,86 @@ class SensorSettingsController extends GetxController {
   }
 
   Future<List<Sensor>> getAllSensors() async {
-    DataSnapshot snapshot =
-        await sensorsDatabase.get(); // جلب جميع البيانات من قاعدة البيانات
-    List<Sensor> sensorsList = []; // قائمة لتخزين السنسورات
+    DataSnapshot snapshot = await sensorsDatabase.get();
+    List<Sensor> sensorsList = [];
+
     if (snapshot.exists) {
       Map<dynamic, dynamic> sensorData =
           snapshot.value as Map<dynamic, dynamic>;
-      print("--------------- Sensors Data --------------");
 
-      // الدوران على كل سنسر في قاعدة البيانات
       sensorData.forEach((key, value) {
         Sensor sensor = Sensor.fromMap(value as Map<dynamic, dynamic>);
-        sensorsList.add(sensor); // إضافة السنسر إلى قائمة السنسورات
-        sensorsIds
-            .add(sensor.sensorId); // إضافة معرّف السنسر إلى قائمة المعرّفات
+        sensorsList.add(sensor);
+        sensorsIds.add(sensor.sensorId);
 
-        // طباعة بيانات السنسر
-        print("Sensor ID: ${sensor.sensorId}");
-        print("Heart Rate: ${sensor.heartRate}");
-        print("SpO2: ${sensor.spO2}");
-        print("Temperature: ${sensor.temperatura}");
-        print("----------- End ---- Sensors Data --------------");
+        print(
+            "Sensor ID: ${sensor.sensorId}, Heart Rate: ${sensor.heartRate}, SpO2: ${sensor.spO2}, Temperature: ${sensor.temperatura}");
       });
-
-      // طباعة جميع معرّفات السنسورات بعد الانتهاء
-      for (String sensorId in sensorsIds) {
-        print("Collected Sensor ID: $sensorId");
-      }
-    } else {
-      print("No sensors found in the database.");
     }
 
-    print("------------- End getAllSensors ----------------");
-    return sensorsList; // إرجاع قائمة السنسورات
+    return sensorsList;
   }
 
   Future<Sensor?> getSensorById(String sensorId) async {
-    // جلب جميع البيانات من قاعدة البيانات
     DataSnapshot snapshot = await sensorsDatabase.get();
 
     if (snapshot.exists) {
       Map<dynamic, dynamic> sensorData =
           snapshot.value as Map<dynamic, dynamic>;
 
-      // البحث عن السنسور بناءً على معرفه
       for (var value in sensorData.values) {
         Sensor sensor = Sensor.fromMap(value as Map<dynamic, dynamic>);
         if (sensor.sensorId == sensorId) {
-          print(
-              '---------------------Selected User Sensor Data--------------------------');
-          print(sensor.sensorId);
-          print(sensor.temperatura);
-          print(sensor.heartRate);
-          print(sensor.spO2);
-          print(
-              '----------------Selected User Sensor Data-------------------------------');
-
-          return sensor; // إرجاع السنسور إذا تم العثور عليه
+          print("Selected User Sensor ID: ${sensor.sensorId}");
+          return sensor;
         }
       }
     }
 
-    return null; // إرجاع null إذا لم يتم العثور على السنسور
+    return null;
   }
 
   void listenToSensorChanges(String sensorId) {
-    // isCheckingReadings.value = true; // بدء التحقق
     sensorsDatabase.onValue.listen((DatabaseEvent event) {
       try {
         final data = event.snapshot.value;
         if (data != null && data is Map<dynamic, dynamic>) {
           List<Sensor> sensorReadings = [];
           for (var value in data.values) {
-            // التحقق من أن القيم من النوع المطلوب
             if (value is Map<dynamic, dynamic>) {
               sensorReadings.add(Sensor.fromMap(value));
-            } else {
-              print("Unexpected value type: ${value.runtimeType}");
             }
           }
-
-          if (sensorReadings.isNotEmpty) {
-            calculateSleepStartTimeFromReadings(sensorReadings, sensorId);
-          }
+          calculateSleepStartTimeFromReadings(sensorReadings, sensorId, 1 / 60);
         }
       } catch (error) {
         print("Error processing data: $error");
       } finally {
-        isCheckingReadings.value = false; // انتهى التحقق
+        isCheckingReadings.value = false;
       }
     }, onError: (error) {
       print("Error reading data: $error");
-      isCheckingReadings.value = false; // في حالة حدوث خطأ
+      isCheckingReadings.value = false;
     });
   }
 
   void calculateSleepStartTimeFromReadings(
-      List<Sensor> sensorReadings, String targetSensorId) {
-    Sensor previousReading = sensorReadings.firstWhere(
-        (sensor) => sensor.sensorId == targetSensorId,
-        orElse: () => null!);
+      List<Sensor> sensors, String sensorId, double threshold) {
+    Sensor sensor = sensors.firstWhere((sensor) => sensor.sensorId == sensorId);
+    double currentTemperature = sensor.temperatura.toDouble();
 
-    if (previousReading == null) {
-      print("No readings found for the specified sensor ID: $targetSensorId");
-      return;
+    if (previousTemperature != null &&
+        previousTemperature! - currentTemperature >= 1) {
+      DateTime now = DateTime.now();
+      print(
+          "Temperature decreased by 1 degree or more. Current DateTime: $now");
     }
 
-    // المرور على جميع القراءات بعد القراءة الأولى لنفس المستشعر المحدد
-    for (var reading in sensorReadings.skip(1)) {
-      if (reading.sensorId == targetSensorId) {
-        // حساب نسبة التغير في معدل نبضات القلب ودرجة الحرارة
-
-        // التحقق من انخفاض معدل ضربات القلب بنسبة 20%
-        if (previousReading.heartRate != 0 &&
-            reading.heartRate < previousReading.heartRate * 0.20) {
-          sleepStartTime = DateTime.now().toString(); // تسجيل وقت التنبيه
-          print("::::::::::::::::::::::::::::::::::::::::::::::::;");
-          print("Heart rate dropped: ${reading.heartRate} at $sleepStartTime");
-          print("::::::::::::::::::::::::::::::::::::::::::::::::;");
-        }
-
-        // التحقق من انخفاض درجة الحرارة بأكثر من 0.5 درجة
-        if (previousReading.temperatura != 0 &&
-            reading.temperatura < previousReading.temperatura - 0.5) {
-          sleepStartTime = DateTime.now().toString(); // تسجيل وقت التنبيه
-          print("::::::::::::::::::::::::::::::::::::::::::::::::;");
-          print(
-              "Temperature dropped: ${reading.temperatura} at $sleepStartTime");
-          print("::::::::::::::::::::::::::::::::::::::::::::::::;");
-        }
-
-        // تعيين القراءة الحالية كقراءة سابقة للجولة القادمة
-        previousReading = reading;
-      }
-    }
-
-    // طباعة النتائج فقط إذا تم تحديث sleepStartTime
-    if (sleepStartTime != null) {
-      print(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
-      print("Sensor ID: ${previousReading.sensorId}");
-      print("Heart Rate: ${previousReading.heartRate}");
-      print("Temperature: ${previousReading.temperatura}");
-      print("SpO2: ${previousReading.spO2}");
-      print("Heart rate dropped at $sleepStartTime");
-      print("::::::::::::::::::::::::::::::::::::::::::::::::;");
-    }
-
-    print(':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::');
-    print('Finished checking sensor readings for sensor ID: $targetSensorId');
+    previousTemperature = currentTemperature;
   }
 
   Future<List<UserSensor>> getUserSensors(String? userId) async {
     if (userId == null) {
-      print("Error: Current user ID is null.");
       return [];
     }
 
@@ -293,11 +202,7 @@ class SensorSettingsController extends GetxController {
       if (userSensors.isNotEmpty) {
         this.userSensors = userSensors;
         await cacheUserSensors();
-      } else {
-        print("No sensors found for current user: $userId.");
       }
-    } else {
-      print("No sensor data found in the database.");
     }
 
     return userSensors;
@@ -305,23 +210,6 @@ class SensorSettingsController extends GetxController {
 
   Future<void> addUserSensor(
       String userId, String sensorId, BuildContext context) async {
-    // try {
-    //   // تحقق من وجود المستشعر في جدول sensors
-    //   DataSnapshot sensorSnapshot = await sensorsDatabase.get();
-    //   if (!sensorSnapshot.exists) {
-    //     _showErrorDialog(context, 'Failed to add sensor.');
-    //     throw Exception('Sensor does not exist.');
-    //   }
-
-    //   // تحقق من عدم وجود المستشعر مسبقاً لهذا المستخدم
-    //   List<UserSensor> currentUserSensors = await getUserSensors(userId);
-    //   bool sensorAlreadyAdded =
-    //       currentUserSensors.any((sensor) => sensor.sensorId == sensorId);
-
-    //   if (sensorAlreadyAdded) {
-    //     _showErrorDialog(context, 'Sensor is already added..');
-    //     throw Exception('Sensor is already added.');
-    //   } else {
     Map<String, dynamic> sensorData = {
       'sensorId': sensorId,
       'userId': userId,
@@ -329,16 +217,8 @@ class SensorSettingsController extends GetxController {
     };
 
     await usersSensorsDatabase.push().set(sensorData);
-    print("User sensor added successfully.");
-    _showSuccessDialog(context, 'Sensor added successfully.');
-    // }
-    // إضافة المستشعر
-
-    // تحديث القائمة بعد الإضافة
     await loadSensors();
-    // } catch (e) {
-    //   print("Error adding user sensor: $e");
-    // }
+    _showSuccessDialog(context, 'Sensor added successfully.');
   }
 
   Future<void> deleteSensor(String sensorId) async {
@@ -351,14 +231,9 @@ class SensorSettingsController extends GetxController {
           if (value['sensorId'] == sensorId && value['userId'] == userId) {
             await usersSensorsDatabase.child(key).remove();
             userSensors.removeWhere((sensor) => sensor.sensorId == sensorId);
-
-            // تحديث التخزين المحلي بعد الحذف
             await cacheUserSensors();
-
-            // تحديث واجهة المستخدم
             sensorsCurrentUser.value =
                 userSensors.map((e) => e.sensorId).toList();
-            print("Sensor with sensorId $sensorId deleted successfully.");
           }
         });
       }
@@ -383,80 +258,22 @@ class SensorSettingsController extends GetxController {
               child: const Text('Add'),
               onPressed: () async {
                 String sensorId = sensorIdController.text.trim();
-                print('sensorsIdsaaaaaaaaaaaaa');
-                print(sensorsIds);
-                print('sensorsIdsaaaaaaaaaaaaa');
-
                 if (sensorId.isNotEmpty) {
                   if (sensorsIds.contains(sensorId)) {
-                    // التحقق من أن الحساس غير مرتبط مسبقًا بالمستخدم
                     List<UserSensor> userSensors = await getUserSensors(userId);
-                    bool sensorExistsForUser = userSensors.any(
-                      (userSensor) => userSensor.sensorId == sensorId,
-                    );
-
-                    if (sensorExistsForUser) {
+                    if (userSensors
+                        .any((sensor) => sensor.sensorId == sensorId)) {
                       _showErrorDialog(
-                        context,
-                        'This sensor is already linked to your account.',
-                      );
+                          context, 'This sensor is already assigned to you.');
                     } else {
                       await addUserSensor(userId!, sensorId, context);
-                      Navigator.pop(context); // إغلاق الـDialog بعد الإضافة
-                      // setState(() {});
-                      _showSuccessDialog(context, 'Sensor added successfully.');
-                      loadSensors();
+                      Navigator.pop(context);
                     }
                   } else {
-                    _showErrorDialog(
-                      context,
-                      'Sensor with ID $sensorId not found.',
-                    );
+                    _showErrorDialog(context, 'Sensor not found.');
                   }
-
-                  // await addUserSensor(userId!, sensorId, context);
-                  // Navigator.pop(context); // Close after adding
-                }
-              },
-            ),
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.pop(context); // Close dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showConfirmationDialog(BuildContext context, String sensorId) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Delete Sensor'),
-          content: const Text('Are you sure you want to delete this sensor?'),
-          actions: [
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                Navigator.pop(context); // إغلاق النافذة بدون حذف
-              },
-            ),
-            ElevatedButton(
-              child: const Text('Delete'),
-              onPressed: () async {
-                Navigator.pop(context); // إغلاق النافذة بعد الحذف
-                try {
-                  _showConfirmationDialog(context, sensorId);
-
-                  await deleteSensor(sensorId);
-                  _showSuccessDialog(context, 'Sensor deleted successfully.');
-                } catch (e) {
-                  _showErrorDialog(
-                      context, 'Failed to delete sensor. Please try again.');
+                } else {
+                  _showErrorDialog(context, 'Sensor ID cannot be empty.');
                 }
               },
             ),
@@ -475,10 +292,8 @@ class SensorSettingsController extends GetxController {
           content: Text(message),
           actions: [
             ElevatedButton(
-              child: const Text('Close'),
-              onPressed: () {
-                Navigator.pop(context); // Close dialog
-              },
+              child: const Text('OK'),
+              onPressed: () => Navigator.pop(context),
             ),
           ],
         );
@@ -495,10 +310,8 @@ class SensorSettingsController extends GetxController {
           content: Text(message),
           actions: [
             ElevatedButton(
-              child: const Text('Close'),
-              onPressed: () {
-                Navigator.pop(context); // Close dialog
-              },
+              child: const Text('OK'),
+              onPressed: () => Navigator.pop(context),
             ),
           ],
         );

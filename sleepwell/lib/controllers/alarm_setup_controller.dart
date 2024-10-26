@@ -1,115 +1,87 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:get/get.dart';
 
-import '../alarm.dart';
+import '../services/firebase_auth_service.dart';
+import '../services/firebase_firestore_service.dart';
 
-class SleepCycleController extends GetxController {
-  Rx<DateTime> bedtime = DateTime.now().obs;
-  Rx<DateTime> wakeUpTime = DateTime.now().obs;
+class AlarmSetupController extends GetxController {
+  final FirebaseAuthService authService = FirebaseAuthService();
+  final FirebaseFirestoreService firestoreService = FirebaseFirestoreService();
+
+  late TextEditingController bedtimeController;
+  late TextEditingController wakeUpTimeController;
+  late TimeOfDay selectedBedtime;
+  late TimeOfDay selectedWakeUpTime;
+  String printedBedtime = '';
+  String printedWakeUpTime = '';
+  String printedNumOfCycles = '';
   RxInt numOfCycles = 0.obs;
-  RxString optimalWakeUpTime = "".obs;
-  String? userId = FirebaseAuth.instance.currentUser?.uid;
-  void setBedtime(DateTime selectedTime) {
-    bedtime.value = selectedTime;
+
+  late DateTime _now;
+  late Timer _timer;
+  RxString userId = ''.obs;
+  RxString beneficiaryId = ''.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    bedtimeController = TextEditingController();
+    wakeUpTimeController = TextEditingController();
+    selectedBedtime = TimeOfDay.now();
+    selectedWakeUpTime = TimeOfDay.now();
+    _now = DateTime.now();
+    userId.value = authService.getUserId() ?? '';
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _now = DateTime.now();
+      update(); // Use GetX's update to trigger UI updates.
+    });
   }
 
-  void setWakeUpTime(DateTime selectedTime) {
-    wakeUpTime.value = selectedTime;
+  @override
+  void onClose() {
+    bedtimeController.dispose();
+    wakeUpTimeController.dispose();
+    _timer.cancel();
+    super.onClose();
   }
 
-  TimeOfDay timeOfDayFromDateTime(DateTime dateTime) {
-    return TimeOfDay(hour: dateTime.hour, minute: dateTime.minute);
-  }
+  Future<void> saveTimes(String beneficiaryId) async {
+    TimeOfDay? selectedTime = selectedBedtime;
 
-  // تعديل دالة الحفظ لحساب وقت الاستيقاظ المثالي
-  void saveTimes()
-  // List<Map<String, int>> myHourList, String beneficiaryId)
-  async {
-    // if (myHourList.isEmpty) {
-    //   // التعامل مع حالة القائمة الفارغة
-    //   print("myHourList is empty.");
-    //   return;
-    // }
+    // Example of applying DRY principle by using a reusable method
+    int totalSleepTimeMinutes = calculateSleepTimeInMinutes();
+    int numberOfCycles = (totalSleepTimeMinutes / 90).floor();
+    numOfCycles.value = numberOfCycles;
 
-    // int bedtimeIndex = 0;
-    // int bedtimeMinutes = 0;
-    // int sleepCycleMinutes = 90;
-
-    // // التحقق من وجود 'heartRate' في العنصر الأول
-    // if (myHourList.isNotEmpty && myHourList[0].containsKey('heartRate')) {
-    //   int? firstRead = myHourList[0]['heartRate'];
-    //   int? diff = (firstRead! * 0.2).toInt();
-    //   int? toComp = firstRead - diff;
-
-    //   // إيجاد الفهرس الذي يكون فيه معدل نبضات القلب أقل من toComp
-    //   for (int i = 0; i < myHourList.length; i++) {
-    //     if (myHourList[i]['heartRate']! < toComp) {
-    //       bedtimeIndex = i;
-    //       break;
-    //     }
-    //   }
-
-    //   // حساب وقت النوم بناءً على الفهرس
-    //   if (bedtimeIndex > 0) {
-    //     if (myHourList[bedtimeIndex].containsKey('hour') &&
-    //         myHourList[bedtimeIndex].containsKey('minute')) {
-    //       bedtimeMinutes = myHourList[bedtimeIndex]['hour']! * 60 +
-    //           myHourList[bedtimeIndex]['minute']!;
-    //     } else {
-    //       // التعامل مع حالة نقص البيانات
-    //       print("Missing 'hour' or 'minute' key in myHourList.");
-    //       return;
-    //     }
-    //   } else {
-    //     if (myHourList[myHourList.length - 1].containsKey('hour') &&
-    //         myHourList[myHourList.length - 1].containsKey('minute')) {
-    //       bedtimeMinutes = myHourList[myHourList.length - 1]['hour']! * 60 +
-    //           myHourList[myHourList.length - 1]['minute']!;
-    //     } else {
-    //       print(
-    //           "Missing 'hour' or 'minute' key in the last element of myHourList.");
-    //       return;
-    //     }
-    //   }
-
-    //   int wakeUpTimeMinutes =
-    //       wakeUpTime.value.hour * 60 + wakeUpTime.value.minute;
-    //   if (wakeUpTimeMinutes < bedtimeMinutes) {
-    //     wakeUpTimeMinutes += 24 * 60;
-    //   }
-
-    //   int totalSleepTimeMinutes = wakeUpTimeMinutes - bedtimeMinutes;
-    //   numOfCycles.value = (totalSleepTimeMinutes / 90).floor();
-
-    //   int optimalWakeUpMinutes =
-    //       bedtimeMinutes + (numOfCycles.value * sleepCycleMinutes);
-
-    //   // حساب وقت الاستيقاظ المثالي
-    //   optimalWakeUpTime.value =
-    //       "${(optimalWakeUpMinutes ~/ 60) % 24}:${optimalWakeUpMinutes % 60}";
-
-    //   // حفظ المنبه باستخدام AppAlarm
-    //   await AppAlarm.saveAlarm(
-    //     timeOfDayFromDateTime(bedtime.value), // تحويل DateTime إلى TimeOfDay
-    //     optimalWakeUpTime.value,
-    //     beneficiaryId,
-    //   );
-    //   await AppAlarm.getAlarms();
-    // } else {
-    //   // التعامل مع حالة نقص البيانات
-    //   print("Invalid or empty myHourList.");
-    //   return;
-    // }
-    await AppAlarm.saveAlarm(
-      timeOfDayFromDateTime(bedtime.value), // تحويل DateTime إلى TimeOfDay
-      optimalWakeUpTime.value,
-      userId!,
+    // Save to Firestore using the service
+    await firestoreService.saveAlarm(
+      printedBedtime,
+      printedWakeUpTime,
+      numOfCycles.value.toString(),
+      userId.value,
+      beneficiaryId,
+      beneficiaryId.isEmpty,
     );
-    await AppAlarm.getAlarms();
-    print(
-        'timeOfDayFromDateTime(bedtime.value)${timeOfDayFromDateTime(bedtime.value)}');
   }
+
+  int calculateSleepTimeInMinutes() {
+    int bedtimeMinutes = selectedBedtime.hour * 60 + selectedBedtime.minute;
+    int wakeUpTimeMinutes = selectedWakeUpTime.hour * 60 + selectedWakeUpTime.minute;
+
+    if (wakeUpTimeMinutes < bedtimeMinutes) {
+      wakeUpTimeMinutes += 24 * 60;
+    }
+
+    return wakeUpTimeMinutes - bedtimeMinutes;
+  }
+
+  String formatTime(TimeOfDay time) {
+    final now = DateTime.now();
+    final formattedTime = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    return DateFormat('hh:mm a').format(formattedTime);
+  }
+
+  // Add additional reusable methods for sleep time calculations and Firestore operations here
 }

@@ -35,11 +35,10 @@ class _SignInScreenState extends State<SignInScreen> {
   void getCurrentUser() async {
     try {
       final user = auth.currentUser;
-      if (user != null) {
+      if (user != null && mounted) {
         setState(() {
-          userid = user.uid; // تهيئة userid
+          userid = user.uid;
         });
-        // قم بتخزين الـ userid في SharedPreferences
         await storeUserIdInSharedPreferences(userid!);
       }
     } catch (e) {
@@ -201,33 +200,29 @@ class _SignInScreenState extends State<SignInScreen> {
                   color: const Color(0xffd5defe),
                   title: 'Sign In'.tr,
                   onPressed: () async {
+                    if (!mounted)
+                      return; // Check if the widget is still in the tree
                     setState(() {
                       showSpinner = true;
                     });
 
                     try {
-                      // تسجيل الدخول باستخدام البريد الإلكتروني وكلمة المرور
                       final userCredential =
                           await _auth.signInWithEmailAndPassword(
                         email: email,
                         password: password,
                       );
 
-                      // الحصول على معرّف المستخدم بعد تسجيل الدخول
                       final userId = userCredential.user?.uid;
 
                       if (userId != null) {
-                        // الانتقال إلى الشاشة الرئيسية بعد تسجيل الدخول بنجاح
-                        Get.offAll(const HomeScreen());
+                        if (mounted) {
+                          Get.offAll(const HomeScreen());
+                        }
 
-                        // تعيين حالة تسجيل الدخول في SharedPreferences
                         await prefs.setBool("isLogin", true);
 
-                        // الحصول على FCM Token
-                        final getAccessToken =
-                            await getToken(); // تأكد أن getToken() دالة تنتظر الإكمال
-
-                        // تحديث بيانات المستخدم في جدول المستخدمين في Firestore
+                        final getAccessToken = await getToken();
                         await _firestore
                             .collection('Users')
                             .doc(userId)
@@ -236,8 +231,9 @@ class _SignInScreenState extends State<SignInScreen> {
                         });
                       } else {
                         throw FirebaseAuthException(
-                            code: 'user-not-found',
-                            message: 'User ID not found!');
+                          code: 'user-not-found',
+                          message: 'User ID not found!',
+                        );
                       }
                     } catch (e) {
                       String errorMessage = 'An error occurred';
@@ -263,16 +259,19 @@ class _SignInScreenState extends State<SignInScreen> {
                         errorMessage = e.toString();
                       }
 
-                      // عرض رسالة الخطأ للمستخدم
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(errorMessage),
-                        ),
-                      );
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(errorMessage),
+                          ),
+                        );
+                      }
                     } finally {
-                      setState(() {
-                        showSpinner = false;
-                      });
+                      if (mounted) {
+                        setState(() {
+                          showSpinner = false;
+                        });
+                      }
                     }
                   },
                 ),
@@ -326,7 +325,6 @@ class _SignInScreenState extends State<SignInScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // زر تسجيل الدخول باستخدام Google
                     SquareTile(
                       onTap: () async {
                         setState(() {
@@ -334,19 +332,27 @@ class _SignInScreenState extends State<SignInScreen> {
                         });
                         try {
                           await AuthService().signInWithGoogle();
-                          Get.offAll(const HomeScreen());
-                        } catch (e) {
-                          String errorMessage =
-                              'An error occurred! Please try again.';
-                          if (e is PlatformException) {
-                            if (e.code == 'sign_in_failed') {
-                              errorMessage =
-                                  'Sign-in failed. Please check your Google account credentials.';
-                            }
+
+                          // تحقق من وجود UID وتوجيه المستخدم
+                          final user = _auth.currentUser;
+                          if (user != null && user.uid.isNotEmpty) {
+                            // إذا كانت البيانات متوفرة، توجيه المستخدم إلى الشاشة الرئيسية
+                            Get.offAll(const HomeScreen());
+                          } else {
+                            // إذا كانت البيانات مفقودة، عرض رسالة فشل
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    "Failed to sign in. Please try again."),
+                              ),
+                            );
+                            Get.offAll(const SignInScreen());
                           }
+                        } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(errorMessage),
+                            const SnackBar(
+                              content:
+                                  Text('An error occurred! Please try again.'),
                             ),
                           );
                         } finally {

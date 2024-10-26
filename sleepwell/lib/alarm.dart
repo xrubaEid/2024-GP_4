@@ -12,8 +12,6 @@ import 'package:sleepwell/models/list_of_music.dart';
 import 'package:sleepwell/screens/alarm/alarm_ring_screen.dart';
 import 'package:sleepwell/screens/alarm/alarm_ring_with_equation_screen.dart';
 
-import 'controllers/beneficiary_controller.dart';
-
 class AppAlarm {
   static StreamSubscription<AlarmSettings>? subscription;
   static String _selectedSoundPath = musicList[0].musicPath;
@@ -22,15 +20,16 @@ class AppAlarm {
 
   static Future<void> initAlarms() async {
     if (Alarm.android) {
-      checkAndroidNotificationPermission();
-      checkAndroidScheduleExactAlarmPermission();
+      await checkAndroidNotificationPermission();
+      await checkAndroidScheduleExactAlarmPermission();
     }
 
     final prefs = await SharedPreferences.getInstance();
     _loadSettings(prefs);
+
     subscription ??= Alarm.ringStream.stream.listen(
       (alarmSettings) {
-        // beneficiaryId = selectedBeneficiaryId!;
+        log("Alarm triggered for: ${alarmSettings.id}");
         if (_selectedMission == "Default") {
           Get.to(() => AlarmRingScreen(alarmSettings: alarmSettings));
         } else {
@@ -53,29 +52,23 @@ class AppAlarm {
   static Future<void> checkAndroidNotificationPermission() async {
     final status = await Permission.notification.status;
     if (status.isDenied) {
-      alarmPrint('Requesting notification permission...');
+      log('Requesting notification permission...');
       final res = await Permission.notification.request();
-      alarmPrint(
-        'Notification permission ${res.isGranted ? '' : 'not '}granted.',
-      );
+      log('Notification permission: ${res.isGranted ? 'Granted' : 'Denied'}');
     }
   }
 
   static Future<void> checkAndroidScheduleExactAlarmPermission() async {
     final status = await Permission.scheduleExactAlarm.status;
-    alarmPrint('Schedule exact alarm permission: $status.');
+    log('Schedule exact alarm permission: $status.');
     if (status.isDenied) {
-      alarmPrint('Requesting schedule exact alarm permission...');
+      log('Requesting schedule exact alarm permission...');
       final res = await Permission.scheduleExactAlarm.request();
-      alarmPrint(
-        'Schedule exact alarm permission ${res.isGranted ? '' : 'not'} granted.',
-      );
+      log('Schedule exact alarm permission: ${res.isGranted ? 'Granted' : 'Denied'}');
     }
   }
 
   static AlarmSettings buildAlarmSettings(DateTime date) {
-    // final id = DateTime.now().millisecondsSinceEpoch % 100000;
-    print(_selectedSoundPath);
     const id = 1000;
     final alarmSettings = AlarmSettings(
       id: id,
@@ -90,40 +83,24 @@ class AppAlarm {
     return alarmSettings;
   }
 
-  final BeneficiaryController controller = Get.find();
-  late RxString beneficiaryId = ''.obs;
-  String? selectedBeneficiaryId;
-  bool? isForBeneficiary = true;
-
   static Future<void> saveAlarm(
-    TimeOfDay bedtime,
-    String optimalWakeTime,
-    String beneficiaryId, // نقبل null إذا كان المنبه للمستخدم نفسه
+    String bedtime, // String بتنسيق "HH:mm"
+    String optimalWakeTime, // String بتنسيق "yyyy-MM-dd hh:mm a"
+    String beneficiaryId,
   ) async {
-    // تحديد تاريخ ووقت النوم
-    // DateTime bedtimeDate = DateFormat("yyyy-MM-dd hh:mm a").parse(
-    //   "${DateTime.now().toString().split(' ')[0]} ${bedtime.format(Get.context!)}",
-    // );
-
-    // // تحديد تاريخ ووقت الاستيقاظ المثالي
-    // DateTime optimalWakeUpDate = DateFormat("yyyy-MM-dd hh:mm a").parse(
-    //   "${DateTime.now().toString().split(' ')[0]} $optimalWakeTime",
-    // );
-
-    // // تعديل تاريخ الاستيقاظ ليكون في اليوم التالي إذا كان وقت الاستيقاظ قبل وقت النوم
-    // if (optimalWakeUpDate.isBefore(bedtimeDate)) {
-    //   optimalWakeUpDate = optimalWakeUpDate.add(const Duration(days: 1));
-    // }
     DateTime now = DateTime.now();
-    DateTime bedtimeDate =
-        DateTime(now.year, now.month, now.day, bedtime.hour, bedtime.minute);
 
-// تحويل وقت الاستيقاظ المثالي
+    // تحويل وقت النوم إلى كائن DateTime بناءً على اليوم الحالي
+    DateTime bedtimeDate = DateFormat("HH:mm").parse(bedtime);
+    bedtimeDate = DateTime(
+        now.year, now.month, now.day, bedtimeDate.hour, bedtimeDate.minute);
+
+    // تحويل وقت الاستيقاظ المثالي إلى كائن DateTime
     DateTime optimalWakeUpDate = DateFormat("yyyy-MM-dd hh:mm a").parse(
       "${DateTime.now().toString().split(' ')[0]} $optimalWakeTime",
     );
 
-// إذا كان وقت الاستيقاظ المثالي قبل وقت النوم، ضف يومًا إلى وقت الاستيقاظ المثالي
+    // إذا كان وقت الاستيقاظ المثالي قبل وقت النوم، ضف يومًا إلى وقت الاستيقاظ المثالي
     if (optimalWakeUpDate.isBefore(bedtimeDate)) {
       optimalWakeUpDate = optimalWakeUpDate.add(const Duration(days: 1));
     }
@@ -133,24 +110,18 @@ class AppAlarm {
     await Alarm.set(alarmSettings: alarmSettings);
 
     // التوجيه إلى شاشة رنين المنبه بناءً على المستفيد أو المستخدم
-    Get.to(() => AlarmRingScreen(
-          alarmSettings: alarmSettings,
-          // beneficiaryId: isForBeneficiary
-          //     ? beneficiaryId
-          //     : null, // تمرير معرف المستفيد أو null
-        ));
+    Get.to(() => AlarmRingScreen(alarmSettings: alarmSettings));
 
     // طباعة معلومات لأغراض تتبع التصحيح
-    log("Alarm For------------------------------------------------");
-    log("Beneficiary ID: ${beneficiaryId ?? 'None (User)'}");
-    beneficiaryId = beneficiaryId;
-    log("Is for Beneficiary: $beneficiaryId");
+    log("Alarm set for beneficiary ID: ${beneficiaryId ?? 'None (User)'}");
+    log("Alarm set time: $optimalWakeUpDate");
   }
 
-  static getAlarms() {
-    Alarm.getAlarms().forEach((element) {
-      print("-- ${element.dateTime}");
-    });
+  static getAlarms() async {
+    var alarms = await Alarm.getAlarms();
+    for (var alarm in alarms) {
+      log("Alarm ID: ${alarm.id}, Time: ${alarm.dateTime}");
+    }
   }
 
   static updateStoredWakeUpAlarmSound() {
@@ -159,6 +130,7 @@ class AppAlarm {
       alarmSettings =
           alarmSettings.copyWith(assetAudioPath: _selectedSoundPath);
       Alarm.set(alarmSettings: alarmSettings);
+      log("Alarm sound updated for Alarm ID: ${alarmSettings.id}");
     }
   }
 }

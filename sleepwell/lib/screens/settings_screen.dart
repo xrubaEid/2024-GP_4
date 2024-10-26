@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sleepwell/controllers/alarm_setup_controller.dart';
+import 'package:sleepwell/controllers/sleep-cycle-ontroller.dart';
 import 'package:sleepwell/controllers/sensor_settings_controller.dart';
 import 'package:sleepwell/main.dart';
 import 'package:sleepwell/screens/account_screen.dart';

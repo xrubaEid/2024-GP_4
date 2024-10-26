@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 
-class ConfirmationDialog extends StatelessWidget {
+class ConfirmationDialogWidget extends StatelessWidget {
   final String alarmFor;
   final String selectedDevice;
   final String wakeUpTime;
   final String bedTime;
   final int sleepCycle;
+  final Function()? onPressed;
+  final Function()? changeDevice;
 
-  ConfirmationDialog({
+  const ConfirmationDialogWidget({
+    super.key,
     required this.alarmFor,
     required this.selectedDevice,
     required this.wakeUpTime,
     required this.bedTime,
     required this.sleepCycle,
+    this.onPressed,
+    this.changeDevice,
   });
 
   @override
@@ -64,26 +69,36 @@ class ConfirmationDialog extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
+                    onPressed: onPressed,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.purple,
                       minimumSize: Size(
                           mediaQuery.size.width * 0.35, 40), // Button width
                     ),
-                    child: const Text('Continue'),
+                    child: const Text(
+                      'Continue',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
+                    onPressed: changeDevice,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,
                       minimumSize: Size(
                           mediaQuery.size.width * 0.35, 40), // Button width
                     ),
-                    child: const Text('Change Device'),
+                    child: const Text(
+                      'Change Device',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -98,7 +113,14 @@ class ConfirmationDialog extends StatelessWidget {
                     minimumSize: Size(mediaQuery.size.width * 0.75,
                         40), // Full width cancel button
                   ),
-                  child: const Text('Cancel'),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
                 ),
               ),
             ],
