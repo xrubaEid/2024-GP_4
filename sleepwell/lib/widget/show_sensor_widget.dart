@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleepwell/models/user_sensor.dart';
+
+import '../controllers/sensor_settings_controller.dart';
 
 class ReusableSensorDialog extends StatefulWidget {
   final List<UserSensor> userSensors;
@@ -23,6 +26,8 @@ class ReusableSensorDialog extends StatefulWidget {
 class _ReusableSensorDialogState extends State<ReusableSensorDialog> {
   String? _selectedSensorId;
   bool selectedForYou = true;
+  final SensorSettingsController _controller =
+      Get.put(SensorSettingsController());
 
 // دالة لتخزين الحساس في SharedPreferences
   Future<void> _storeSelectedSensorId(String sensorId) async {
@@ -84,20 +89,46 @@ class _ReusableSensorDialogState extends State<ReusableSensorDialog> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    selectedForYou
-                        ? ' Available Devices Select Device\n For  YourSelf'
-                        : 'Choose Available Devices For\n beneficiaryName ',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16.0),
+                    child: Text(
+                      'Available Devices',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                  Row(
+                    children: [
+                      PopupMenuButton(
+                        icon: const Icon(Icons.more_vert),
+                        onSelected: (value) {
+                          if (value == 'add_sensor') {
+                            _controller.showAddSensorDialog(context);
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'add_sensor',
+                            child: Row(
+                              children: [
+                                Icon(Icons.add_alarm, color: Colors.black),
+                                SizedBox(width: 8),
+                                Text('Add New Sensor Device'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 8),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),

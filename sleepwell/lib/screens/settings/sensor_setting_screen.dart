@@ -4,7 +4,6 @@ import 'package:sleepwell/controllers/sensor_settings_controller.dart';
 import 'package:sleepwell/models/user_sensor.dart';
 
 import '../../widget/show_sensor_widget.dart';
- 
 
 class SensorSettingScreen extends StatelessWidget {
   final SensorSettingsController _controller =
