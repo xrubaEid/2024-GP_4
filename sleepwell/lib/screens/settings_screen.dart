@@ -15,6 +15,7 @@ import 'package:sleepwell/screens/settings/language_screen.dart';
 
 import 'package:sleepwell/widget/counter_widget.dart';
 import '../controllers/beneficiary_controller.dart';
+import '../services/sensor_service.dart';
 import '../widget/bed_time_reminder.dart';
 import 'edite_alarm_screen.dart';
 import 'profile/about_you_screen.dart';
@@ -95,108 +96,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  // final DeviceController controllerDevice = Get.put(DeviceController());
-  // void showDeviceBottomSheet(BuildContext context) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     shape: const RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-  //     ),
-  //     builder: (context) {
-  //       return DraggableScrollableSheet(
-  //         expand: false,
-  //         maxChildSize: 0.7,
-  //         initialChildSize: 0.5,
-  //         minChildSize: 0.3,
-  //         builder: (BuildContext context, ScrollController scrollController) {
-  //           return Container(
-  //             padding: const EdgeInsets.all(16),
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.end,
-  //               children: [
-  //                 Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     const Text(
-  //                       'Available Devices',
-  //                       style: TextStyle(
-  //                         fontSize: 18,
-  //                         fontWeight: FontWeight.bold,
-  //                       ),
-  //                     ),
-  //                     IconButton(
-  //                       icon: const Icon(Icons.close),
-  //                       onPressed: () {
-  //                         Navigator.pop(context);
-  //                       },
-  //                     ),
-  //                   ],
-  //                 ),
-  //                 Expanded(
-  //                   child: ListView(
-  //                     controller: scrollController,
-  //                     children: [
-  //                       Obx(
-  //                         () => ListTile(
-  //                           title: const Text('Sensor 1'),
-  //                           trailing: controllerDevice.selectedDevice.value ==
-  //                                   'Sensor 1'
-  //                               ? const Icon(Icons.check_circle,
-  //                                   color: Colors.green)
-  //                               : null,
-  //                           onTap: () {
-  //                             controllerDevice.saveDevice('Sensor 1');
-  //                             // Navigator.pop(context); // إغلاق النافذة
-  //                           },
-  //                         ),
-  //                       ),
-  //                       Obx(
-  //                         () => ListTile(
-  //                           title: const Text('Sensor 2'),
-  //                           trailing: controllerDevice.selectedDevice.value ==
-  //                                   'Sensor 2'
-  //                               ? const Icon(Icons.check_circle,
-  //                                   color: Colors.green)
-  //                               : null,
-  //                           onTap: () {
-  //                             controllerDevice.saveDevice('Sensor 2');
-  //                             // Navigator.pop(context); // إغلاق النافذة
-  //                           },
-  //                         ),
-  //                       ),
-  //                       Obx(
-  //                         () => ListTile(
-  //                           title: const Text('Sensor 3'),
-  //                           trailing: controllerDevice.selectedDevice.value ==
-  //                                   'Sensor 3'
-  //                               ? const Icon(Icons.check_circle,
-  //                                   color: Colors.green)
-  //                               : null,
-  //                           onTap: () {
-  //                             controllerDevice.saveDevice('Sensor 3');
-  //                             // Navigator.pop(context); // إغلاق النافذة
-  //                           },
-  //                         ),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           );
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
-
-  // LocaleThemeController controller = Get.find();
   @override
   Widget build(BuildContext context) {
     // isDarkMode.value = controller.themeMode.value == ThemeMode.dark;
-    final SensorSettingsController alarmcontroller =
-        Get.put(SensorSettingsController());
+   
+        final sensorService = Get.find<SensorService>();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF004AAD),
@@ -309,16 +214,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               },
                             ),
 
-                            // const Divider(color: Color.fromRGBO(9, 238, 13, 1)),
-                            // const Text(
-                            //   'SETTINGS',
-                            //   style: TextStyle(
-                            //     fontSize: 22,
-                            //     fontWeight: FontWeight.bold,
-                            //     color: Color.fromARGB(255, 92, 221, 169),
-                            //   ),
-                            // ),
-                            // const SizedBox(height: 10),
+                          
                             ListTile(
                               title: Text('Notification'.tr,
                                   style: const TextStyle(
@@ -366,7 +262,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   // showDeviceBottomSheet(
                                   //     context);
                                   // Get.to(const SensorScreen());
-                                  alarmcontroller.checkUserSensors(context);
+                                  // sensorService.checkUserSensors(context);
                                 }
 
                                 // => Get.to(() => NotificationScreen()),
@@ -429,19 +325,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                             const SizedBox(height: 20),
 
-                            // Obx(
-                            //   () => SwitchListTile(
-                            //     title: Text('Dark Mode'.tr,
-                            //         style: const TextStyle(color: Colors.white, fontSize: 18)),
-                            //     value: isDarkMode.value,
-                            //     onChanged: (value) {
-                            //       isDarkMode.value = value;
-                            //       // controller.saveUserThemeModeToCashe(
-                            //       // value ? ThemeMode.dark : ThemeMode.light);
-                            //     },
-                            //   ),
-                            // ),
-
+                          
                             Text(
                               'Account Actions'.tr,
                               style: const TextStyle(

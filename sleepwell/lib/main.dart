@@ -11,6 +11,7 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:sleepwell/push_notification_service.dart';
 import 'locale/app_translation.dart';
 import 'locale/local_controller.dart';
+import 'services/sensor_service.dart';
 
 // too1423too@gmail.com
 late SharedPreferences prefs;
@@ -26,6 +27,8 @@ bool loginStatus = prefs.getBool("isLogin") ?? false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Get.putAsync<SensorService>(() => SensorService().init(),
+      permanent: true);
   tz.initializeTimeZones();
 
   PushNotificationService.initializeNotifications();

@@ -20,4 +20,13 @@ class Sensor {
       heartRate: data['HeartRate'] ?? 0,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'sensorId': sensorId,
+      'Temperatura': temperatura,
+      'SpO2': spO2,
+      'HeartRate': heartRate,
+    };
+  }
 }

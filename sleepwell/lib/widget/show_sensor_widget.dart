@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleepwell/models/user_sensor.dart';
 
 import '../controllers/sensor_settings_controller.dart';
+import '../services/sensor_service.dart';
 
 class ReusableSensorDialog extends StatefulWidget {
   final List<UserSensor> userSensors;
@@ -26,8 +27,9 @@ class ReusableSensorDialog extends StatefulWidget {
 class _ReusableSensorDialogState extends State<ReusableSensorDialog> {
   String? _selectedSensorId;
   bool selectedForYou = true;
-  final SensorSettingsController _controller =
-      Get.put(SensorSettingsController());
+
+  final sensorService = Get.find<SensorService>();
+  final sensorSettings = Get.find<SensorSettingsController>();
 
 // دالة لتخزين الحساس في SharedPreferences
   Future<void> _storeSelectedSensorId(String sensorId) async {
@@ -105,7 +107,7 @@ class _ReusableSensorDialogState extends State<ReusableSensorDialog> {
                         icon: const Icon(Icons.more_vert),
                         onSelected: (value) {
                           if (value == 'add_sensor') {
-                            _controller.showAddSensorDialog(context);
+                            sensorSettings.showAddSensorDialog(context);
                           }
                         },
                         itemBuilder: (context) => [

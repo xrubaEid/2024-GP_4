@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sleepwell/screens/alarm/SleepWellCycleScreen/sleepwell_cycle_screen.dart';
 
 import '../../widget/info_card.dart';
-import '../alarm/alarm_setup_screen.dart';
 
 class BeneficiaryDetailsScreen extends StatefulWidget {
   final String beneficiaryId;
@@ -382,7 +382,7 @@ class _BeneficiaryDetailsScreenState extends State<BeneficiaryDetailsScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                           AlarmSetupScreen(),
+                                          SleepWellCycleScreen(),
                                     ),
                                   );
                                 },
@@ -428,8 +428,7 @@ class _BeneficiaryDetailsScreenState extends State<BeneficiaryDetailsScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                       AlarmSetupScreen(),
+                                  builder: (context) => SleepWellCycleScreen(),
                                 ),
                               );
                             },

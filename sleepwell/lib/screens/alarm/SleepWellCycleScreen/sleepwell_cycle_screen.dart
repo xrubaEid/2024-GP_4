@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../../alarm.dart';
 import '../../../controllers/beneficiary_controller.dart';
 import '../../../controllers/sensor_settings_controller.dart';
 import '../../../controllers/sleep-cycle-ontroller.dart';
+import '../../../services/sensor_service.dart';
 import '../../../widget/clockview.dart';
 import '../../../widget/confirmation_dialog_widget.dart';
 
 class SleepWellCycleScreen extends StatelessWidget {
   final SleepCycleController controller = Get.put(SleepCycleController());
-  final SensorSettingsController deviceController =
-      Get.put(SensorSettingsController());
+  final sensorService = Get.find<SensorService>();
   final BeneficiaryController beneficiaryController =
       Get.put(BeneficiaryController());
   // final String? userId = FirebaseAuth.instance.currentUser?.uid;
+  final sensorSettings = Get.put(SensorSettingsController());
 
   SleepWellCycleScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    deviceController
-        .listenToSensorChanges(deviceController.selectedSensor.value);
+    sensorService.listenToSensorChanges(sensorService.selectedSensor.value);
 
     return Scaffold(
       appBar: _buildAppBar(),
@@ -49,6 +50,23 @@ class SleepWellCycleScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 _buildSelectDeviceButton(context),
                 _buildSensorStatus(),
+                ElevatedButton(
+                  onPressed: () async {
+                    // Call the function to update alarm with new values
+                    await AppAlarm.loadAndUpdateAlarm(
+                      newBedtime: '09:15 AM', // Set newBedtime to '01:20 AM',
+                      userId:
+                          controller.userId.value, // Set userId to 'userId',
+                      // userId: 'GnQXhV91N7XRbM9z9t8g', // Set userId to 'userId',
+                    );
+                    await AppAlarm.printAllAlarms();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text("Alarm updated successfully!")),
+                    );
+                  },
+                  child: const Text("Update Alarm"),
+                ),
               ],
             ),
           ),
@@ -221,22 +239,21 @@ class SleepWellCycleScreen extends StatelessWidget {
 
   Widget _buildSelectDeviceButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () => deviceController.checkUserSensors(context),
+      // onPressed: () {},
+      onPressed: () => sensorSettings.checkUserSensors(context),
       child: const Text('Select Device'),
     );
   }
 
   Widget _buildSensorStatus() {
     return Obx(
-      () => deviceController.isCheckingReadings.value
-          ? const CircularProgressIndicator()
-          : Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: Text(
-                'Finished checking sensor readings: ${deviceController.sleepStartTime}',
-                style: const TextStyle(fontSize: 20, color: Colors.white),
-              ),
-            ),
+      () => Padding(
+        padding: const EdgeInsets.only(top: 20),
+        child: Text(
+          'Finished checking sensor readings: ${sensorService.sleepStartTime.value.toString()}', // Access with .value
+          style: const TextStyle(fontSize: 20, color: Colors.white),
+        ),
+      ),
     );
   }
 
@@ -264,7 +281,7 @@ class SleepWellCycleScreen extends StatelessWidget {
       return;
     }
 
-    if (deviceController.selectedSensor.value.isEmpty) {
+    if (sensorService.selectedSensor.value.isEmpty) {
       _showWarningDialog(context, "Please select a device.");
       return;
     }
@@ -276,6 +293,8 @@ class SleepWellCycleScreen extends StatelessWidget {
       _showWarningDialog(context,
           "Please select a wake-up time with at least 2 hours difference.");
     } else {
+      sensorService
+          .selectUsers(beneficiaryController.selectedBeneficiaryId.value);
       _showConfirmationDialog(context);
     }
   }
@@ -302,15 +321,17 @@ class SleepWellCycleScreen extends StatelessWidget {
       context: context,
       builder: (_) => Obx(
         () => ConfirmationDialogWidget(
-          alarmFor: controller.selectedBeneficiaryName.value,
-          selectedDevice: deviceController.selectedSensor.value,
-          wakeUpTime: DateFormat('hh:mm a').format(controller.wakeUpTime.value),
-          bedTime: DateFormat('hh:mm a').format(controller.bedtime.value),
-          sleepCycle: controller.calculateSleepDuration(),
-          onPressed:
-              controller.loading.value ? null : () => controller.saveTimes(),
-          changeDevice: () => deviceController.checkUserSensors(context),
-        ),
+            alarmFor: controller.selectedBeneficiaryName.value,
+            selectedDevice: sensorService.selectedSensor.value,
+            wakeUpTime:
+                DateFormat('hh:mm a').format(controller.wakeUpTime.value),
+            bedTime: DateFormat('hh:mm a').format(controller.bedtime.value),
+            sleepCycle: controller.calculateSleepDuration(),
+            onPressed:
+                controller.loading.value ? null : () => controller.saveTimes(),
+            changeDevice: null
+            // () => sensorService.checkUserSensors(context),
+            ),
       ),
     );
   }
