@@ -57,13 +57,15 @@ class BeneficiaryController extends GetxController {
     // loadSavedDevice(id); // تحميل الجهاز المحفوظ عند تغيير المستفيد
   }
 
-  Future<void> addBeneficiary(String name, String watch) async {
+  Future<void> addBeneficiary(String name,
+  //  String watch
+   ) async {
     if (userId != null) {
       try {
         BeneficiaryModel newBeneficiary = BeneficiaryModel(
           id: '',
           name: name,
-          watch: watch,
+          // watch: watch,
           userId: userId!,
         );
         await FirebaseFirestore.instance

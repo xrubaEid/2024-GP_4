@@ -30,6 +30,7 @@ class SensorSettingsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    getAllSensors();
   }
 
   Future<void> checkUserSensors(BuildContext context) async {
@@ -225,6 +226,7 @@ class SensorSettingsController extends GetxController {
                           context, 'This sensor is already assigned to you.');
                     } else {
                       await addUserSensor(userId!, sensorId, context);
+                      _showErrorDialog(context, 'Sensor Added SuccessFully');
                       Navigator.pop(context);
                     }
                   } else {

@@ -33,7 +33,7 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final String title = "Ringing...\nOptimal time to WAKE UP for $name";
+    final String title = "Ringing...\nOptimal time to WAKE UP\n for $name";
     return Scaffold(
       body: SafeArea(
         child: Column(
