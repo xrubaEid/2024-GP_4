@@ -1,9 +1,11 @@
+// import 'package:alarm/alarm.dart';
 import 'package:alarm/alarm.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sleepwell/alarm.dart';
 import 'package:sleepwell/firebase_options.dart';
 import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/splash_screen.dart';
@@ -29,6 +31,10 @@ Future<void> main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Get.putAsync<SensorService>(() => SensorService().init(),
       permanent: true);
+  // await Get.putAsync<AlarmService>(() => AlarmService().init(),
+  //     permanent: true);
+  // AlarmService().init();
+
   tz.initializeTimeZones();
 
   PushNotificationService.initializeNotifications();
@@ -50,6 +56,8 @@ Future<void> main() async {
   prefs = await SharedPreferences.getInstance();
   // initialize  Alarm
   await Alarm.init(showDebugLogs: true);
+  // await AppAlarm.initAlarms();
+
   runApp(const MainAppScreen());
 }
 

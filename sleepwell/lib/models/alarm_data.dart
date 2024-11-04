@@ -1,43 +1,52 @@
-// alarm_data.dart
+import 'dart:developer';
 
 class AlarmData {
-    String bedtime;
+  // final int alarmId;
+  String bedtime;
   final String optimalWakeTime;
-  final String name;
-  final bool usertype;
+  late String name;
   final String sensorId;
   final String userId;
+  final String beneficiaryId;
+  final bool isForBeneficiary;
 
   AlarmData({
+    // required this.alarmId,
     required this.userId,
+    required this.beneficiaryId,
     required this.bedtime,
     required this.optimalWakeTime,
     required this.name,
-    required this.usertype,
     required this.sensorId,
+    required this.isForBeneficiary,
   });
 
-  // Convert a Map to an AlarmData instance
   factory AlarmData.fromJson(Map<String, dynamic> json) {
+    if (!json.containsKey('uid')) {
+      log('Warning: userId is missing in Firestore document data');
+    }
     return AlarmData(
-      userId: json['userId'] ?? "0",
-      bedtime: json['bedtime'] ?? '', // Default empty string if null
-      optimalWakeTime: json['optimalWakeTime'] ?? '',
+      // alarmId: json['alarmId']  ?? "0",
+      userId: json['uid'] ?? "0",
+      beneficiaryId: json['beneficiaryId'] ?? "0",
+      bedtime: json['bedtime'] ?? '',
+      optimalWakeTime: json['wakeup_time'] ?? '',
       name: json['name'] ?? '',
-      usertype: json['usertype'] ?? false, // Default to false if null
       sensorId: json['sensorId'] ?? '',
+      isForBeneficiary: json['isForBeneficiary'] ?? false,
     );
   }
 
-  // Convert an AlarmData instance to a Map
   Map<String, dynamic> toJson() {
     return {
       'bedtime': bedtime,
-      'optimalWakeTime': optimalWakeTime,
+      'wakeup_time': optimalWakeTime,
       'name': name,
-      'usertype': usertype,
       'sensorId': sensorId,
-      'userId': userId
+      'uid': userId,
+      'beneficiaryId': beneficiaryId,
+      'isForBeneficiary': isForBeneficiary,
+      // 'alarmId': alarmId,
     };
   }
 }

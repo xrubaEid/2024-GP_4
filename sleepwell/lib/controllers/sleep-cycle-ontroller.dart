@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'dart:ffi';
+import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -9,40 +10,32 @@ import '../services/firebase_firestore_service.dart';
 import '../services/sensor_service.dart';
 
 class SleepCycleController extends GetxController {
-  // Observables for bedtime and wake-up time
   var bedtime = DateTime.now().obs;
   var wakeUpTime = DateTime.now().obs;
   var numOfCycles = 2.obs; // Default number of sleep cycles
   var remainingMinutes = 0.obs;
-  //is loading state
   var loading = false.obs;
 
-  //start
   final FirebaseAuthService authService = FirebaseAuthService();
   final FirebaseFirestoreService firestoreService = FirebaseFirestoreService();
-
   late TextEditingController bedtimeController;
   late TextEditingController wakeUpTimeController;
-  // late TimeOfDay selectedBedtime;
-  // late TimeOfDay selectedWakeUpTime;
 
   String printedNumOfCycles = '';
   RxString userId = ''.obs;
-  RxString selectedBeneficiaryId = ''.obs; //end
-  RxString selectedBeneficiaryName = ''.obs; //end
+  RxString selectedBeneficiaryId = ''.obs;
+  RxString selectedBeneficiaryName = ''.obs;
   final sensorService = Get.find<SensorService>();
+
   @override
   void onInit() {
     super.onInit();
     bedtimeController = TextEditingController();
     wakeUpTimeController = TextEditingController();
-
     userId.value = authService.getUserId() ?? '';
-
-    update(); // Use GetX's update to trigger UI updates.
+    update();
   }
 
-  // Setters for bedtime and wake-up time
   void setBedtime(DateTime selectedTime) {
     bedtime.value = selectedTime;
   }
@@ -56,19 +49,20 @@ class SleepCycleController extends GetxController {
     selectedBeneficiaryName.value = name;
   }
 
-  // Function to calculate the number of cycles between bedtime and wake-up time
-
   int calculateSleepDuration() {
-    // حساب الفرق بين وقت النوم ووقت الاستيقاظ بالدقائق
-    int duration = wakeUpTime.value.difference(bedtime.value).inMinutes.abs();
+    // Handle crossing midnight by adding a day to wakeUpTime if it's earlier than bedtime
+    DateTime adjustedWakeUpTime = wakeUpTime.value;
+    if (wakeUpTime.value.isBefore(bedtime.value)) {
+      adjustedWakeUpTime = wakeUpTime.value.add(const Duration(days: 1));
+    }
+
+    int duration = adjustedWakeUpTime.difference(bedtime.value).inMinutes;
     int cycleDurationMinutes = 90;
 
-    // استخراج الساعات والدقائق من الفرق
-    int hours = duration ~/ 60; // عدد الساعات
-    int minutes = duration % 60; // عدد الدقائق
+    int hours = duration ~/ 60;
+    int minutes = duration % 60;
 
-    // حساب عدد الدورات وتخزين الباقي
-    numOfCycles.value = (duration ~/ cycleDurationMinutes);
+    numOfCycles.value = duration ~/ cycleDurationMinutes;
     remainingMinutes.value = duration % cycleDurationMinutes;
 
     print('$hours hours and $minutes minutes');
@@ -78,61 +72,20 @@ class SleepCycleController extends GetxController {
     return numOfCycles.value;
   }
 
-  int calculateremainingMinutes(bedtime, wakeUpTime) {
-    // حساب الفرق بين وقت النوم ووقت الاستيقاظ بالدقائق
-    int duration = wakeUpTime.value.difference(bedtime.value).inMinutes.abs();
-    int cycleDurationMinutes = 90;
-
-    // استخراج الساعات والدقائق من الفرق
-    int hours = duration ~/ 60; // عدد الساعات
-    int minutes = duration % 60; // عدد الدقائق
-
-    // حساب عدد الدورات وتخزين الباقي
-    numOfCycles.value = (duration ~/ cycleDurationMinutes);
-    remainingMinutes.value = duration % cycleDurationMinutes;
-
-    print('$hours hours and $minutes minutes');
-    print('Number of cycles: ${numOfCycles.value}');
-    print('Remaining minutes: $remainingMinutes');
-
-    return remainingMinutes.value;
-  }
-
-  // Optional: If you want to reset the sleep cycle settings to default
-  void resetSleepCycle() {
-    bedtime.value = DateTime.now();
-    wakeUpTime.value = DateTime.now();
-    numOfCycles.value = 2; // Reset to default number of cycles
-  }
-
   Future<void> saveTimes() async {
     try {
       loading.value = true;
       numOfCycles.value = calculateSleepDuration();
-      sensorService.sensorsCurrentUser.value;
-      print(sensorService.sensorsCurrentUser.value);
-      print(':::::::::::::::::::::');
-      sensorService.userSensors.toString();
-      print(sensorService.userSensors.toString());
-      print(':::::::::::::::::::::');
-      // Save to Firestore using the service
       await firestoreService.saveAlarm(
-        DateFormat('hh:mm a').format(wakeUpTime.value),
         DateFormat('hh:mm a').format(bedtime.value),
-        calculateSleepDuration().toString(),
+        DateFormat('hh:mm a').format(wakeUpTime.value),
+        numOfCycles.value.toString(),
         userId.value,
         selectedBeneficiaryId.value,
         userId.value == selectedBeneficiaryId.value,
         sensorService.selectedSensor.value,
       );
 
-      // await AppAlarm.saveAlarm(
-      // DateFormat('hh:mm a').format(bedtime.value).toString(),
-      // DateFormat('hh:mm a').format(wakeUpTime.value),
-      //   selectedBeneficiaryId.value,
-      // );
-      DateTime now = DateTime.now();
-      print(now);
       await AppAlarm.saveAlarm(
         bedtime: DateFormat('hh:mm a').format(bedtime.value).toString(),
         optimalWakeTime: DateFormat('hh:mm a').format(wakeUpTime.value),
@@ -141,6 +94,7 @@ class SleepCycleController extends GetxController {
         name: selectedBeneficiaryName.value,
         sensorId: sensorService.selectedSensor.value,
       );
+
       await AppAlarm.getAlarms();
       loading.value = false;
       Future.delayed(const Duration(seconds: 1), () {
@@ -148,22 +102,55 @@ class SleepCycleController extends GetxController {
       });
     } catch (e) {
       print("Error saving times: $e");
-
       loading.value = false;
     }
     Get.back();
   }
 
-  int calculateSleepTimeInMinutes() {
-    int bedtimeMinutes = bedtime.value.hour * 60 + bedtime.value.minute;
-    int wakeUpTimeMinutes =
-        wakeUpTime.value.hour * 60 + wakeUpTime.value.minute;
+  void resetSleepCycle() {
+    bedtime.value = DateTime.now();
+    wakeUpTime.value = DateTime.now();
+    numOfCycles.value = 2;
+  }
 
-    if (wakeUpTimeMinutes < bedtimeMinutes) {
-      wakeUpTimeMinutes += 24 * 60;
+  Future<List<Map<String, dynamic>>> getAlarmDataForTodayBySensorId(
+      String sensorId, DateTime userTime) async {
+    try {
+      final now = DateTime.now();
+      final todayStart = DateTime(now.year, now.month, now.day);
+      final todayEnd = todayStart
+          .add(const Duration(days: 1))
+          .subtract(const Duration(seconds: 1));
+
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('alarms')
+          .where('uid', isEqualTo: userId.value)
+          .where('sensorId', isEqualTo: sensorId)
+          .where('timestamp', isGreaterThanOrEqualTo: todayStart)
+          .where('timestamp', isLessThanOrEqualTo: todayEnd)
+          .get();
+
+      List<Map<String, dynamic>> data = [];
+
+      for (var doc in querySnapshot.docs) {
+        Map<String, dynamic> alarmData = doc.data() as Map<String, dynamic>;
+
+        // Parsing wakeup_time and bed_time from the document
+        DateTime wakeupTime =
+            DateFormat('hh:mm a').parse(alarmData['wakeup_time']);
+        DateTime bedTime = DateFormat('hh:mm a').parse(alarmData['bedtime']);
+
+        // Check if userTime is between bedTime and wakeupTime
+        if (userTime.isAfter(bedTime) && userTime.isBefore(wakeupTime)) {
+          data.add(alarmData);
+        }
+      }
+
+      print(' :::::::::::-----------Data for today: ${todayStart} ${todayEnd}');
+      return data;
+    } catch (e) {
+      print(":::::::::::::::::-----------Error fetching data for today: $e");
+      return [];
     }
-    int numberOfCycles = (wakeUpTimeMinutes - bedtimeMinutes / 90).floor();
-
-    return numberOfCycles;
   }
 }

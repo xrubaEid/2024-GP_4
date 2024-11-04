@@ -211,7 +211,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
               TextButton(
                 child: const Text('OK'),
                 onPressed: () {
-                  Get.to(const HomeScreen());
+                  Get.offAll(const HomeScreen());
                 },
               ),
             ],

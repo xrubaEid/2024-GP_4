@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sleepwell/screens/statistic/real_time_data_screen.dart';
 
 import 'dart:core';
 
@@ -67,6 +68,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('alarms')
           .where('uid', isEqualTo: userId)
+          .where('beneficiaryId', isEqualTo: userId)
           .where('added_day', isEqualTo: DateTime.now().day)
           .orderBy('timestamp', descending: true)
           .limit(1)
@@ -262,6 +264,13 @@ class _AlarmScreenState extends State<AlarmScreen> {
                       },
                       child: const Icon(Icons.add),
                     ),
+                    // SizedBox(height: screenHeight * 0.05),
+                    // FloatingActionButton(
+                    //   onPressed: () {
+                    //     Get.to(StatisticsWeekly());
+                    //   },
+                    //   child: const Icon(Icons.add),
+                    // ),
                   ],
                 ),
               ),

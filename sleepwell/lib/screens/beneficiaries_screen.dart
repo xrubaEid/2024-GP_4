@@ -7,7 +7,7 @@ import 'package:sleepwell/services/sensor_service.dart';
 import '../controllers/beneficiary_controller.dart';
 import '../controllers/sensor_settings_controller.dart';
 import '../models/user_sensor.dart';
-import 'settings/sensor_setting_screen.dart';
+ 
 
 class BeneficiariesScreen extends StatelessWidget {
   final BeneficiaryController beneficiaryController =

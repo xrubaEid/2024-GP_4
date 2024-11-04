@@ -181,6 +181,7 @@ class _EditAlarmScreenState extends State<EditAlarmScreen> {
                         await soundsWidget.audioPlayer.pause();
                         saveSettings();
                         await AppAlarm.initAlarms();
+                        // int id = await AppAlarm.generateNewAlarmId();
                         await AppAlarm.updateStoredWakeUpAlarmSound();
                         Get.back();
                       },

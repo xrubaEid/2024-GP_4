@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../models/feedbacke_notification_model.dart';
 
 class FeedbackNotificationWidget extends StatefulWidget {
@@ -116,7 +117,7 @@ class _FeedbackNotificationWidgetState
                     Icon(Icons.access_time, size: 22, color: Colors.grey[600]),
                     const SizedBox(width: 10),
                     Text(
-                        "Timestamp: ${widget.notification.timestamp.toDate()}"),
+                        "Timestamp: ${DateFormat('yyyy-MM-dd: hh:mm a').format(widget.notification.timestamp.toDate())}"),
 
                     Obx(
                       () => Card(

@@ -1,9 +1,12 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../alarm.dart';
 import '../../../controllers/beneficiary_controller.dart';
+import '../../../controllers/get_new_alarm_to_running.dart';
 import '../../../controllers/sensor_settings_controller.dart';
 import '../../../controllers/sleep-cycle-ontroller.dart';
 import '../../../services/sensor_service.dart';
@@ -58,11 +61,142 @@ class SleepWellCycleScreen extends StatelessWidget {
                 //   },
                 //   child: Text("Rename Collection"),
                 // ),
+                // ElevatedButton(
+                //   onPressed: () => showAlarmsDialog(context, '654321'),
+                //   child: const Text("Show Alarms by Sensor ID"),
+                // ),
+                FloatingActionButton(
+                  onPressed: () async {
+                    DateTime now = DateTime.now();
+                    final nowTime = TimeOfDay.fromDateTime(now);
+                    if (sensorService.selectedSensor.value.isNotEmpty) {
+                      await AppAlarm.saveAlarm(
+                        // alarmId: 115,
+                        userId: controller.userId.value,
+                        // userId: 'GnQXhV91N7XRbM9z9t8g',
+                        bedtime: "${now.hour}:${now.minute} AM",
+                        optimalWakeTime:
+                            "${nowTime.hour}:${(nowTime.minute + 1) % 60} AM",
+                        name: 'Yourself',
+                        usertype: true, // for ben =false
+                        sensorId: sensorService.selectedSensor.value,
+                      );
+
+                      // Fetch and log all alarms
+                      await AppAlarm.getAlarms();
+                    }
+
+                    // await GetNewAlarmToRunning.fetchTodayAlarms(
+                    //     controller.userId.value);
+                  },
+                  child: const Icon(Icons.alarm),
+                )
               ],
             ),
           ),
         );
       }),
+    );
+  }
+
+  void showAlarmsDialog(BuildContext context, String sensorId) async {
+    String formattedendDayOfWackup =
+        DateFormat('hh:mm a').format(DateTime.now());
+    DateTime bedtimeDate = DateFormat("HH:mm a").parse(formattedendDayOfWackup);
+    List<Map<String, dynamic>> alarms =
+        await controller.getAlarmDataForTodayBySensorId(sensorId, bedtimeDate);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[50],
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          title: Text(
+            'Alarms for Sensor ID: $sensorId',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: Colors.blueAccent,
+            ),
+          ),
+          content: alarms.isNotEmpty
+              ? SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: alarms.map((alarm) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            // 'No alarms found for this sensor today.',
+                            'This Sensor Is Not  Available. Its Connected With Anather Alarm Now. \n Plesase Select Another Sensor',
+                            style: TextStyle(color: Colors.redAccent),
+                          ),
+                          _buildStyledText('Bedtime', alarm['bedtime']),
+                          _buildStyledText(
+                              'Optimal Wake Time', alarm['wakeup_time']),
+                          _buildStyledText('isForBeneficiary',
+                              alarm['isForBeneficiary'] ? 'true' : 'false'),
+                          _buildStyledText('Sensor ID', alarm['sensorId']),
+                          _buildStyledText('User ID', alarm['uid']),
+                          _buildStyledText(
+                              'Beneficiary ID', alarm['beneficiaryId']),
+                          _buildStyledText(
+                              'Timestamp', alarm['timestamp'].toString()),
+                          const Divider(
+                            color: Colors.grey,
+                            thickness: 1,
+                            height: 20,
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                )
+              : const Text(
+                  // 'No alarms found for this sensor today.',
+                  'This Sensor is Available. There are no alarms for today Connected With It.',
+                  style: TextStyle(color: Colors.redAccent),
+                ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Close',
+                style: TextStyle(
+                  color: Colors.blueAccent,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildStyledText(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(fontSize: 16, color: Colors.black87),
+          children: [
+            TextSpan(
+              text: '$label: ',
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.blueGrey),
+            ),
+            TextSpan(
+              text: value,
+              style: const TextStyle(color: Colors.black),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -340,7 +474,7 @@ class SleepWellCycleScreen extends StatelessWidget {
     // Check time difference
     if (_timeDifferenceInMinutes(
             controller.bedtime.value, controller.wakeUpTime.value) <
-        120) {
+        90) {
       _showWarningDialog(context,
           "Please select a wake-up time with at least 2 hours difference.");
     } else {
@@ -367,6 +501,56 @@ class SleepWellCycleScreen extends StatelessWidget {
     );
   }
 
+  Future<void> checkAvalibalSensor(
+      BuildContext context, String sensorId) async {
+    String formattedendDayOfWackup =
+        DateFormat('hh:mm a').format(controller.bedtime.value);
+    DateTime SelectedbedtimeDate =
+        DateFormat("HH:mm a").parse(formattedendDayOfWackup);
+    List<Map<String, dynamic>> alarms =
+        await controller.getAlarmDataForTodayBySensorId(
+            sensorService.selectedSensor.value, SelectedbedtimeDate);
+    if (alarms.isEmpty) {
+      controller.saveTimes();
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.grey[50],
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            title: Text(
+              'Alarms for Sensor ID: ${sensorService.selectedSensor.value}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: Colors.blueAccent,
+              ),
+            ),
+            content: const Text(
+              'This Sensor Is Not  Available. Its Connected With Anather Alarm Now. \n Plesase Select Another Sensor',
+              style: TextStyle(color: Colors.redAccent),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text(
+                  'Close',
+                  style: TextStyle(
+                    color: Colors.blueAccent,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   void _showConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -374,11 +558,13 @@ class SleepWellCycleScreen extends StatelessWidget {
         () => ConfirmationDialogWidget(
           alarmFor: controller.selectedBeneficiaryName.value,
           selectedDevice: sensorService.selectedSensor.value,
-          wakeUpTime: DateFormat('hh:mm a').format(controller.wakeUpTime.value),
           bedTime: DateFormat('hh:mm a').format(controller.bedtime.value),
+          wakeUpTime: DateFormat('hh:mm a').format(controller.wakeUpTime.value),
           sleepCycle: controller.calculateSleepDuration(),
-          onPressed:
-              controller.loading.value ? null : () => controller.saveTimes(),
+          onPressed: controller.loading.value
+              ? null
+              : () => checkAvalibalSensor(
+                  context, sensorService.selectedSensor.value),
           changeDevice: () => sensorSettings.checkUserSensors(context),
 
           // () => sensorService.checkUserSensors(context),

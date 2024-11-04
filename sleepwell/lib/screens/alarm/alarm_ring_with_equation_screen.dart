@@ -29,7 +29,7 @@ class _AlarmRingWithEquationScreenState
   void initState() {
     super.initState();
     name = widget.alarmsData.name;
-    userType = widget.alarmsData.usertype;
+    userType = widget.alarmsData.isForBeneficiary;
   }
 
   @override
@@ -62,20 +62,19 @@ class _AlarmRingWithEquationScreenState
               child: TextButton(
                 onPressed: () {
                   final now = DateTime.now();
-                  int snooze = prefs.getInt("snooze") ?? 1;
+                  int snooze = prefs.getInt("snooze") ?? 2;
                   Alarm.set(
-                    alarmSettings: widget.alarmSettings.copyWith(
-                      dateTime: DateTime(
-                        now.year,
-                        now.month,
-                        now.day,
-                        now.hour,
-                        now.minute,
-                        0,
-                        0,
-                      ).add(Duration(minutes: snooze)),
-                    ),
-                  ).then((_) => Navigator.pop(context));
+                      alarmSettings: widget.alarmSettings.copyWith(
+                    dateTime: DateTime(
+                      now.year,
+                      now.month,
+                      now.day,
+                      now.hour,
+                      now.minute,
+                      0,
+                      0,
+                    ).add(Duration(minutes: snooze)),
+                  )).then((_) => Navigator.pop(context));
                 },
                 child: Text(
                   "Snooze",

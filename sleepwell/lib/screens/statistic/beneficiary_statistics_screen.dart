@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:sleepwell/widget/statistic_monthly_widget.dart';
 
-import '../../controllers/alarms_controller.dart';
+import '../../controllers/alarms_statistics_controller.dart';
 import '../../controllers/beneficiary_controller.dart';
 
 import '../../models/alarm_model.dart';
@@ -80,7 +80,8 @@ class _BeneficiaryStatisticsScreenState
 
   @override
   Widget build(BuildContext context) {
-    AlarmsController alarmsController = Get.put(AlarmsController());
+    AlarmsStatisticsController alarmsController =
+        Get.put(AlarmsStatisticsController());
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -226,13 +227,12 @@ class _BeneficiaryStatisticsScreenState
                     //   ),
                     // );
                     return const Center(
-                        child: Text(
-                      "No data available",
-                      textAlign: TextAlign.center,
-                    ),
+                      child: Text(
+                        "No data available",
+                        textAlign: TextAlign.center,
+                      ),
                     );
-                  }
-                   else {
+                  } else {
                     final alarms = snapshot.data!;
 
                     // جلب أول بيانات نوم
@@ -371,11 +371,18 @@ class _BeneficiaryStatisticsScreenState
                     final alarms = snapshot.data ?? [];
 
                     final now = DateTime.now(); // Get the current date
-                    final firstDayOfMonth =
-                        DateTime(now.year, now.month, 1); // Start of the month
+                    // final firstDayOfMonth =
+                    //     DateTime(now.year, now.month, 1); // Start of the month
+                    // String monthName =
+                    //     DateFormat('MMMM yyyy').format(firstDayOfMonth);
+                    DateTime firstDayCurrentMonth =
+                        DateTime(now.year, now.month, 1);
+                    DateTime firstDayPreviousMonth = DateTime(
+                        firstDayCurrentMonth.year,
+                        firstDayCurrentMonth.month - 1,
+                        1);
                     String monthName =
-                        DateFormat('MMMM yyyy').format(firstDayOfMonth);
-
+                        DateFormat('MMMM yyyy').format(firstDayPreviousMonth);
                     List<BarChartGroupData> barGroupsMontt = [];
                     List<PieChartSectionData> pieSectionsMonth = [];
                     List<double> sleepHoursMonth = [];

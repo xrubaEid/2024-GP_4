@@ -13,10 +13,10 @@ import 'package:sleepwell/screens/settings/language_screen.dart';
 import 'package:sleepwell/widget/counter_widget.dart';
 import '../services/sensor_service.dart';
 import '../widget/bed_time_reminder.dart';
+import 'alarm/SleepWellCycleScreen/cycles_calculation_testing.dart';
 import 'edite_alarm_screen.dart';
 import 'profile/about_you_screen.dart';
 import 'profile/more_about_you.dart';
-
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -289,6 +289,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   Get.to(() => const EditAlarmScreen());
                                 }),
                             ListTile(
+                                title: Text('Sleep Goal'.tr,
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 18)),
+                                leading: const Icon(
+                                    Icons.location_searching_sharp,
+                                    color: Colors.white),
+                                trailing: const Icon(Icons.arrow_forward_ios,
+                                    color: Colors.white, size: 18),
+                                onTap: () {}
+                                // => Get.to(() => NotificationScreen()),
+                                ),
+                            ListTile(
+                                title: Text('Cycles Calculation Testing'.tr,
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 18)),
+                                leading: const Icon(Icons.add_alarm_outlined,
+                                    color: Colors.white),
+                                trailing: const Icon(Icons.arrow_forward_ios,
+                                    color: Colors.white, size: 18),
+                                onTap: () {
+                                  Get.to(() => CyclesCalculationTesting());
+                                }),
+                            ListTile(
                                 title: Text(
                                   'Snooze'.tr,
                                   style: const TextStyle(
@@ -358,6 +381,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   btnOkText: "Sign Out",
                                   btnCancelOnPress: () {
                                     // Action when 'Cancel' is pressed
+                                    Get.back();
                                   },
                                   btnOkOnPress: () {
                                     _auth.signOut();

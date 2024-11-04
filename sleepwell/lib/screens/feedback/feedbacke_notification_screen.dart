@@ -110,12 +110,13 @@ class _FeedbackeNotificationsScreenState
               onTap: () =>
                   Get.to(() => const FeedbackNotificationWeeklyScreen()),
             ),
-            // TextButton(
-            //     onPressed: _sendWeeklyNotification,
-            //     child: const Text(
-            //       "Send Notification ",
-            //       style: TextStyle(color: Colors.white, fontSize: 22),
-            //     )),
+            TextButton(
+              onPressed: _sendWeeklyNotification,
+              child: const Text(
+                "Send Notification ",
+                style: TextStyle(color: Colors.white, fontSize: 22),
+              ),
+            ),
           ],
         ),
       ),

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sleepwell/controllers/alarms_controller.dart';
+import 'package:sleepwell/controllers/alarms_statistics_controller.dart';
 import 'package:sleepwell/models/alarm_model.dart';
 
 class DependentScreen extends StatefulWidget {
@@ -17,7 +17,8 @@ class DependentScreen extends StatefulWidget {
 }
 
 class _DependentScreenState extends State<DependentScreen> {
-  final AlarmsController _alarmsController = AlarmsController();
+  final AlarmsStatisticsController _alarmsController =
+      AlarmsStatisticsController();
   late Future<List<AlarmModelData>> _dependentAlarms;
   String? userId = FirebaseAuth.instance.currentUser?.uid;
   @override

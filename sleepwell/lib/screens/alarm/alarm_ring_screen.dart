@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:alarm/alarm.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../models/alarm_data.dart';
+import '../../push_notification_service.dart';
 import '../feedback/feedback_page.dart';
 import '../home_screen.dart';
 // alarm_ring_screen.dart
@@ -22,13 +26,21 @@ class AlarmRingScreen extends StatefulWidget {
 class _AlarmRingScreenState extends State<AlarmRingScreen> {
   late String name;
   late bool userType;
+  Timer? _reminderTimer;
+  bool _showFeedbackDialog = true;
+
+  @override
+  void dispose() {
+    _reminderTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
     // final Map<String, dynamic> alarmsData = Get.arguments ?? {};
     name = widget.alarmsData.name;
-    userType = widget.alarmsData.usertype;
+    userType = widget.alarmsData.isForBeneficiary;
   }
 
   @override
@@ -53,7 +65,7 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
                     DateTime now = DateTime.now();
                     Alarm.set(
                       alarmSettings: widget.alarmSettings.copyWith(
-                        dateTime: now.add(const Duration(minutes: 5)),
+                        dateTime: now.add(const Duration(minutes: 2)),
                       ),
                     ).then((_) => Navigator.pop(context));
                   },
@@ -61,11 +73,64 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    await Alarm.stop(widget.alarmSettings.id);
-                    Get.offAll(() =>
-                        userType ? const FeedbackPage() : const HomeScreen());
+                    if (_showFeedbackDialog && userType) {
+                      final shouldShowFeedbackDialog = await showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Daily Feedback'),
+                            content: const Text(
+                                'Do you want to give your feedback now?'),
+                            actions: [
+                              TextButton(
+                                child: const Text('Remind me later'),
+                                onPressed: () async {
+                                  await Alarm.stop(widget.alarmSettings.id)
+                                      .then(
+                                          (_) => Navigator.pop(context, false));
+
+                                  await PushNotificationService
+                                      .showNotification(
+                                    title: 'Daily Feedback',
+                                    body: 'You must  given your feedback now',
+                                    schedule: true,
+                                    interval: 3600,
+                                    actionButtons: [
+                                      NotificationActionButton(
+                                          key: 'FeedBak',
+                                          label: 'Go To Feedback Now')
+                                    ],
+                                  );
+                                  Get.back(result: false);
+                                  _showFeedbackDialog = false;
+                                  // _startReminderTimer();
+                                },
+                              ),
+                              TextButton(
+                                child: const Text('Yes'),
+                                onPressed: () async {
+                                  await Alarm.stop(widget.alarmSettings.id)
+                                      .then(
+                                          (_) => Navigator.pop(context, false));
+                                  Get.back(result: true);
+                                  Get.offAll(() => const FeedbackPage());
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+
+                      if (shouldShowFeedbackDialog ?? false) {
+                        Get.to(() => const FeedbackPage());
+                      }
+                    } else {
+                      await Alarm.stop(widget.alarmSettings.id)
+                          .then((_) => Navigator.pop(context, false));
+                      Get.offAll(() => const HomeScreen());
+                    }
                   },
-                  child: Text("Stop"),
+                  child: const Text("Stop"),
                 ),
               ],
             ),
@@ -73,5 +138,38 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
         ),
       ),
     );
+  }
+
+  void _startReminderTimer() {
+    _reminderTimer = Timer(const Duration(minutes: 3), () {
+      if (_showFeedbackDialog) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Daily Feedback Reminder'),
+              content: const Text('Do you want to give your feedback now?'),
+              actions: [
+                TextButton(
+                  child: const Text('Remind me later'),
+                  onPressed: () {
+                    Get.back(result: false);
+                    _showFeedbackDialog = false;
+                    _startReminderTimer();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Yes'),
+                  onPressed: () {
+                    Get.back();
+                    Get.to(() => const FeedbackPage());
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    });
   }
 }

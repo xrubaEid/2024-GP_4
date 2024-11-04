@@ -40,6 +40,7 @@ class PushNotificationService {
       (isAllowed) async {
         if (!isAllowed) {
           await AwesomeNotifications().requestPermissionToSendNotifications();
+          debugPrint('Channel initialization completed for: basic_channel');
         }
       },
     );

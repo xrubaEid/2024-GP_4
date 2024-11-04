@@ -1,213 +1,153 @@
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_database/firebase_database.dart';
-// import 'package:flutter/material.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-
-// class RealTimeDataScreen extends StatefulWidget {
-//   @override
-//   _RealTimeDataScreenState createState() => _RealTimeDataScreenState();
-// }
-
-// class _RealTimeDataScreenState extends State<RealTimeDataScreen> {
-//   late String userId;
-//   final _auth = FirebaseAuth.instance;
-//   late User signInUser;
-//   late String email;
-
-//   // Data from the database
-//   Map<String, dynamic> realTimeData = {};
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     getCurrentUser();
-//   }
-
-//   void getCurrentUser() async {
-//     try {
-//       final user = _auth.currentUser;
-//       if (user != null) {
-//         setState(() {
-//           signInUser = user;
-//           userId = user.uid;
-//           email = user.email!;
-//         });
-//         await saveUserIdToPrefs(userId);
-//         _fetchUserData(); // Fetch data after setting userId
-//       }
-//     } catch (e) {
-//       print(e);
-//     }
-//   }
-
-//   Future<void> saveUserIdToPrefs(String userId) async {
-//     SharedPreferences prefs = await SharedPreferences.getInstance();
-//     await prefs.setString('userId', userId);
-//   }
-
-//   void _fetchUserData() {
-//     print("Fetching user data...");
-//     print("User id is:$userId::::::::::::::::::");
-
-//     final DatabaseReference databaseReference =
-//         FirebaseDatabase.instance.ref('users/$userId'); // Use the userId here
-
-//     databaseReference.onValue.listen((event) {
-//       if (event.snapshot.exists) {
-//         final data = event.snapshot.value;
-//         print('Fetched data from Firebase: $data');
-
-//         if (data != null && data is Map<dynamic, dynamic>) {
-//           setState(() {
-//             realTimeData = Map<String, dynamic>.from(data);
-//             print("Heart rate: ${realTimeData['Heart rate']}");
-//             print("SpO2: ${realTimeData['SpO2']}");
-//             print("Temperatura: ${realTimeData['Temperatura']}");
-//           });
-//         } else {
-//           print('No data available or data is not a Map.');
-//         }
-//       } else {
-//         print('Snapshot does not exist. Path might be incorrect.');
-//       }
-//     }, onError: (error) {
-//       print('Error fetching data: $error');
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Real-Time Data Screen'),
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(8.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Text(
-//               'Heart rate: ${realTimeData['Heart rate'] ?? 'No data'}',
-//               style: const TextStyle(fontSize: 18),
-//             ),
-//             const SizedBox(height: 10),
-//             Text(
-//               'SpO2: ${realTimeData['SpO2'] ?? 'No data'}',
-//               style: const TextStyle(fontSize: 18),
-//             ),
-//             const SizedBox(height: 10),
-//             Text(
-//               'Temperatura: ${realTimeData['Temperatura'] ?? 'No data'}',
-//               style: const TextStyle(fontSize: 18),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
-class RealTimeDataScreen extends StatefulWidget {
+import '../../controllers/alarms_statistics_controller.dart';
+import '../../models/alarm_model.dart';
+import '../../widget/statistic_weekly_widget.dart';
+
+class StatisticsWeekly extends StatefulWidget {
+  StatisticsWeekly({super.key});
+
   @override
-  _RealTimeDataScreenState createState() => _RealTimeDataScreenState();
+  State<StatisticsWeekly> createState() => _StatisticsWeeklyState();
 }
 
-class _RealTimeDataScreenState extends State<RealTimeDataScreen> {
-  late String userId;
-  final _auth = FirebaseAuth.instance;
-  late User signInUser;
-  late String email;
-
-  // بيانات من قاعدة البيانات
-  Map<String, dynamic> realTimeData = {};
+class _StatisticsWeeklyState extends State<StatisticsWeekly> {
+  String? userId = FirebaseAuth.instance.currentUser?.uid;
+  String weekRange = '';
 
   @override
   void initState() {
     super.initState();
-    getCurrentUser();
+    getWeekRange();
   }
 
-  void getCurrentUser() async {
-    try {
-      final user = _auth.currentUser;
-      if (user != null) {
-        setState(() {
-          signInUser = user;
-          userId = user.uid;
-          email = user.email!;
-        });
-        await saveUserIdToPrefs(userId);
-        _fetchUserData(); // جلب البيانات بعد تعيين userId
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
+  void getWeekRange() {
+    final now = DateTime.now();
+    final weekEnd = now.subtract(const Duration(days: 1));
+    final weekStart = now.subtract(const Duration(days: 7));
 
-  Future<void> saveUserIdToPrefs(String userId) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userId', userId);
-  }
-
-  void _fetchUserData() {
-    print("Fetching user data...");
-    print("User id is: $userId");
-
-    final DatabaseReference databaseReference =
-        FirebaseDatabase.instance.ref('users/$userId'); // Use the userId here
-
-    print('Checking path: users/$userId');
-
-    databaseReference.onValue.listen((event) {
-      if (event.snapshot.exists) {
-        final data = event.snapshot.value;
-        print('Fetched data from Firebase: $data');
-
-        if (data != null && data is Map<dynamic, dynamic>) {
-          setState(() {
-            realTimeData = Map<String, dynamic>.from(data)
-              ..remove('uid'); // Remove 'uid' from the data
-          });
-        } else {
-          print('No data available or data is not a Map.');
-        }
-      } else {
-        print('Snapshot does not exist at path: users/$userId');
-      }
-    }, onError: (error) {
-      print('Error fetching data: $error');
-    });
+    weekRange =
+        '${DateFormat('d MMM').format(weekStart)} - ${DateFormat('d MMM').format(weekEnd)}';
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Real-Time Data Screen'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    AlarmsStatisticsController alarmsController =
+        Get.put(AlarmsStatisticsController());
+
+    return DefaultTabController(
+      length: 3, // Number of tabs
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: const Color(0xFF004AAD),
+          title: const Text(
+            "Statistics",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          iconTheme: const IconThemeData(color: Colors.white),
+          bottom: const TabBar(
+            indicatorColor: Colors.white,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.grey,
+            tabs: [
+              Tab(text: 'Day'),
+              Tab(text: 'Week'),
+              Tab(text: 'Month'),
+            ],
+          ),
+        ),
+        body: TabBarView(
           children: [
-            Text(
-              'Heart rate: ${realTimeData['Heart rate'] ?? 'No data'}',
-              style: const TextStyle(fontSize: 18),
+            // First tab: Day view
+            SingleChildScrollView(
+              child: FutureBuilder<List<AlarmModelData>>(
+                future: alarmsController.fetchLastWeekAlarms(userId!),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return const Center(child: Text("Error loading data"));
+                  } else {
+                    final alarms = snapshot.data ?? [];
+                    List<double> sleepHours = List.filled(7, 0.0);
+                    List<double> sleepCycles = List.filled(7, 0.0);
+
+                    for (var alarm in alarms) {
+                      DateTime alarmDate = alarm.timestamp is Timestamp
+                          ? (alarm.timestamp as Timestamp).toDate()
+                          : DateTime.parse(alarm.timestamp.toString());
+
+                      final differenceInDays =
+                          DateTime.now().difference(alarmDate).inDays;
+
+                      if (differenceInDays >= 0 && differenceInDays <= 7) {
+                        sleepHours[7 - differenceInDays] =
+                            alarm.sleepDuration.inHours.toDouble();
+                        sleepCycles[7 - differenceInDays] =
+                            alarm.sleepCycles.toDouble();
+                      }
+                    }
+
+                    final barGroups = List.generate(7, (index) {
+                      return BarChartGroupData(
+                        x: index,
+                        barRods: [
+                          BarChartRodData(
+                            toY: sleepHours[index],
+                            color: Colors.blue,
+                            width: 16,
+                          ),
+                        ],
+                      );
+                    });
+
+                    List<Color> weekColors = [
+                      const Color(0xFF26C6DA),
+                      const Color.fromRGBO(223, 30, 233, 1),
+                      const Color(0xFF81C784),
+                      const Color(0xFF53C3E9),
+                      Colors.blue,
+                      const Color.fromARGB(255, 10, 227, 147),
+                      const Color(0xFF53C3E9),
+                    ];
+
+                    final pieSections = List.generate(7, (index) {
+                      return PieChartSectionData(
+                        value: sleepCycles[index],
+                        color: weekColors[index],
+                        title: '${sleepCycles[index]}',
+                        radius: 60,
+                      );
+                    });
+
+                    const double chartMaxYweek = 20;
+                    final double averageSleepHours =
+                        sleepHours.reduce((a, b) => a + b) / sleepHours.length;
+
+                    return StatisticsWeeklyWidget(
+                      barGroups: barGroups,
+                      pieSections: pieSections,
+                      chartMaxYweek: chartMaxYweek,
+                      averageSleepHours: averageSleepHours,
+                      weekRange: weekRange,
+                    );
+                  }
+                },
+              ),
             ),
-            const SizedBox(height: 10),
-            Text(
-              'SpO2: ${realTimeData['SpO2'] ?? 'No data'}',
-              style: const TextStyle(fontSize: 18),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Temperatura: ${realTimeData['Temperatura'] ?? 'No data'}',
-              style: const TextStyle(fontSize: 18),
-            ),
+            // Second tab: Week view
+            Container(),
+            // Third tab: Month view
+            Container(),
           ],
         ),
       ),

@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../models/alarm_model.dart';
 
 class GetNewAlarmToRunning {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  static final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  Future<List<AlarmModelData>> fetchTodayAlarms(String userId) async {
+  // Static method to fetch today's alarms for a specific user
+  static Future<List<AlarmModelData>> fetchTodayAlarms(String userId) async {
     final now = DateTime.now();
     final DateTime todayStart = DateTime(now.year, now.month, now.day);
     final DateTime todayEnd = todayStart
@@ -24,8 +24,8 @@ class GetNewAlarmToRunning {
 
     querySnapshot.docs.forEach((doc) {
       final data = doc.data() as Map<String, dynamic>;
-      final timestamp = data['timestamp']
-          ?.toDate(); // Assuming 'timestamp' is a Timestamp object from Firestore
+      final timestamp = (data['timestamp'] as Timestamp)
+          .toDate(); // Parse Firestore timestamp
       if (timestamp != null) {
         print('Document ID: ${doc.id}');
         print('Data: $data');
@@ -34,6 +34,7 @@ class GetNewAlarmToRunning {
       }
     });
 
+    // Convert each document into an AlarmModelData instance and return the list
     return querySnapshot.docs
         .map((doc) =>
             AlarmModelData.fromFirestore(doc.data() as Map<String, dynamic>))
