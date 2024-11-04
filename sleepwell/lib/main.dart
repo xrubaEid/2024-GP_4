@@ -1,55 +1,68 @@
-import 'dart:convert';
+// import 'package:alarm/alarm.dart';
 import 'package:alarm/alarm.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sleepwell/alarm.dart';
 import 'package:sleepwell/firebase_options.dart';
-import 'package:sleepwell/screens/dashboard_screen.dart';
+import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/screens/splash_screen.dart';
 import 'package:timezone/data/latest.dart' as tz;
-import 'package:http/http.dart' as http;
+import 'package:sleepwell/push_notification_service.dart';
+import 'locale/app_translation.dart';
+import 'locale/local_controller.dart';
+import 'services/sensor_service.dart';
 
-import 'local_notification_service.dart';
-import 'public_classes.dart';
-// import 'screens/alarm_screen.dart';
-
+// too1423too@gmail.com
+late SharedPreferences prefs;
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
-
   print("Handling a background message: ${message.messageId}");
 }
 
-late SharedPreferences prefs;
-
+bool loginStatus = prefs.getBool("isLogin") ?? false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Get.putAsync<SensorService>(() => SensorService().init(),
+      permanent: true);
+  // await Get.putAsync<AlarmService>(() => AlarmService().init(),
+  //     permanent: true);
+  // AlarmService().init();
+
   tz.initializeTimeZones();
 
-  // initialize  FirebaseMessaging
+  PushNotificationService.initializeNotifications();
 
   requestNotificationPermission();
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
+  await FirebaseMessaging.instance.subscribeToTopic("topic");
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  // GetX local storege
-  //await GetStorage.init();
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('Got a message whilst in the foreground!');
+    print('Message data: ${message.notification?.title}');
+
+    if (message.notification != null) {
+      print('Message also contained a notification: ${message.notification}');
+    }
+  });
+
   prefs = await SharedPreferences.getInstance();
   // initialize  Alarm
   await Alarm.init(showDebugLogs: true);
+  // await AppAlarm.initAlarms();
+
   runApp(const MainAppScreen());
 }
 
-// You may set the permission requests to "provisional" which allows the user to choose what type
-// of notifications they would like to receive once the user receives a notification.
 Future<void> requestNotificationPermission() async {
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
     announcement: false,
@@ -59,8 +72,19 @@ Future<void> requestNotificationPermission() async {
     provisional: false,
     sound: true,
   );
+  print("=======================================================");
+  print('Notification permission granted: ${settings.authorizationStatus}');
+  print("=======================================================");
+}
 
-  print('User granted permission: ${settings.authorizationStatus}');
+Future<String?> getToken() async {
+  final token = await FirebaseMessaging.instance.getToken();
+  print("=======================================================");
+  print(token);
+  print("=======================================================");
+  // print(selectedBeneficiaryId);
+  print("=======================================================");
+  return token;
 }
 
 class MainAppScreen extends StatefulWidget {
@@ -75,16 +99,34 @@ class _MainAppScreenState extends State<MainAppScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getToken();
     runNotificationListening();
-    if (AppNotifications.isUserSubscribeToPublicNotification == null) {
-      AppNotifications.subscribeToPublicNotification();
-    }
+
+    // subscribe to public notification
+    // if (AppNotifications.isUserSubscribeToPublicNotification == null) {
+    //   AppNotifications.subscribeToPublicNotification();
+    // }
+    getToken();
+    FirebaseMessaging.instance
+        .getToken()
+        .then((token) => print("Firebase Messaging Token: $token"));
+
+    // استماع للإشعارات أثناء فتح التطبيق
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print(
+          'Received a message: ${message.notification?.title}, ${message.notification?.body}');
+    });
+
+    // استماع للإشعارات عند فتح التطبيق من الإشعار
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('Message clicked!');
+    });
   }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    Get.lazyPut(() => AppLocalelcontroller(), fenix: true);
+    final AppLocalelcontroller locallcontroller = Get.find();
     bool loginStatus = prefs.getBool("isLogin") ?? false;
     return GetMaterialApp(
       title: 'SleepWell',
@@ -92,77 +134,56 @@ class _MainAppScreenState extends State<MainAppScreen> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      debugShowCheckedModeBanner: false,
-      home: loginStatus ? DashboardScreen() : const SplashScreen(),
-      // home: DashboardScreen(),
+      debugShowCheckedModeBanner: false, translations: AppTranslation(),
+      locale: locallcontroller.language,
+      home: loginStatus ? const HomeScreen() : const SplashScreen(),
+      // home: const SplashScreen(),
     );
   }
 }
 
 void runNotificationListening() {
-  final localNotification = LocalNotificationService.instance;
-  localNotification.initialize();
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     print(
         "========================== Get a message =============================");
     if (message.notification != null) {
       print('::::::::::::Get a message notification in the foreground!');
-      localNotification.showLocalNotification(
-        message.hashCode,
-        message.notification!.title ?? "",
-        message.notification!.body ?? "",
+      PushNotificationService.showNotification(
+        title: message.notification!.title ?? "",
+        body: message.notification!.body ?? "",
+        summary: 'Hellow Aimn',
       );
     }
     print("=======================================================");
   });
-  
-  // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-  //   print('Got a message whilst in the foreground!');
-  //   print('Message data: ${message.data}');
-
-  //   if (message.notification != null) {
-  //     print('Message also contained a notification: ${message.notification}');
-  //   }
-  // });
 }
 
-Future<void> getToken() async {
-  final token = await FirebaseMessaging.instance.getToken();
-  print("=======================================================");
-  print(token);
-  print("=======================================================");
-}
+// Future<void> sendNotification(String title, String message) async {
+//   final serverKey = await PushNotificationServices.getToken();
+//   var headersList = {
+//     'Content-Type': 'application/json',
+//     'Authorization':
+//         'key=eHt4wVoiR46JQ2DpCVyQ1j:APA91bFIWdKZ8TuebQXAtml1U8zsR_JmaqCHhfFpGE7m7nzVyM0W7H_pUvERL9WCnXuE9J6SEaTxQDYUIQxuISfsEirPh6ZIASOFam6aYDwIc2IwT-qYBjdgK7v_SIo0yep8oopWFFJH', // Replace with the correct Server Key
+//   };
 
-Future<void> sendNotification(String title, String message) async {
-  var headersList = {
-    'Accept': '*/*',
-    'Content-Type': 'application/json',
-    'Authorization':
-        'key=AAAAtoni7cA:APA91bG8smrjGMaG3Z5_t9gMdyE9HHIT8x190zBaCfRQOsDYiCxiCOEEoyc7_dKnOPzJ95q4A1LdkP2shvAlu7sJiUL-xIMlngfEOTRkdtoG24bRZjAziwSd09L7BEW2GQyRXwOGGIUw'
-  };
-  var url = Uri.parse('https://fcm.googleapis.com/fcm/send');
+//   var url = Uri.parse('https://fcm.googleapis.com/fcm/send');
 
-  var body = {
-    "to":
-        "f56BBhPGRl-akiM3KwnnaY:APA91bHMcYDBbIxcY7zYpAp6a9D33-3pw8l_y2hNH7swZ55pW5aZo5UYaAw2gTlUWFdcCrPYr463H5Ti-1IbX_uS-fMKHNZBTvPIsyFuRZ3Fm1gBgBQw5OgNfpiFwzptANqQuTO4dWzj",
-    "notification": {
-      "title": "Check this Mobile (title)",
-      "body": "Rich Notification testing (body)",
-      "mutable_content": true,
-      "sound": "Tri-tone"
-    },
-  };
+//   var body = json.encode({
+//     "to":
+//         "fuGq6l26RtGIMFOvrx2bdJ:APA91bERdvLts9KkvpK6WNnpqeJpF6VaUoOFXHsP743c-ScOYiXHt375013eMreMJXZcy_IGSmXlMtXdJ8Z5Bp94JN58gG7WM9_PotDNF-6JRNKWLtZ4jhh-UhdNYkIJjaglwMKsQKIu", // Add your device token here
+//     "notification": {"title": title, "body": message, "sound": "default"},
+//     "priority": "high"
+//   });
 
-  var req = http.Request('POST', url);
-  req.headers.addAll(headersList);
-  req.body = json.encode(body);
+//   var response = await http.post(url, headers: headersList, body: body);
 
-  var res = await req.send();
-  final resBody = await res.stream.bytesToString();
-
-  if (res.statusCode >= 200 && res.statusCode < 300) {
-    print(resBody);
-  } else {
-    print(res.reasonPhrase);
-  }
-}
+//   if (response.statusCode >= 200 && response.statusCode < 300) {
+//     print("=======================================================");
+//     print("Notification sent successfully: ${response.body}");
+//     print("=======================================================");
+//   } else {
+//     print("=======================================================");
+//     print("Error: ${response.statusCode} ${response.reasonPhrase}");
+//     print("=======================================================");
+//   }
+// }

@@ -7,6 +7,9 @@ import 'package:sleepwell/screens/profile/question_card.dart';
 class MoreAboutYouScreen extends StatefulWidget {
   @override
   static String RouteScreen = 'MoreAboutYouScreen';
+
+  const MoreAboutYouScreen({super.key});
+  @override
   _MoreAboutYouScreenState createState() => _MoreAboutYouScreenState();
 }
 
@@ -82,6 +85,7 @@ class _MoreAboutYouScreenState extends State<MoreAboutYouScreen> {
     ],
     ['Yes', 'Occasionally', 'No'],
   ];
+
   Future<void> fetchSavedAnswers() async {
     setState(() {
       _isLoading = true;
@@ -89,9 +93,9 @@ class _MoreAboutYouScreenState extends State<MoreAboutYouScreen> {
 
     try {
       DocumentSnapshot snapshot = await _firestore
-          .collection('User behavior')
+          .collection('userHabitts')
           .doc(_user!.uid)
-          .get(GetOptions(source: Source.server));
+          .get(const GetOptions(source: Source.server));
       if (snapshot.exists) {
         Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
         setState(() {
@@ -134,7 +138,7 @@ class _MoreAboutYouScreenState extends State<MoreAboutYouScreen> {
         ),
         backgroundColor: const Color(0xFF004AAD),
         body: _isLoading
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : Container(
                 height: MediaQuery.of(context).size.height,
                 decoration: const BoxDecoration(
@@ -165,8 +169,8 @@ class _MoreAboutYouScreenState extends State<MoreAboutYouScreen> {
               ),
         floatingActionButton: FloatingActionButton(
           onPressed: saveAnswers,
-          child: Icon(Icons.save),
           tooltip: 'Save Answers',
+          child: const Icon(Icons.save),
         ),
       ),
     );
@@ -174,7 +178,7 @@ class _MoreAboutYouScreenState extends State<MoreAboutYouScreen> {
 
   void saveAnswers() async {
     try {
-      await _firestore.collection('User behavior').doc(_user!.uid).update({
+      await _firestore.collection('userHabitts').doc(_user!.uid).update({
         'answerQ1': _answers[0],
         'answerQ2': _answers[1],
         'answerQ3': _answers[2],
@@ -187,7 +191,7 @@ class _MoreAboutYouScreenState extends State<MoreAboutYouScreen> {
         'answerQ10': _answers[9],
         'timestamp': FieldValue.serverTimestamp(),
       });
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Answers saved!'),
       ));
     } catch (e) {

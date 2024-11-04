@@ -32,7 +32,7 @@ class LocalNotificationService {
 
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      'public sleepwell channel',
+      'public volunteer channel',
       'Sleepwell app notification',
       channelDescription: 'This channel is used for important notifications.',
       importance: Importance.max,
