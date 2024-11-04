@@ -440,22 +440,23 @@ class _UserStatisticsScreenState extends State<UserStatisticsScreen> {
                   } else {
                     final alarms = snapshot.data!;
 
-                    // جلب أول بيانات نوم
                     final latestAlarm = alarms.first;
                     String wakeupTime = latestAlarm.wakeupTime; // وقت الاستيقاظ
                     String bedtime = latestAlarm.bedtime; // وقت النوم
                     String numOfCycles = latestAlarm.numOfCycles;
 
-                    // تحويل الأوقات من String إلى DateTime
-                    DateTime bedtimeDate = DateFormat("HH:mm").parse(bedtime);
+                    DateTime bedtimeDate = DateFormat("hh:mm a").parse(bedtime);
                     DateTime wakeupTimeDate =
-                        DateFormat("HH:mm").parse(wakeupTime);
+                        DateFormat("hh:mm a").parse(wakeupTime);
 
-                    // حساب عدد الساعات الفعلية للنوم
+// إذا كان وقت الاستيقاظ بعد منتصف الليل ووقت النوم قبل منتصف الليل، أضف يومًا لوقت الاستيقاظ
+                    // if (wakeupTimeDate.isBefore(bedtimeDate)) {
+                    //   wakeupTimeDate = wakeupTimeDate.add(Duration(days: 1));
+                    // }
+
                     Duration sleepDuration =
                         wakeupTimeDate.difference(bedtimeDate);
 
-                    // تحويل مدة النوم إلى عدد ساعات ودقائق
                     String sleepHoursDuration =
                         "${sleepDuration.inHours} h ${sleepDuration.inMinutes.remainder(60)}m";
 

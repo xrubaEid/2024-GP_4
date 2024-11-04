@@ -18,11 +18,12 @@ class ResetPasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text(
           'Reset Your Password By Email',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 24,
+            fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
         ),

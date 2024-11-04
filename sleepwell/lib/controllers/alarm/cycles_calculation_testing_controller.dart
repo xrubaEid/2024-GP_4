@@ -1,5 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
+ 
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -12,46 +13,50 @@ class CyclesCalculationTestingController extends GetxController {
   Rx<DateTime> wakeUpTime = DateTime.now().obs;
 
   RxInt numberOfCycles = 0.obs;
-  // RxInt remainingMinutes = 0.obs;
   RxDouble sleepHours = 0.0.obs;
-  RxDouble sleepHourshours = 0.0.obs;
-  RxDouble remainingminutesToCompleteHoure = 0.0.obs;
-  RxDouble remainingminutesToCompleteCycle = 0.0.obs;
-  RxString actualWakeUpTime = ''.obs;
+  RxDouble remainingMinutesToCompleteHour = 0.0.obs;
+  RxDouble remainingMinutesToCompleteCycle = 0.0.obs;
+  RxString optimalWakeTime = ''.obs;
   RxBool addedFifteenMinutes = false.obs;
   String? userId = FirebaseAuth.instance.currentUser?.uid;
   final sensorService = Get.find<SensorService>();
 
   Future<void> calculateSleepCycles() async {
-    final sleepDuration = wakeUpTime.value.difference(actualBedtime.value);
+    DateTime adjustedWakeUpTime = wakeUpTime.value;
+
+    // Adjust for next day if wake-up time is earlier than actual bedtime
+    if (wakeUpTime.value.isBefore(actualBedtime.value)) {
+      adjustedWakeUpTime = wakeUpTime.value.add(Duration(days: 1));
+    }
+
+    final sleepDuration = adjustedWakeUpTime.difference(actualBedtime.value);
 
     sleepHours.value =
         sleepDuration.inHours + (sleepDuration.inMinutes % 60) / 60.0;
     numberOfCycles.value = (sleepDuration.inMinutes / 90).floor();
-    remainingminutesToCompleteCycle.value = sleepDuration.inMinutes % 90;
-    actualWakeUpTime.value = DateFormat('hh:mm a').format(wakeUpTime.value);
-    addedFifteenMinutes.value = wakeUpTime.value.minute % 15 == 0;
-    sleepHourshours.value = sleepDuration.inHours.toDouble();
-    remainingminutesToCompleteHoure.value = sleepDuration.inMinutes % 60;
-    print(
-        'Sleep Duration (minutes): ${sleepDuration.inMinutes}'); // All Sleep Duration in Miniutes
-    print(
-        'sleepDuration.inHours  : ${sleepDuration.inHours}'); // All Sleep Duration in Hours only
-    print(
-        'sleepDuration.inMinutes Remaining Minutes: ${sleepDuration.inMinutes % 60}');
-    print('------------------------------------');
+    remainingMinutesToCompleteCycle.value = sleepDuration.inMinutes % 90;
+
+    // Check if the duration is a perfect multiple of 90 minutes
+    addedFifteenMinutes.value = (sleepDuration.inMinutes % 90) != 0;
+
+    // Set optimal wake time based on 90-minute sleep cycles
+    final optimalCycleTime =
+        actualBedtime.value.add(Duration(minutes: 90 * numberOfCycles.value));
+    optimalWakeTime.value = DateFormat('hh:mm a').format(optimalCycleTime);
+
+    remainingMinutesToCompleteHour.value = sleepDuration.inMinutes % 60;
+
+    print('Sleep Duration (minutes): ${sleepDuration.inMinutes}');
     print('Number of Cycles: ${numberOfCycles.value}');
     print(
-        'remainingminutesToCompleteCycle: ${remainingminutesToCompleteCycle.value}');
-    print('------------------------------------');
-
+        'Remaining Minutes to Complete Cycle: ${remainingMinutesToCompleteCycle.value}');
     print('Sleep Hours: ${sleepHours.value}');
-    print('Actual Wake Up Time: ${actualWakeUpTime.value}');
+    print('Optimal Wake Time: ${optimalWakeTime.value}');
     print('Added Fifteen Minutes: ${addedFifteenMinutes.value}');
 
     await AppAlarm.saveAlarm(
       bedtime: DateFormat('hh:mm a').format(bedtime.value).toString(),
-      optimalWakeTime: DateFormat('hh:mm a').format(wakeUpTime.value),
+      optimalWakeTime: optimalWakeTime.value,
       userId: userId.toString(),
       usertype: true,
       name: 'Yourself',

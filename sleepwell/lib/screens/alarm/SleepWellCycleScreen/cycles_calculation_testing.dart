@@ -49,7 +49,7 @@ class CyclesCalculationTesting extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  controller.calculateSleepCycles();
+                  _checkAndSaveTimes(context);
                 },
                 child: const Text(
                   'Calculate',
@@ -137,7 +137,7 @@ class CyclesCalculationTesting extends StatelessWidget {
         const SizedBox(height: 10),
         Obx(
           () => Text(
-            "Number of Sleep Cycles: ${controller.numberOfCycles.value}     Remaining Minutes: ${controller.remainingminutesToCompleteCycle.value}",
+            "Number of Sleep Cycles: ${controller.numberOfCycles.value}   ",
             style: const TextStyle(
                 fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
           ),
@@ -145,7 +145,7 @@ class CyclesCalculationTesting extends StatelessWidget {
         const SizedBox(height: 10),
         Obx(
           () => Text(
-            "Number of Sleep Hours: ${controller.sleepHourshours.value}     Sleep Minutes: ${controller.remainingminutesToCompleteHoure.value}",
+            "Sleep Hours: ${controller.sleepHours.value.toInt()}     ",
             style: const TextStyle(
                 fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
           ),
@@ -153,7 +153,7 @@ class CyclesCalculationTesting extends StatelessWidget {
         const SizedBox(height: 10),
         Obx(
           () => Text(
-            "Actual Wake Up Time: ${controller.actualWakeUpTime.value}",
+            "Optimal Wake Up Time: ${controller.optimalWakeTime.value}",
             style: const TextStyle(
                 fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
           ),
@@ -179,12 +179,12 @@ class CyclesCalculationTesting extends StatelessWidget {
             controller.bedtime.value, controller.actualBedtime.value) <
         30) {
       _showWarningDialog(context,
-          "Please select a wake-up time with at least 30 hours difference.");
+          "Please select an actual bedtime at least 30 minutes after the selected bedtime.");
     } else if (_timeDifferenceInMinutes(
             controller.actualBedtime.value, controller.wakeUpTime.value) <
-        90) {
+        30) {
       _showWarningDialog(context,
-          "Please select a wake-up time with at least 90 hours difference.");
+          "Please select a wake-up time at least 30 minutes after the selected actual bedtime.");
     } else {
       controller.calculateSleepCycles();
     }
@@ -193,11 +193,14 @@ class CyclesCalculationTesting extends StatelessWidget {
   void _showWarningDialog(BuildContext context, String message) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Warning", style: TextStyle(color: Colors.red)),
+      builder: (context) => AlertDialog(
+        title: const Text('Warning'),
         content: Text(message),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text("OK"))
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
         ],
       ),
     );
