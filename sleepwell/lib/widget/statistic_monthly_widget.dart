@@ -29,7 +29,8 @@ class StatisticsMonthlyWidget extends StatelessWidget {
 
   List<String> getFormattedDatesForMonth() {
     final now = DateTime.now();
-    final DateTime monthStart = DateTime(now.year, now.month, 1); // بداية الشهر
+    DateTime monthStart = DateTime(now.year, now.month, 1); // بداية الشهر
+    monthStart = DateTime(monthStart.year, monthStart.month - 1, 1);
     final int daysInMonth =
         DateTime(now.year, now.month + 1, 0).day; // عدد أيام الشهر
 
@@ -41,7 +42,7 @@ class StatisticsMonthlyWidget extends StatelessWidget {
           (i + 1) * 7 > daysInMonth ? daysInMonth : (i + 1) * 7;
 
       // صياغة النطاق الأسبوعي مثل "01-07/10"
-      String formattedRange = '$weekStartDay/$weekEndDay-${now.month}';
+      String formattedRange = '$weekStartDay/$weekEndDay-${now.month - 1}';
       formattedDatesWeeks.add(formattedRange);
     }
 

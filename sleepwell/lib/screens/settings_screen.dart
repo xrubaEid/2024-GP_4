@@ -3,17 +3,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sleepwell/controllers/sensor_settings_controller.dart';
 import 'package:sleepwell/main.dart';
 import 'package:sleepwell/screens/account_screen.dart';
 import 'package:sleepwell/screens/auth/signin_screen.dart';
 import 'package:sleepwell/screens/feedback/feedbacke_notification_screen.dart';
-import 'package:sleepwell/screens/settings/language_screen.dart';
 import 'package:sleepwell/widget/counter_widget.dart';
 import '../services/sensor_service.dart';
 import '../widget/bed_time_reminder.dart';
-import 'alarm/SleepWellCycleScreen/cycles_calculation_testing.dart';
+import 'alarm/cycles_calculation_testing.dart';
 import 'edite_alarm_screen.dart';
 import 'profile/about_you_screen.dart';
 import 'profile/more_about_you.dart';
@@ -29,11 +27,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   RxBool isDarkMode = false.obs;
   final _auth = FirebaseAuth.instance;
   late User signInUser;
-  late String userId;
+
   late String email;
   late String firstName;
   late String lastName;
-
+  final String? userId = FirebaseAuth.instance.currentUser?.uid;
   @override
   void initState() {
     super.initState();
@@ -48,28 +46,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (user != null) {
         setState(() {
           signInUser = user;
-          userId = user.uid;
           email = user.email!;
         });
-        // تخزين userId في SharedPreferences
-        await saveUserIdToPrefs(userId);
+
         _fetchUserData();
       }
     } catch (e) {
       print(e);
     }
-  }
-
-// دالة لتخزين userId في SharedPreferences
-  Future<void> saveUserIdToPrefs(String userId) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userId', userId);
-  }
-
-// دالة لاسترجاع userId من SharedPreferences
-  Future<String?> getUserIdFromPrefs() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('userId');
   }
 
   void _fetchUserData() async {
@@ -232,19 +216,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               ),
                             ),
                             const SizedBox(height: 10),
-                            ListTile(
-                                title: Text('Language'.tr,
-                                    style: const TextStyle(
-                                        color: Colors.white, fontSize: 18)),
-                                leading: const Icon(Icons.language,
-                                    color: Colors.white),
-                                trailing: const Icon(Icons.arrow_forward_ios,
-                                    color: Colors.white, size: 18),
-                                onTap: () {
-                                  Get.to(const LangageScreen());
-                                }
-                                // => Get.to(() => NotificationScreen()),
-                                ),
+                            // ListTile(
+                            //     title: Text('Language'.tr,
+                            //         style: const TextStyle(
+                            //             color: Colors.white, fontSize: 18)),
+                            //     leading: const Icon(Icons.language,
+                            //         color: Colors.white),
+                            //     trailing: const Icon(Icons.arrow_forward_ios,
+                            //         color: Colors.white, size: 18),
+                            //     onTap: () {
+                            //       Get.to(const LangageScreen());
+                            //     }
+                            //     // => Get.to(() => NotificationScreen()),
+                            //     ),
                             ListTile(
                               title: Text('Sensor Connection'.tr,
                                   style: const TextStyle(
@@ -265,18 +249,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                               // => Get.to(() => NotificationScreen()),
                             ),
-                            ListTile(
-                                title: Text('Sleep Goal'.tr,
-                                    style: const TextStyle(
-                                        color: Colors.white, fontSize: 18)),
-                                leading: const Icon(
-                                    Icons.location_searching_sharp,
-                                    color: Colors.white),
-                                trailing: const Icon(Icons.arrow_forward_ios,
-                                    color: Colors.white, size: 18),
-                                onTap: () {}
-                                // => Get.to(() => NotificationScreen()),
-                                ),
+                     
                             ListTile(
                                 title: Text('Edit Alarm'.tr,
                                     style: const TextStyle(

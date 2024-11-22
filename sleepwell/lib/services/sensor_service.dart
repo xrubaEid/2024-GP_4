@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:get/get.dart';
@@ -12,6 +11,7 @@ import 'package:sleepwell/services/firebase_firestore_service.dart';
 import '../alarm.dart';
 import '../models/user_sensor.dart';
 import '../push_notification_service.dart';
+import 'update_optimal_bedtime_and_wakeuptime_alarm_service.dart';
 
 class SensorService extends GetxService {
   final DatabaseReference sensorsDatabase =
@@ -19,7 +19,8 @@ class SensorService extends GetxService {
   final DatabaseReference usersSensorsDatabase =
       FirebaseDatabase.instance.ref().child('usersSensors');
   final FirebaseFirestoreService firestoreService = FirebaseFirestoreService();
-
+  final UpdateOptimalBedtimeAndWakeAlarmService updateOptimalAlarm =
+      UpdateOptimalBedtimeAndWakeAlarmService();
   // var loading = true.obs;
   var sensorsCurrentUser = <String>[].obs;
   var selectedSensor = ''.obs;
@@ -33,6 +34,7 @@ class SensorService extends GetxService {
 
   double? previousTemperature;
   int? previousHeartRate;
+  int? previousSpO2;
   final FirebaseAuthService authService = FirebaseAuthService();
   // /////////////////////////////////////////
   Sensor? previousSensorReading; // To store the previous sensor readings
@@ -41,20 +43,28 @@ class SensorService extends GetxService {
 /////////////////////////////////////////
   // Async initializer for setting up SensorService
   Future<SensorService> init() async {
-    // userId = authService.getUserId() ?? '';
+    // userId = FirebaseAuth.instance.currentUser?.uid;
+    userId = authService.getUserId() ?? '';
     await loadSensors();
+    authService.getUserId();
+    log(userId!);
+    log(userId!);
     log(userId.toString());
-    log(userId.toString());
-    log(userId.toString());
+    // AlarmService().init();
 // ////////////////////////
+    // await isSensorReading(selectedSensor.value.obs.toString());
     if (userId != null && selectedSensor.value.isNotEmpty) {
-      await isSensorReading(selectedSensor.value.obs.toString());
+      // bool loginStatus = prefs.getBool("isLogin") ?? false;
+      // if (loginStatus) {
+      await isSensorReading(selectedSensor.value.toString());
+      log("${userId.toString()}==========${selectedSensor.value}");
       await getSelectedSensor();
       await startSensorReadingChecker();
 // ////////////////////////
-      listenToSensorChanges(selectedSensor.value.obs.toString());
+      listenToSensorChanges(selectedSensor.value.toString());
       AlarmService().init();
     }
+    // }
     // Check if the selected sensor is reading and get its details
 
     return this;
@@ -103,53 +113,61 @@ class SensorService extends GetxService {
     return isActivelyReading;
   }
 
-  // Function to get sensor data by ID from Firebase
-  // Future<Sensor?> getSensorById(String sensorId) async {
-  //   DataSnapshot snapshot = await sensorsDatabase.child(sensorId).get();
-
-  //   if (snapshot.exists) {
-  //     Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
-  //     return Sensor.fromMap(data);
-  //   }
-
-  //   return null;
-  // }
-
   @override
   void onClose() {
     stopSensorReadingChecker(); // Ensure the timer is stopped when the service is disposed
     super.onClose();
   }
+// Store previous readings for comparison
 
   Future<bool> isSensorReading(String sensorId) async {
     Sensor? sensor = await getSensorById(sensorId);
+
     if (sensor != null) {
-      // Check if any readings (e.g., temperature, heart rate) are non-zero
+      // Check if the sensor is reading actively
       bool isReading =
           sensor.temperatura > 0 || sensor.heartRate > 0 || sensor.spO2 > 0;
-      log("Sensor ${sensor.sensorId} is reading: $isReading");
+
+      // Current readings
+      int currentHeartRate = sensor.heartRate;
+      int currentTemperature = sensor.temperatura.toInt();
+      int currentSpO2 = sensor.spO2;
+
+      // Compare current readings with previous readings
+      bool readingsChanged = (previousHeartRate != currentHeartRate &&
+              previousHeartRate != null) ||
+          (previousTemperature != currentTemperature &&
+              previousTemperature != null) ||
+          (previousSpO2 != currentSpO2 && previousSpO2 != null);
+
+      // Log readings for debugging
+      log("Current Readings - Temperature: $currentTemperature, Heart Rate: $currentHeartRate, SpO2: $currentSpO2");
+      log("Previous Readings - Temperature: $previousTemperature, Heart Rate: $previousHeartRate, SpO2: $previousSpO2");
+      log("Sensor ${sensor.sensorId} is actively reading: $readingsChanged");
+
+      // Update previous readings for the next check
+      previousHeartRate = currentHeartRate;
+      previousTemperature = currentTemperature.toDouble();
+      previousSpO2 = currentSpO2;
+
+      // Notify if sensor is actively reading or not
       await PushNotificationService.showNotification(
-        title: 'Selected Sensor Avalible For Your Alarm',
-        body: 'Selcted Sensor $sensorId Is Reading ',
+        title: 'Sensor Status',
+        body: readingsChanged
+            ? 'Selected sensor $sensorId is actively reading.'
+            : 'Selected sensor $sensorId is not actively reading.',
         schedule: true,
         interval: 60,
-        // actionButtons: [
-        //   NotificationActionButton(
-        //       key: 'DailyNotification', label: 'Go To Alarm Screen')
-        // ],
       );
-      return isReading;
+
+      return readingsChanged;
     } else {
       log("Sensor not found or inactive.");
       await PushNotificationService.showNotification(
-        title: 'Selected Sensor Avalible For Your Alarm',
-        body: 'Sensor Is Not Reading Its Not Working Checked it',
+        title: 'Sensor Unavailable',
+        body: 'Sensor $sensorId is not reading. Please check the sensor.',
         schedule: true,
         interval: 60,
-        // actionButtons: [
-        //   NotificationActionButton(
-        //       key: 'DailyNotification', label: 'Go To Alarm Screen')
-        // ],
       );
       return false;
     }
@@ -222,79 +240,344 @@ class SensorService extends GetxService {
     return null;
   }
 
-  void listenToSensorChanges(String sensorId) {
-    sensorsDatabase.onValue.listen((DatabaseEvent event) async {
-      final data = event.snapshot.value;
+  // StreamSubscription? sensorSubscription;
 
-      // Convert data to a list of sensor objects
-      List<Sensor> sensorReadings = convertObjectToLIst(data);
-      // Filter by selected sensor ID
-      Sensor currentSensor = sensorReadings.firstWhere(
-        (sensor) => sensor.sensorId == selectedSensor.value,
-        orElse: () =>
-            Sensor(sensorId: '', temperatura: 0, spO2: 0, heartRate: 0),
-      );
-      print('currentSensor: ${currentSensor.toMap()}');
-      if (currentSensor.sensorId.isNotEmpty) {
+  // void listenToSensorChanges(String sensorId,
+  //     {Duration scanDuration = const Duration(minutes: 5)}) {
+  //   // Cancel any existing subscription to prevent multiple listeners
+  //   sensorSubscription?.cancel();
+
+  //   // Start a timer to stop listening after the specified duration
+  //   Future.delayed(scanDuration, () {
+  //     log("Scanning duration completed. Stopping the listener for sensor $sensorId.");
+  //     sensorSubscription?.cancel();
+  //   });
+
+  //   // Begin listening to the sensor data
+  //   sensorSubscription =
+  //       sensorsDatabase.onValue.listen((DatabaseEvent event) async {
+  //     try {
+  //       final data = event.snapshot.value;
+
+  //       if (data == null) {
+  //         log("Error: No data received from database.");
+  //         return;
+  //       }
+
+  //       // Convert data to a list of sensor objects
+  //       List<Sensor> sensorReadings = [];
+  //       try {
+  //         sensorReadings = convertObjectToLIst(data);
+  //       } catch (e) {
+  //         log("Error converting data to list: $e");
+  //         return;
+  //       }
+
+  //       // Filter by selected sensor ID
+  //       Sensor currentSensor = sensorReadings.firstWhere(
+  //         (sensor) => sensor.sensorId == selectedSensor.value,
+  //         orElse: () =>
+  //             Sensor(sensorId: '', temperatura: 0, spO2: 0, heartRate: 0),
+  //       );
+
+  //       log('currentSensor: ${currentSensor.toMap()}');
+
+  //       if (currentSensor.sensorId.isEmpty) {
+  //         log("No matching sensor found for ID: ${selectedSensor.value}");
+  //         return;
+  //       }
+
+  //       // Process sensor data safely
+  //       double currentTemperature = currentSensor.temperatura.toDouble();
+  //       int currentHeartRate = currentSensor.heartRate;
+
+  //       bool hasTemperatureDecreased = previousTemperature != null &&
+  //           previousTemperature! > currentTemperature;
+
+  //       bool hasHeartRateDecreased = previousHeartRate != null &&
+  //           currentHeartRate <= previousHeartRate! * 0.8;
+
+  //       // Flag to ensure notifications are sent only once
+  //       bool notificationSent = false;
+
+  //       if (!notificationSent &&
+  //           (hasTemperatureDecreased || hasHeartRateDecreased)) {
+  //         notificationSent =
+  //             true; // Set flag to true to prevent duplicate notifications
+  //         DateTime now = DateTime.now();
+
+  //         try {
+  //           int alarmId = findAlarmBySensor(currentSensor.sensorId);
+  //           if (alarmId != -1) {
+  //             String newBedtime = DateFormat('hh:mm a').format(now);
+
+  //             // Safely fetch wake-up time
+  //             String wakeupTimeString = getWakeupTimeForAlarm(alarmId);
+  //             if (wakeupTimeString.isEmpty ||
+  //                 !RegExp(r'^\d{1,2}:\d{2} (AM|PM)$')
+  //                     .hasMatch(wakeupTimeString)) {
+  //               throw FormatException(
+  //                   "Invalid wakeup time format: $wakeupTimeString");
+  //             }
+
+  //             String updatedWakeupTime = updateOptimalAlarm
+  //                 .calculateOptimalWakeUpTime(newBedtime, wakeupTimeString);
+
+  //             await firestoreService.updateBedtime(
+  //               newBedtime: newBedtime,
+  //               newOptimalWakeUpTime: updatedWakeupTime,
+  //               alarmId: alarmId,
+  //             );
+
+  //             await AppAlarm.loadAndUpdateOptimalBedtimeAndWakeAlarm(
+  //               alarmId: alarmId,
+  //               newBedtime: newBedtime,
+  //               newWakeTime: updatedWakeupTime,
+  //             );
+
+  //             await PushNotificationService.showNotification(
+  //               title: 'Alarm Updated',
+  //               body:
+  //                   'Your sleep time was updated to $newBedtime and optimal wakeup time is $updatedWakeupTime.',
+  //               schedule: false,
+  //             );
+
+  //             log("Updated alarm: Bedtime: $newBedtime, Wakeup: $updatedWakeupTime");
+
+  //             // Stop listening once bedtime is sent
+  //             sensorSubscription?.cancel();
+  //           } else {
+  //             log("No alarm associated with sensor ${currentSensor.sensorId}");
+  //           }
+  //         } catch (e) {
+  //           log("Error updating Optimal alarm: $e");
+  //         }
+  //       }
+
+  //       // Update previous values
+  //       previousTemperature = currentTemperature;
+  //       previousHeartRate = currentHeartRate;
+  //     } catch (e, stackTrace) {
+  //       log("Unexpected error: $e");
+  //       log("Stack trace: $stackTrace");
+  //     }
+  //   }, onError: (error) {
+  //     log("Error reading sensor data: $error");
+  //   });
+  // }
+
+  StreamSubscription? sensorSubscription;
+
+  void listenToSensorChanges(String sensorId,
+      {Duration scanDuration = const Duration(minutes: 3)}) {
+    // Cancel any existing subscription to prevent multiple listeners
+    sensorSubscription?.cancel();
+
+    bool isSensorDataReceived = false; // Flag to check if data is received
+
+    // Start a timer to stop listening after the specified duration
+    Future.delayed(scanDuration, () async {
+      if (!isSensorDataReceived) {
+        log("No data received from sensor within $scanDuration. Using default bedtime and wakeup time.");
+
+        try {
+          // Fetch the default values for bedtime and optimal wakeup time
+          int alarmId = findAlarmBySensor(sensorId);
+          if (alarmId != -1) {
+            String basicBedtime = getBasicBedtimeForAlarm(alarmId);
+            // String basicOptimalWakeTime = getBasicOptimalWakeupTimeForAlarm(alarmId);
+            String basicOptimalWakeTime = getWakeupTimeForAlarm(alarmId);
+
+            // Update the values with default bedtime and wake time
+            String wakeupTimeString = getWakeupTimeForAlarm(alarmId);
+            if (wakeupTimeString.isEmpty ||
+                !RegExp(r'^\d{1,2}:\d{2} (AM|PM)$')
+                    .hasMatch(wakeupTimeString)) {
+              throw FormatException(
+                  "Invalid wakeup time format: $wakeupTimeString");
+            }
+//////////////////////////////////
+            String updatedWakeupTime = updateOptimalAlarm
+                .calculateOptimalWakeUpTime(basicBedtime, basicOptimalWakeTime);
+
+            await firestoreService.updateBedtime(
+              newBedtime: basicBedtime,
+              newOptimalWakeUpTime: updatedWakeupTime,
+              alarmId: alarmId,
+            );
+
+            await AppAlarm.loadAndUpdateOptimalBedtimeAndWakeAlarm(
+              alarmId: alarmId,
+              newBedtime: basicBedtime,
+              newWakeTime: updatedWakeupTime,
+            );
+            // //////////////////////////////////
+
+            await PushNotificationService.showNotification(
+              title: 'Default Alarm Restored',
+              body:
+                  'No readings received. Your bedtime is set to $basicBedtime, and wakeup time is $updatedWakeupTime.',
+              schedule: false,
+            );
+
+            log("Restored default alarm: Bedtime: $basicBedtime, Wakeup: $basicOptimalWakeTime");
+          } else {
+            log("No alarm found for sensor $sensorId.");
+          }
+        } catch (e) {
+          log("Error restoring default alarm: $e");
+        }
+      }
+
+      // Stop the listener
+      sensorSubscription?.cancel();
+    });
+
+    // Begin listening to the sensor data
+    sensorSubscription =
+        sensorsDatabase.onValue.listen((DatabaseEvent event) async {
+      try {
+        final data = event.snapshot.value;
+
+        if (data == null) {
+          log("Error: No data received from database.");
+          return;
+        }
+
+        // Convert data to a list of sensor objects
+        List<Sensor> sensorReadings = [];
+        try {
+          sensorReadings = convertObjectToLIst(data);
+        } catch (e) {
+          log("Error converting data to list: $e");
+          return;
+        }
+
+        // Filter by selected sensor ID
+        Sensor currentSensor = sensorReadings.firstWhere(
+          (sensor) => sensor.sensorId == selectedSensor.value,
+          orElse: () =>
+              Sensor(sensorId: '', temperatura: 0, spO2: 0, heartRate: 0),
+        );
+
+        log('currentSensor: ${currentSensor.toMap()}');
+
+        if (currentSensor.sensorId.isEmpty) {
+          log("No matching sensor found for ID: ${selectedSensor.value}");
+          return;
+        }
+
+        // Process sensor data safely
         double currentTemperature = currentSensor.temperatura.toDouble();
         int currentHeartRate = currentSensor.heartRate;
 
-        bool hasDecreased = false;
+        bool hasTemperatureDecreased = previousTemperature != null &&
+            previousTemperature! > currentTemperature;
 
-        // Check if temperature has decreased
-        if (previousTemperature != null &&
-            previousTemperature! > currentTemperature) {
-          hasDecreased = true;
-          print(
-              "Temperature decreased from $previousTemperature to $currentTemperature");
-        }
+        bool hasHeartRateDecreased = previousHeartRate != null &&
+            currentHeartRate <= previousHeartRate! * 0.8;
 
-        // Check if heart rate has decreased by 20% or more
-        if (previousHeartRate != null &&
-            currentHeartRate <= previousHeartRate! * 0.8) {
-          hasDecreased = true;
-          print(
-              "Heart rate decreased by 20% or more from $previousHeartRate to $currentHeartRate");
-        }
+        // Flag to ensure notifications are sent only once
+        bool notificationSent = false;
 
-        // Print the datetime if any decrease was detected
-        if (hasDecreased) {
+        if (!notificationSent &&
+            (hasTemperatureDecreased || hasHeartRateDecreased)) {
+          notificationSent =
+              true; // Set flag to true to prevent duplicate notifications
           DateTime now = DateTime.now();
 
-          print("Current DateTime: $now");
-          await AppAlarm.loadAndUpdateAlarm(
-            newBedtime: DateFormat('hh:mm a').format(now),
-            userId: selectedCurrentUser.value.obs.toString(),
-          );
-          await AppAlarm.printAllAlarms();
+          try {
+            isSensorDataReceived = true; // Mark that data was received
+            int alarmId = findAlarmBySensor(currentSensor.sensorId);
+            if (alarmId != -1) {
+              String newBedtime = DateFormat('hh:mm a').format(now);
 
-          await firestoreService.updateBedtime(
-            userId: userId.toString(),
-            selectedCurrentUser: selectedCurrentUser.value.obs.toString(),
-            newBedtime: DateFormat('hh:mm a').format(now),
-          );
+              // Safely fetch wake-up time
+              String wakeupTimeString = getWakeupTimeForAlarm(alarmId);
+              if (wakeupTimeString.isEmpty ||
+                  !RegExp(r'^\d{1,2}:\d{2} (AM|PM)$')
+                      .hasMatch(wakeupTimeString)) {
+                throw FormatException(
+                    "Invalid wakeup time format: $wakeupTimeString");
+              }
 
-          await PushNotificationService.showNotification(
-            title: 'Actual Sleep Time For Your Sleep Tracker',
-            body: 'Actual Sleep Time is ${DateFormat('hh:mm a').format(now)}',
-            schedule: true,
-            interval: 60,
-            // actionButtons: [
-            //   NotificationActionButton(
-            //       key: 'DailyNotification', label: 'Go To Alarm Screen')
-            // ],
-          );
+              String updatedWakeupTime = updateOptimalAlarm
+                  .calculateOptimalWakeUpTime(newBedtime, wakeupTimeString);
+
+              await firestoreService.updateBedtime(
+                newBedtime: newBedtime,
+                newOptimalWakeUpTime: updatedWakeupTime,
+                alarmId: alarmId,
+              );
+
+              await AppAlarm.loadAndUpdateOptimalBedtimeAndWakeAlarm(
+                alarmId: alarmId,
+                newBedtime: newBedtime,
+                newWakeTime: updatedWakeupTime,
+              );
+
+              await PushNotificationService.showNotification(
+                title: 'Alarm Updated',
+                body:
+                    'Your sleep time was updated to $newBedtime and optimal wakeup time is $updatedWakeupTime.',
+                schedule: false,
+              );
+
+              log("Updated alarm: Bedtime: $newBedtime, Wakeup: $updatedWakeupTime");
+
+              // Stop listening once bedtime is sent
+              sensorSubscription?.cancel();
+            } else {
+              log("No alarm associated with sensor ${currentSensor.sensorId}");
+            }
+          } catch (e) {
+            log("Error updating Optimal alarm: $e");
+          }
         }
 
-        // Update previous values for the next comparison
+        // Update previous values
         previousTemperature = currentTemperature;
         previousHeartRate = currentHeartRate;
+      } catch (e, stackTrace) {
+        log("Unexpected error: $e");
+        log("Stack trace: $stackTrace");
       }
     }, onError: (error) {
-      print("Error reading data: $error");
+      log("Error reading sensor data: $error");
     });
   }
 
+  String getWakeupTimeForAlarm(int alarmId) {
+    // alarmId = 9498;
+    final alarm = AppAlarm.getAlarmDataById(alarmId);
+    log("::::::::::: alarmId: $alarmId");
+    log(alarm!.optimalWakeTime.toString().trim());
+    if (alarm == null || alarm.optimalWakeTime.isEmpty) {
+      log("Invalid or missing wake-up time for alarm ID: $alarmId");
+      return ''; // Return an empty string to handle gracefully in the caller.
+    }
+    return alarm.optimalWakeTime;
+  }
+
+  int findAlarmBySensor(String sensorId) {
+    // Query local alarm database to find the alarm linked to the given sensor ID
+    final alarm = AppAlarm.getAlarmBySensorId(sensorId);
+    return alarm?.alarmId ?? -1;
+  }
+
+  String getBasicBedtimeForAlarm(int alarmId) {
+    // alarmId = 9498;
+    final alarm = AppAlarm.getAlarmDataById(alarmId);
+    log("::::::::::: alarmId: $alarmId");
+    log(alarm!.bedtime.toString().trim());
+    if (alarm == null || alarm.bedtime.isEmpty) {
+      log("Invalid or missing Basic Bedtime  for alarm ID: $alarmId");
+      return ''; // Return an empty string to handle gracefully in the caller.
+    }
+    return alarm.bedtime;
+  }
+
+// ///////////////////////////////////////////////
   List<Sensor> convertObjectToLIst(Object? data) {
     List<Sensor> sensorReadings = [];
     if (data != null && data is Map<dynamic, dynamic>) {
@@ -308,9 +591,6 @@ class SensorService extends GetxService {
   }
 
   Future<List<UserSensor>> getUserSensors(String? userId) async {
-    if (userId == null) {
-      return [];
-    }
     try {
       DataSnapshot snapshot = await usersSensorsDatabase.get();
       List<UserSensor> userSensors = [];
@@ -322,6 +602,7 @@ class SensorService extends GetxService {
           if (sensorData['userId'] == userId &&
               sensorData.containsKey('sensorId')) {
             userSensors.add(UserSensor.fromMap(sensorData));
+            log("User ID: ${sensorData['userId']},userSensors $userSensors  Sensor ID: ${sensorData['sensorId']}");
           }
         });
       }
@@ -329,7 +610,9 @@ class SensorService extends GetxService {
       return userSensors;
     } catch (e) {
       print(e);
-
+      if (userId == null) {
+        return [];
+      }
       return [];
     }
   }
@@ -338,10 +621,6 @@ class SensorService extends GetxService {
     selectedSensor.value = sensorId;
     loadSensors();
   }
-
-  // RxString getSelectedSensor(String sensorId) {
-  //   return sensorId.obs;
-  // }
 
   void selectUsers(String selectUsers) {
     selectedCurrentUser.value = selectUsers;

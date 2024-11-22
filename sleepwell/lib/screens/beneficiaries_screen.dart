@@ -7,7 +7,6 @@ import 'package:sleepwell/services/sensor_service.dart';
 import '../controllers/beneficiary_controller.dart';
 import '../controllers/sensor_settings_controller.dart';
 import '../models/user_sensor.dart';
- 
 
 class BeneficiariesScreen extends StatelessWidget {
   final BeneficiaryController beneficiaryController =
@@ -35,7 +34,11 @@ class BeneficiariesScreen extends StatelessWidget {
           ),
         ),
         child: Obx(() {
+          final String? userId = FirebaseAuth.instance.currentUser?.uid;
+          beneficiaryController.fetchBeneficiaries(userId!);
+
           if (beneficiaryController.isLoading.value) {
+            beneficiaryController.fetchBeneficiaries(userId!);
             return const Center(child: CircularProgressIndicator());
           }
           if (beneficiaryController.beneficiaries.isEmpty) {
@@ -68,6 +71,7 @@ class BeneficiariesScreen extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final beneficiary =
                         beneficiaryController.beneficiaries[index];
+
                     return Column(
                       children: [
                         ListTile(

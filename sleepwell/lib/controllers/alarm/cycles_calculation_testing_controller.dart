@@ -1,5 +1,3 @@
- 
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -55,6 +53,7 @@ class CyclesCalculationTestingController extends GetxController {
     print('Added Fifteen Minutes: ${addedFifteenMinutes.value}');
 
     await AppAlarm.saveAlarm(
+      alarmId: generateUniqueAlarmId(),
       bedtime: DateFormat('hh:mm a').format(bedtime.value).toString(),
       optimalWakeTime: optimalWakeTime.value,
       userId: userId.toString(),
@@ -63,6 +62,11 @@ class CyclesCalculationTestingController extends GetxController {
       sensorId: sensorService.selectedSensor.value,
     );
     await AppAlarm.getAlarms();
+  }
+
+  /// Generates a unique alarm ID
+  static int generateUniqueAlarmId() {
+    return DateTime.now().millisecondsSinceEpoch % 10000;
   }
 
   void setBedtime(DateTime time) {

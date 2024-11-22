@@ -7,13 +7,13 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:sleepwell/widget/statistic_monthly_widget.dart';
 
-import '../../controllers/alarms_statistics_controller.dart';
+import '../../controllers/statistics/alarms_statistics_controller.dart';
 import '../../controllers/beneficiary_controller.dart';
 
 import '../../models/alarm_model.dart';
 import '../../widget/statistic_daily_widget.dart';
 import '../../widget/statistic_weekly_widget.dart';
-import '../alarm/SleepWellCycleScreen/sleepwell_cycle_screen.dart';
+import '../alarm/sleepwell_cycle_screen.dart';
 
 class BeneficiaryStatisticsScreen extends StatefulWidget {
   // final String beneficiaryId;

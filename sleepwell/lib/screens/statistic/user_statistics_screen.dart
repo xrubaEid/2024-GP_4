@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../controllers/alarms_statistics_controller.dart';
+import '../../controllers/statistics/alarms_statistics_controller.dart';
 import '../../models/alarm_model.dart';
 import '../../widget/statistic_daily_widget.dart';
 import '../../widget/statistic_monthly_widget.dart';
@@ -448,11 +448,7 @@ class _UserStatisticsScreenState extends State<UserStatisticsScreen> {
                     DateTime bedtimeDate = DateFormat("hh:mm a").parse(bedtime);
                     DateTime wakeupTimeDate =
                         DateFormat("hh:mm a").parse(wakeupTime);
-
-// إذا كان وقت الاستيقاظ بعد منتصف الليل ووقت النوم قبل منتصف الليل، أضف يومًا لوقت الاستيقاظ
-                    // if (wakeupTimeDate.isBefore(bedtimeDate)) {
-                    //   wakeupTimeDate = wakeupTimeDate.add(Duration(days: 1));
-                    // }
+ 
 
                     Duration sleepDuration =
                         wakeupTimeDate.difference(bedtimeDate);

@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../controllers/feedbacke_notification_controllerl.dart';
+import '../../../controllers/notifications/feedbacke_notification_controllerl.dart';
 import '../../../models/feedbacke_notification_model.dart';
 import '../../../widget/feedbacke_notification_widget.dart';
 

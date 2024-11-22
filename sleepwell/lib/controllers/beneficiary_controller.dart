@@ -22,7 +22,7 @@ class BeneficiaryController extends GetxController {
 
   Future<void> fetchBeneficiaries(String userId) async {
     try {
-      isLoading(true); // بدأ تحميل البيانات
+      isLoading(true);
       print('Fetching beneficiaries for userId: $userId');
 
       QuerySnapshot snapshot = await FirebaseFirestore.instance
@@ -57,9 +57,10 @@ class BeneficiaryController extends GetxController {
     // loadSavedDevice(id); // تحميل الجهاز المحفوظ عند تغيير المستفيد
   }
 
-  Future<void> addBeneficiary(String name,
-  //  String watch
-   ) async {
+  Future<void> addBeneficiary(
+    String name,
+    //  String watch
+  ) async {
     if (userId != null) {
       try {
         BeneficiaryModel newBeneficiary = BeneficiaryModel(

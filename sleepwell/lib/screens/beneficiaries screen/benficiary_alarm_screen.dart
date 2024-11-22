@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sleepwell/controllers/alarms_statistics_controller.dart';
+import 'package:sleepwell/controllers/statistics/alarms_statistics_controller.dart';
 import 'package:sleepwell/models/alarm_model.dart';
 
 class BeneficiaryAlarmScreen extends StatefulWidget {

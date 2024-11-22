@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:sleepwell/models/sensor_model.dart';
-
 import '../models/user_sensor.dart';
 import '../services/sensor_service.dart';
 import '../widget/show_sensor_widget.dart';
@@ -38,16 +36,17 @@ class SensorSettingsController extends GetxController {
       print("Error: User ID is null");
       return;
     }
+    await sensorService.getUserSensors(userId);
     await sensorService.loadSensors();
-    userSensors = await sensorService.getUserSensors(userId);
-
-    if (userSensors.isEmpty) {
-      showAddSensorDialog(context);
-    } else {
-      // } else {
+    userSensors = await sensorService.getUserSensors(userId!);
+    log('userSensors $userId $userSensors');
+    if (userSensors.isNotEmpty) {
+      await sensorService.loadSensors();
       selectedSensor = sensorService.selectedSensor.value.obs;
+      await sensorService.getUserSensors(userId!);
       showSensorSelectionDialog(
         context: context,
+
         userSensors: sensorService.sensorsCurrentUser
             .map((sensorId) =>
                 UserSensor(sensorId: sensorId, userId: userId!, enable: true))
@@ -63,6 +62,9 @@ class SensorSettingsController extends GetxController {
       sensorsCurrentUser.clear();
       sensorsCurrentUser
           .addAll(userSensors.map((sensor) => sensor.sensorId).toList());
+    } else {
+      // } else {
+      showAddSensorDialog(context);
     }
     await sensorService.loadSensors();
     loading = false.obs;
