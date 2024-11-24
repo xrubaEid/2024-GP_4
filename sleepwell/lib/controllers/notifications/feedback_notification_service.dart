@@ -20,7 +20,8 @@ class FeedbackNotificationService {
 
     return feedbackSnapshot.docs.map((doc) {
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-      return FeedbackeNotificationModel.fromMap(data);
+      return FeedbackeNotificationModel.fromMap(
+          data, doc.id); // Pass both map and docId
     }).toList();
   }
 

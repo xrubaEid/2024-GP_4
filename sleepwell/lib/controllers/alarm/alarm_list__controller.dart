@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/alarm_data.dart';
 
@@ -41,6 +42,69 @@ class AlarmListController extends GetxController {
     }
   }
 
+  Future<void> loadAlarmss() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? jsonData = prefs.getString("alarms");
+
+      if (jsonData != null) {
+        var decodedData = jsonDecode(jsonData);
+        List<dynamic> alarmList =
+            decodedData is List ? decodedData : [decodedData];
+
+        alarms.value = alarmList
+            .map((alarmJson) =>
+                AlarmData.fromJson(alarmJson as Map<String, dynamic>))
+            .where((alarm) {
+              // Parse optimalWakeTime and compare it with the current time
+              if (alarm.optimalWakeTime.isNotEmpty) {
+                try {
+                  // Attempt to parse the time using the custom format
+                  DateTime now = DateTime.now();
+                  DateTime parsedWakeTime = _parseTimeToDateTime(
+                    alarm.optimalWakeTime,
+                    now,
+                  );
+                  return parsedWakeTime.isAfter(DateTime.now());
+                } catch (e) {
+                  log("Error parsing optimalWakeTime: $e");
+                  return false; // Skip invalid times
+                }
+              }
+              return false; // Skip alarms with no wakeup time
+            })
+            .toList()
+            .reversed
+            .toList(); // Reverse list to show most recent alarms first
+
+        log("Filtered Alarms loaded: ${alarms.length} alarms");
+      }
+    } catch (e) {
+      debugPrint("Error loading alarms: $e");
+      log("Error loading alarms: $e");
+    }
+  }
+
+  DateTime _parseTimeToDateTime(String time, DateTime currentDate) {
+    try {
+      // Parse time in the format "hh:mm a" (e.g., "10:00 PM")
+      final DateFormat timeFormat = DateFormat("hh:mm a");
+      final DateTime parsedTime = timeFormat.parse(time);
+
+      // Combine the parsed time with the current date
+      return DateTime(
+        currentDate.year,
+        currentDate.month,
+        currentDate.day,
+        parsedTime.hour,
+        parsedTime.minute,
+      );
+    } catch (e) {
+      log("Error in _parseTimeToDateTime: $e");
+      throw FormatException("Invalid time format: $time");
+    }
+  }
+
   Future<void> loadAlarms() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -57,7 +121,7 @@ class AlarmListController extends GetxController {
             .toList()
             .reversed
             .toList(); // Reverse the list to show recent alarms first
-        // log("Alarms loaded: ${alarms.length} alarms");
+        log("Alarms loaded: ${alarms.length} alarms");
       }
     } catch (e) {
       debugPrint("Error loading alarms: $e");
@@ -83,7 +147,7 @@ class AlarmListController extends GetxController {
 
   void deleteAlarm(int alarmId) {
     alarms.removeWhere((alarm) => alarm.alarmId == alarmId);
-    deleteAlarmFromFirebase(alarmId);
+    // deleteAlarmFromFirebase(alarmId);
     saveAlarms();
   }
 

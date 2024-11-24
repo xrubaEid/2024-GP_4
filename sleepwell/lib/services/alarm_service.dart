@@ -123,7 +123,6 @@ class AlarmService {
     }
   }
 
- 
   static Future<void> startAlarmService(String userId) async {
     log("====================== AppAlarm.printAllAlarms ===========================");
     await AppAlarm.printAllAlarms();
@@ -180,4 +179,4 @@ class AlarmService {
       }
     }
   }
-} 
+}

@@ -11,9 +11,7 @@ import 'package:sleepwell/screens/auth/signup_screen.dart';
 import 'package:sleepwell/screens/home_screen.dart';
 import 'package:sleepwell/widget/regsterbutton.dart';
 import '../../controllers/auth/auth_service.dart';
-import '../../locale/local_controller.dart';
 import '../../services/firebase_auth_service.dart';
-import '../../widget/choice_chip_widget.dart';
 import '../../widget/square_tile.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -77,41 +75,6 @@ class _SignInScreenState extends State<SignInScreen> {
         backgroundColor: myColor,
         title: const Text(''),
         automaticallyImplyLeading: false, // This removes the arrow
-        // actions: [
-        //   Padding(
-        //     padding: const EdgeInsets.all(8.0),
-        //     child: PopupMenuButton<int>(
-        //       icon: const Icon(
-        //         Icons.language,
-        //         color: Colors.white,
-        //       ),
-        //       itemBuilder: (BuildContext context) {
-        //         return [
-        //           PopupMenuItem<int>(
-        //             // value: 1,
-        //             child: ChoiceChipWidget(
-        //               choices: ["Arabic".tr, "English".tr],
-        //               initialSelected: Get.locale?.languageCode == 'en' ? 1 : 0,
-        //               changeSelected: (selectedValue) {
-        //                 print(":::::::::::::::::::::$selectedValue");
-        //                 final AppLocalelcontroller locallcontroller =
-        //                     Get.find();
-        //                 Get.back();
-        //                 if (selectedValue == 0 &&
-        //                     locallcontroller.language.languageCode == 'en') {
-        //                   locallcontroller.changeLanguage('ar');
-        //                 } else if (selectedValue == 1 &&
-        //                     locallcontroller.language.languageCode == 'ar') {
-        //                   locallcontroller.changeLanguage('en');
-        //                 }
-        //               },
-        //             ),
-        //           ),
-        //         ];
-        //       },
-        //     ),
-        //   ),
-        // ],
       ),
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,

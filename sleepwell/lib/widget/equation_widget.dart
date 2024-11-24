@@ -9,6 +9,7 @@ import 'package:sleepwell/models/difficult_equation_model.dart';
 import 'package:sleepwell/models/easy_equation_model.dart';
 import 'package:sleepwell/screens/home_screen.dart';
 
+import '../controllers/alarm/alarm_list__controller.dart';
 import '../push_notification_service.dart';
 
 class EquationWidget extends StatefulWidget {
@@ -36,6 +37,8 @@ class _EquationWidgetState extends State<EquationWidget> {
     _reminderTimer?.cancel();
     super.dispose();
   }
+
+  final AlarmListController controller = Get.put(AlarmListController());
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +95,7 @@ class _EquationWidgetState extends State<EquationWidget> {
 
                         // Stop the alarm
                         await Alarm.stop(widget.alarmId);
-
+                        controller.deleteAlarm(widget.alarmId);
                         // If the alarm is for a beneficiary, reset data and navigate to the home screen
                         if (!widget.isForBeneficiary) {
                           print("Resetting beneficiary info");
@@ -198,6 +201,4 @@ class _EquationWidgetState extends State<EquationWidget> {
       }
     });
   }
-
-
 }

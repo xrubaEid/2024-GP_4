@@ -171,7 +171,7 @@ class _FeedbackNotificationWeeklyScreenState
                             Text(
                               notifications.isNotEmpty
                                   ? "Percentage of weekly effects on sleep\n   for $displayDate"
-                                  : " Weekly effects on sleep No data yet  $displayDate",
+                                  : " Weekly effects on sleep No data yet\n  $displayDate:",
                               style: const TextStyle(
                                   color: Colors.black, fontSize: 18),
                             ),

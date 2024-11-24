@@ -34,8 +34,7 @@ class _AlarmRingWithEquationScreenState
 
   @override
   Widget build(BuildContext context) {
-    final String title =
-        "Ringing...\nOptimal time to WAKE UP\n for Yourself   $name";
+    final String title = "Ringing...\nOptimal time to WAKE UP\n for    $name";
 
     return Scaffold(
       body: SafeArea(

@@ -24,7 +24,7 @@ class CyclesCalculationTestingController extends GetxController {
 
     // Adjust for next day if wake-up time is earlier than actual bedtime
     if (wakeUpTime.value.isBefore(actualBedtime.value)) {
-      adjustedWakeUpTime = wakeUpTime.value.add(Duration(days: 1));
+      adjustedWakeUpTime = wakeUpTime.value.add(const Duration(days: 1));
     }
 
     final sleepDuration = adjustedWakeUpTime.difference(actualBedtime.value);
@@ -52,16 +52,16 @@ class CyclesCalculationTestingController extends GetxController {
     print('Optimal Wake Time: ${optimalWakeTime.value}');
     print('Added Fifteen Minutes: ${addedFifteenMinutes.value}');
 
-    await AppAlarm.saveAlarm(
-      alarmId: generateUniqueAlarmId(),
-      bedtime: DateFormat('hh:mm a').format(bedtime.value).toString(),
-      optimalWakeTime: optimalWakeTime.value,
-      userId: userId.toString(),
-      usertype: true,
-      name: 'Yourself',
-      sensorId: sensorService.selectedSensor.value,
-    );
-    await AppAlarm.getAlarms();
+    // await AppAlarm.saveAlarm(
+    //   alarmId: generateUniqueAlarmId(),
+    //   bedtime: DateFormat('hh:mm a').format(bedtime.value).toString(),
+    //   optimalWakeTime: optimalWakeTime.value,
+    //   userId: userId.toString(),
+    //   usertype: true,
+    //   name: 'Yourself',
+    //   sensorId: sensorService.selectedSensor.value,
+    // );
+    // await AppAlarm.getAlarms();
   }
 
   /// Generates a unique alarm ID

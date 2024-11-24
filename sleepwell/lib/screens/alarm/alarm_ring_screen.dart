@@ -6,6 +6,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../controllers/alarm/alarm_list__controller.dart';
 import '../../models/alarm_data.dart';
 import '../../push_notification_service.dart';
 import '../feedback/feedback_page.dart';
@@ -45,6 +46,8 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final AlarmListController controller = Get.put(AlarmListController());
+
     final String title = "Ringing...\nOptimal time to WAKE UP\n for $name";
     return Scaffold(
       body: SafeArea(
@@ -88,6 +91,8 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
                                   await Alarm.stop(widget.alarmSettings.id)
                                       .then(
                                           (_) => Navigator.pop(context, false));
+                                  controller
+                                      .deleteAlarm(widget.alarmSettings.id);
 
                                   await PushNotificationService
                                       .showNotification(
@@ -127,6 +132,8 @@ class _AlarmRingScreenState extends State<AlarmRingScreen> {
                     } else {
                       await Alarm.stop(widget.alarmSettings.id)
                           .then((_) => Navigator.pop(context, false));
+                      controller.deleteAlarm(widget.alarmSettings.id);
+
                       Get.offAll(() => const HomeScreen());
                     }
                   },

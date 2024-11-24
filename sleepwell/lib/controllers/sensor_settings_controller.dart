@@ -8,8 +8,10 @@ import 'package:get/get.dart';
 import 'package:sleepwell/models/sensor_model.dart';
 import '../models/user_sensor.dart';
 import '../services/sensor_service.dart';
-import '../widget/show_sensor_widget.dart';
+// import '../widget/show_sensor_widget.dart';
+import '../widget/show_sensor_dailog_widget.dart';
 
+//
 class SensorSettingsController extends GetxController {
   final sensorService = Get.find<SensorService>();
 
